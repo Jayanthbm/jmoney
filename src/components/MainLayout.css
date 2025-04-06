@@ -1,0 +1,173 @@
+/* src/components/MainLayout.css */
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Header */
+.header {
+  background: #1e88e5;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-left .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+/* Content Area */
+.content-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Sidebar (desktop only) */
+.sidebar {
+  width: 220px;
+  background: #f9f9f9;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 1rem;
+  display: none;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.nav-icon {
+  font-size: 1.2rem;
+}
+
+.nav-item:hover {
+  background: #e3f2fd;
+}
+
+.nav-item.active {
+  background: #bbdefb;
+  font-weight: bold;
+}
+
+/* Main Content */
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Mobile Footer Navigation */
+.mobile-footer {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  padding: 0.75rem 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Footer nav icon and label */
+.footer-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.footer-icon {
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.footer-nav-item.active {
+  color: #1e88e5;
+  font-weight: bold;
+}
+
+
+
+/* Logout button - red */
+.icon-button.logout {
+  background: #e53935;
+  color: white;
+  padding: 0.4rem;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.icon-button.logout:hover {
+  background: #d32f2f;
+}
+
+/* Settings icon - neutral/white on blue header */
+.icon-button.settings {
+  background: transparent;
+  color: white;
+  padding: 0.4rem;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+.icon-button.settings:hover {
+  color: #bbdefb;
+}
+
+.mobile-only {
+  display: block;
+}
+/* Responsive Breakpoints */
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+  }
+
+  .mobile-footer {
+    display: none;
+  }
+
+  /* Show only on mobile */
+  .mobile-only {
+    display: none !important;
+  }
+
+
+}
