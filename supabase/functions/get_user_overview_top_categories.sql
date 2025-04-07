@@ -6,7 +6,9 @@ returns table (
   percentage numeric,
   period text
 )
+language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   start_of_month date := date_trunc('month', now());
@@ -62,4 +64,4 @@ begin
     to_char(start_of_month, 'DD/MM/YY') || ' - ' || to_char(end_of_month, 'DD/MM/YY') as period
   from combined c;
 end;
-$$ language plpgsql;
+$$;

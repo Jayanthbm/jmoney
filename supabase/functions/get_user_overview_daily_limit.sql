@@ -6,7 +6,9 @@ returns table (
   remaining numeric,
   remaining_percentage numeric
 )
+language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   start_of_month date := date_trunc('month', now());
@@ -21,26 +23,26 @@ begin
   select coalesce(sum(amount), 0)
   into income_total
   from transactions
-  where user_id = uid
-    and type = 'Income'
-    and transaction_timestamp >= start_of_month
-    and transaction_timestamp < end_of_month + interval '1 day';
+  where transactions.user_id = uid
+    and transactions.type = 'Income'
+    and transactions.transaction_timestamp >= start_of_month
+    and transactions.transaction_timestamp < end_of_month + interval '1 day';
 
   select coalesce(sum(amount), 0)
   into expenses_till_yesterday
   from transactions
-  where user_id = uid
-    and type = 'Expense'
-    and transaction_timestamp >= start_of_month
-    and transaction_timestamp < today;
+  where transactions.user_id = uid
+    and transactions.type = 'Expense'
+    and transactions.transaction_timestamp >= start_of_month
+    and transactions.transaction_timestamp < today;
 
   select coalesce(sum(amount), 0)
   into today_expense
   from transactions
-  where user_id = uid
-    and type = 'Expense'
-    and transaction_timestamp >= today
-    and transaction_timestamp < (today + interval '1 day');
+  where transactions.user_id = uid
+    and transactions.type = 'Expense'
+    and transactions.transaction_timestamp >= today
+    and transactions.transaction_timestamp < (today + interval '1 day');
 
   daily := case when remaining_days > 0
     then (income_total - expenses_till_yesterday) / remaining_days
@@ -57,4 +59,4 @@ begin
       else round(((daily - today_expense) / daily) * 100, 2)
     end as remaining_percentage;
 end;
-$$ language plpgsql;
+$$;

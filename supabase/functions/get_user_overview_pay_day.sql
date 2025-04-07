@@ -4,7 +4,9 @@ returns table (
   date text,
   remaining_days integer
 )
+language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   pay_day date := date_trunc('month', now() + interval '1 month');
@@ -16,4 +18,4 @@ begin
     to_char(pay_day, 'FMMonth DD') as date,
     (pay_day - today) as remaining_days;
 end;
-$$ language plpgsql;
+$$;

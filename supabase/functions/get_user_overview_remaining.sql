@@ -8,8 +8,9 @@ returns table (
   remaining_percentage numeric
 )
 language plpgsql
+security definer
+set search_path = public
 as $$
-
 begin
   return query
   select
@@ -17,6 +18,7 @@ begin
     to_char(date_trunc('month', now()), 'DD/MM/YY') || ' - ' ||
       to_char((date_trunc('month', now() + interval '1 month') - interval '1 day'), 'DD/MM/YY') as period,
 
+    -- Total Income
     coalesce((
       select sum(amount)
       from transactions
@@ -26,6 +28,7 @@ begin
         and transactions.transaction_timestamp < date_trunc('month', now() + interval '1 month')
     ), 0) as total_income,
 
+    -- Remaining = Income - Expense
     coalesce((
       select sum(amount)
       from transactions
@@ -44,6 +47,7 @@ begin
         and transactions.transaction_timestamp < date_trunc('month', now() + interval '1 month')
     ), 0) as remaining,
 
+    -- Spent Percentage
     round(
       case
         when coalesce((
@@ -76,6 +80,7 @@ begin
       end
     ) as spent_percentage,
 
+    -- Remaining Percentage
     round(
       case
         when coalesce((
