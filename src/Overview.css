@@ -1,0 +1,71 @@
+/* Container for all cards */
+.overview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px;
+  justify-content: flex-start;
+}
+
+/* Individual card takes full width on mobile */
+.overview-card-wrapper {
+  flex: 1 1 100%;
+}
+
+@media (min-width: 768px) {
+
+  /* Two cards per row on larger screens */
+  .overview-card-wrapper {
+    flex: 1 1 calc(50% - 16px);
+  }
+}
+
+.big-income-text{
+  font-size: 2rem;
+  color:#3ecf8e;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+.refresh-button {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.refresh-button:hover {
+  background-color: black;
+  color: white;
+  transform: scale(1.05);
+}
+
+.refresh-button:active {
+  transform: scale(0.98);
+}
+
+.refresh-icon {
+  animation: rotate 0.6s linear;
+}
+
+.refresh-button:active .refresh-icon {
+  animation: rotate 0.6s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
