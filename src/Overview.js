@@ -287,7 +287,7 @@ const Overview = () => {
                         <div className="category-text">
                           <div className="category-name">{cat.name}</div>
                           <div className="category-value">
-                            ₹{formatIndianNumber(cat.amount)} | {cat.percentage}
+                            ₹{formatIndianNumber(cat?.amount || 0)} | {cat?.percentage || 0}
                             %
                           </div>
                         </div>
@@ -298,7 +298,7 @@ const Overview = () => {
                   {/* Section 2: Donut Chart */}
                   <div className="category-donut-chart">
                     <PieChart
-                      data={data.topCategories.map((cat, index) => ({
+                      data={data.topCategories?.map((cat, index) => ({
                         title: cat.name,
                         value: cat.percentage,
                         color: CATEGORY_COLORS[index],
