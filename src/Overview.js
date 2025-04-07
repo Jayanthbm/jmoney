@@ -175,7 +175,7 @@ const Overview = () => {
                     <MyCountUp end={data?.remainingForPeriod?.remaining || 0} />
                   </div>
                   <ProgressBar
-                    value={data?.remainingForPeriod?.spent_percentage}
+                    value={data?.remainingForPeriod?.spent_percentage || 0}
                     color="#3ecf8e"
                   />
                 </div>
@@ -195,7 +195,7 @@ const Overview = () => {
                   <div className="daily-limit-section">
                     <div className="daily-limit-label">REMAINING</div>
                     <div className="daily-limit-value green-text">
-                      ₹{formatIndianNumber(data?.dailyLimit?.remaining)}
+                      ₹{formatIndianNumber(data?.dailyLimit?.remaining || 0)}
                     </div>
                   </div>
 
@@ -206,15 +206,15 @@ const Overview = () => {
                   <div className="daily-limit-section">
                     <div className="daily-limit-label">SPENT</div>
                     <div className="daily-limit-value red-text">
-                      ₹{formatIndianNumber(data?.dailyLimit?.spent)}
+                      ₹{formatIndianNumber(data?.dailyLimit?.spent || 0)}
                     </div>
                   </div>
 
                   {/* Circular Progress */}
                   <div className="daily-limit-section progress-section">
                     <CircularProgressbar
-                      value={data?.dailyLimit?.remaining_percentage}
-                      text={`${data?.dailyLimit?.remaining_percentage}%`}
+                      value={data?.dailyLimit?.remaining_percentage || 0}
+                      text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
                       styles={buildStyles({
                         pathColor: "#3ecf8e",
                         strokeLinecap: "round",
@@ -234,7 +234,7 @@ const Overview = () => {
                 <div className="payday-container">
                   {/* Section 1: Pay Date & Dot Grid */}
                   <div className="payday-info">
-                    <div className="payday-date">{data?.payDay?.date}</div>
+                    <div className="payday-date">{data?.payDay?.date || ""}</div>
                     <div className="dot-grid">
                       {Array.from({
                         length: data?.payDay?.days_in_month || 30,
@@ -254,8 +254,8 @@ const Overview = () => {
                   {/* Section 2: Circular Progress */}
                   <div className="payday-progress">
                     <CircularProgressbar
-                      value={100 - data?.payDay?.remaining_days_percentage}
-                      text={`${data?.payDay?.remaining_days} \ndays`}
+                      value={100 - data?.payDay?.remaining_days_percentage || 0}
+                      text={`${data?.payDay?.remaining_days || 0} \ndays`}
                       styles={buildStyles({
                         pathColor: "#139af5",
                         strokeLinecap: "round",
@@ -278,36 +278,44 @@ const Overview = () => {
                 <div className="top-categories-donut">
                   {/* Section 1: Labels */}
                   <div className="category-labels">
-                    {data?.topCategories.map((cat, index) => (
-                      <div key={index} className="category-label-item">
-                        <span
-                          className="category-dot"
-                          style={{ backgroundColor: CATEGORY_COLORS[index] }}
-                        />
-                        <div className="category-text">
-                          <div className="category-name">{cat.name}</div>
-                          <div className="category-value">
-                            ₹{formatIndianNumber(cat?.amount || 0)} | {cat?.percentage || 0}
-                            %
+                    {data?.topCategories?.length > 0 && (
+                      <>
+                        {data?.topCategories?.map((cat, index) => (
+                          <div key={index} className="category-label-item">
+                            <span
+                              className="category-dot"
+                              style={{
+                                backgroundColor: CATEGORY_COLORS[index],
+                              }}
+                            />
+                            <div className="category-text">
+                              <div className="category-name">{cat.name}</div>
+                              <div className="category-value">
+                                ₹{formatIndianNumber(cat?.amount || 0)} |{" "}
+                                {cat?.percentage || 0}%
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        ))}
+                      </>
+                    )}
                   </div>
 
                   {/* Section 2: Donut Chart */}
                   <div className="category-donut-chart">
-                    <PieChart
-                      data={data.topCategories?.map((cat, index) => ({
-                        title: cat.name,
-                        value: cat.percentage,
-                        color: CATEGORY_COLORS[index],
-                      }))}
-                      lineWidth={20}
-                      rounded
-                      animate
-                      startAngle={270}
-                    />
+                    {data?.topCategories?.length > 0 && (
+                      <PieChart
+                        data={data?.topCategories?.map((cat, index) => ({
+                          title: cat.name,
+                          value: cat.percentage,
+                          color: CATEGORY_COLORS[index],
+                        }))}
+                        lineWidth={20}
+                        rounded
+                        animate
+                        startAngle={270}
+                      />
+                    )}
                   </div>
                 </div>
               </OverviewCard>
