@@ -11,6 +11,7 @@ import Budgets from "./Budgets";
 import Goals from "./Goals";
 import MainLayout from "./components/MainLayout";
 import Loading from "./components/Loading";
+import "./App.css";
 
 function App() {
   const [session, setSession] = useState(null);

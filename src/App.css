@@ -9,3 +9,12 @@ html {
   height: 100%;
   margin: 0;
 }
+.container{
+  padding-bottom: 10px;
+  margin-bottom: 2rem;
+}
+
+.right-align {
+  display: flex;
+  justify-content: flex-end;
+}
