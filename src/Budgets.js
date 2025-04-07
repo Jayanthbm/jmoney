@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import AppLayout from "./components/AppLayout";
 
 const Budgets = () => {
-  return <div>Budgets</div>;
+  const [loading, setLoading] = useState(false);
+  return <AppLayout title="Budgets" loading={loading}></AppLayout>;
 };
 
 export default Budgets;
