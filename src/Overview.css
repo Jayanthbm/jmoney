@@ -20,52 +20,201 @@
   }
 }
 
-.big-income-text{
+.big-income-text {
   font-size: 2rem;
-  color:#3ecf8e;
+  color: #3ecf8e;
   font-weight: bold;
   margin-bottom: 3px;
 }
-.refresh-button {
-  background-color: white;
-  color: black;
-  border: 2px solid black;
-  padding: 0.5rem 1.2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
+
+.daily-limit-container {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+  padding-top: 8px;
 }
 
-.refresh-button:hover {
-  background-color: black;
-  color: white;
-  transform: scale(1.05);
+.daily-limit-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 
-.refresh-button:active {
-  transform: scale(0.98);
+.daily-limit-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #888;
+  margin-bottom: 4px;
+  text-align: center;
 }
 
-.refresh-icon {
-  animation: rotate 0.6s linear;
+.daily-limit-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
 }
 
-.refresh-button:active .refresh-icon {
-  animation: rotate 0.6s linear infinite;
+.progress-section {
+  max-width: 70px;
 }
 
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
+.divider {
+  height: 60px;
+  width: 1px;
+  background-color: #ccc;
+}
 
-  to {
-    transform: rotate(360deg);
-  }
+.payday-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.payday-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.payday-date {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #374752;
+}
+
+.dot-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 12px);
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-past {
+  background-color: #cbd5e1;
+  /* gray-300 */
+}
+
+.dot-future {
+  background-color: #139af5;
+  /* blue */
+}
+
+.payday-progress {
+  max-width: 80px;
+  flex-shrink: 0;
+}
+
+.top-categories-donut {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.category-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.category-label-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.category-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.category-value {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.category-donut-chart {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.stat-card-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.stat-card-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-amount {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.red-text {
+  color: #f87171;
+}
+
+.green-text {
+  color: #3ecf8e;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.stat-chart {
+  width: 90px;
+  height: 90px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-subtext {
+  position: absolute;
+  bottom: 6px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: center;
 }

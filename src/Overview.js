@@ -3,10 +3,13 @@ import { supabase } from "./supabaseClient";
 import Loading from "./components/Loading";
 import "./Overview.css";
 import OverviewCard from "./components/OverviewCard";
-import CountUp from "react-countup";
 import ProgressBar from "./components/ProgressBar";
 import { FiRefreshCw } from "react-icons/fi";
-
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { PieChart } from "react-minimal-pie-chart";
+import MyCountUp from "./components/MyCountUp";
+import { formatIndianNumber } from "./utils";
 const CACHE_EXPIRY_HOURS = 20;
 
 const Overview = () => {
@@ -91,26 +94,57 @@ const Overview = () => {
     [isCacheExpired]
   );
 
-  const formatIndianNumber = (value) => {
-    return value.toLocaleString("en-IN");
-  };
-
-  const MyCountUp = ({ end }) => {
-    return (
-      <CountUp
-        end={end}
-        duration={1.5}
-        formattingFn={formatIndianNumber}
-        enableScrollSpy
-        scrollSpyDelay={100}
-      />
-    );
-  };
-
   useEffect(() => {
     fetchOverview();
   }, [fetchOverview]);
 
+  const CATEGORY_COLORS = ["#3b82f6", "#10b981", "#9ca3af"];
+  const COLORS = {
+    income: "#3ecf8e", // green
+    expense: "#f87171", // red
+    text: "#374752", // label
+  };
+
+  const StatCard = ({ title, subtitle, income, expense, percentage }) => {
+    return (
+      <div className="overview-card-wrapper">
+        <OverviewCard title={title} subtitle={subtitle}>
+          <div className="stat-card-container">
+            {/* Section 1: Text */}
+            <div className="stat-card-numbers">
+              <div className="stat-row">
+                <div className="stat-amount red-text">
+                  ₹{formatIndianNumber(expense)}
+                </div>
+                <div className="stat-label">EXPENSE</div>
+              </div>
+              <div className="stat-row">
+                <div className="stat-amount green-text">
+                  ₹{formatIndianNumber(income)}
+                </div>
+                <div className="stat-label">INCOME</div>
+              </div>
+            </div>
+
+            {/* Section 2: CircularProgressbar */}
+            <div className="stat-chart">
+              <CircularProgressbar
+                value={Math.round(percentage)}
+                text={`${Math.round(percentage)}%`}
+                styles={buildStyles({
+                  pathColor: COLORS.expense,
+                  trailColor: "#e5e7eb", // light gray
+                  textColor: COLORS.text,
+                  textSize: "16px",
+                  strokeLinecap: "round",
+                })}
+              />
+            </div>
+          </div>
+        </OverviewCard>
+      </div>
+    );
+  };
   return (
     <div className="container">
       <div className="right-align">
@@ -152,47 +186,156 @@ const Overview = () => {
             <div className="overview-card-wrapper">
               <OverviewCard
                 title="Daily Limit"
-                subtitle={`Limit: ₹${data?.dailyLimit?.daily_limit}`}
-              ></OverviewCard>
+                subtitle={`Limit: ₹${formatIndianNumber(
+                  data?.dailyLimit?.daily_limit
+                )}`}
+              >
+                <div className="daily-limit-container">
+                  {/* Remaining */}
+                  <div className="daily-limit-section">
+                    <div className="daily-limit-label">REMAINING</div>
+                    <div className="daily-limit-value green-text">
+                      ₹{formatIndianNumber(data?.dailyLimit?.remaining)}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="divider" />
+
+                  {/* Spent */}
+                  <div className="daily-limit-section">
+                    <div className="daily-limit-label">SPENT</div>
+                    <div className="daily-limit-value red-text">
+                      ₹{formatIndianNumber(data?.dailyLimit?.spent)}
+                    </div>
+                  </div>
+
+                  {/* Circular Progress */}
+                  <div className="daily-limit-section progress-section">
+                    <CircularProgressbar
+                      value={data?.dailyLimit?.remaining_percentage}
+                      text={`${data?.dailyLimit?.remaining_percentage}%`}
+                      styles={buildStyles({
+                        pathColor: "#3ecf8e",
+                        strokeLinecap: "round",
+                        trailColor: "#eee",
+                        textColor: "#000",
+                        textSize: "18px",
+                      })}
+                    />
+                  </div>
+                </div>
+              </OverviewCard>
             </div>
 
             {/* Pay Day */}
             <div className="overview-card-wrapper">
-              <OverviewCard
-                title="Pay Day"
-                subtitle="Days until next salary"
-              ></OverviewCard>
+              <OverviewCard title="Pay Day" subtitle="Days until next salary">
+                <div className="payday-container">
+                  {/* Section 1: Pay Date & Dot Grid */}
+                  <div className="payday-info">
+                    <div className="payday-date">{data?.payDay?.date}</div>
+                    <div className="dot-grid">
+                      {Array.from({
+                        length: data?.payDay?.days_in_month || 30,
+                      }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`dot ${
+                            i + 1 < data?.payDay?.today
+                              ? "dot-past"
+                              : "dot-future"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Section 2: Circular Progress */}
+                  <div className="payday-progress">
+                    <CircularProgressbar
+                      value={100 - data?.payDay?.remaining_days_percentage}
+                      text={`${data?.payDay?.remaining_days} \ndays`}
+                      styles={buildStyles({
+                        pathColor: "#139af5",
+                        strokeLinecap: "round",
+                        trailColor: "#eee",
+                        textColor: "#2c6c99",
+                        textSize: "16px",
+                      })}
+                    />
+                  </div>
+                </div>
+              </OverviewCard>
             </div>
 
+            {/* Top Categories */}
             <div className="overview-card-wrapper">
               <OverviewCard
                 title="Top Categories"
                 subtitle={data?.remainingForPeriod?.period}
-              ></OverviewCard>
+              >
+                <div className="top-categories-donut">
+                  {/* Section 1: Labels */}
+                  <div className="category-labels">
+                    {data?.topCategories.map((cat, index) => (
+                      <div key={index} className="category-label-item">
+                        <span
+                          className="category-dot"
+                          style={{ backgroundColor: CATEGORY_COLORS[index] }}
+                        />
+                        <div className="category-text">
+                          <div className="category-name">{cat.name}</div>
+                          <div className="category-value">
+                            ₹{formatIndianNumber(cat.amount)} | {cat.percentage}
+                            %
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Section 2: Donut Chart */}
+                  <div className="category-donut-chart">
+                    <PieChart
+                      data={data.topCategories.map((cat, index) => ({
+                        title: cat.name,
+                        value: cat.percentage,
+                        color: CATEGORY_COLORS[index],
+                      }))}
+                      lineWidth={20}
+                      rounded
+                      animate
+                      startAngle={270}
+                    />
+                  </div>
+                </div>
+              </OverviewCard>
             </div>
 
             {/* Current Month */}
-            <div className="overview-card-wrapper">
-              <OverviewCard
-                title="This Month"
-                subtitle={data?.current_month?.period}
-              ></OverviewCard>
-            </div>
+            <StatCard
+              title="This Month"
+              subtitle={data?.current_month?.period}
+              expense={data?.current_month?.expense}
+              income={data?.current_month?.income}
+              percentage={data?.current_month?.spent_percentage}
+            />
 
             {/* Current Year */}
-            <div className="overview-card-wrapper">
-              <OverviewCard
-                title="Current Year"
-                subtitle={data?.current_year?.period}
-              ></OverviewCard>
-            </div>
+            <StatCard
+              title="Current Year"
+              subtitle={data?.current_year?.period}
+              expense={data?.current_year?.expense}
+              income={data?.current_year?.income}
+              percentage={data?.current_year?.spent_percentage}
+            />
 
             {/* Net Worth */}
             <div className="overview-card-wrapper">
               <OverviewCard title="Net Worth" subtitle="ALL TIME">
                 <div>
                   <div className="big-income-text">
-                    {" "}
                     ₹ <MyCountUp end={data?.networth?.amount || 0} />
                   </div>
                 </div>
