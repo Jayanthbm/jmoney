@@ -63,7 +63,7 @@ const Overview = () => {
           }
         }
 
-        if (shouldFetch) {
+        if (shouldFetch || cached === null) {
           const { data: freshData, error } = await supabase.rpc(fn, { uid });
           if (error) {
             console.error(`Error fetching ${key}`, error);
@@ -234,7 +234,9 @@ const Overview = () => {
                 <div className="payday-container">
                   {/* Section 1: Pay Date & Dot Grid */}
                   <div className="payday-info">
-                    <div className="payday-date">{data?.payDay?.date || ""}</div>
+                    <div className="payday-date">
+                      {data?.payDay?.date || ""}
+                    </div>
                     <div className="dot-grid">
                       {Array.from({
                         length: data?.payDay?.days_in_month || 30,
