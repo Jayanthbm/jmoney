@@ -7,12 +7,13 @@ import MyCountUp from "./components/MyCountUp";
 import OverviewCard from "./components/OverviewCard";
 import ProgressBar from "./components/ProgressBar";
 import StatCard from "./components/StatCard";
-import MyCircularProgress from "./components/MyCircularProgress";
 import CustomDonutChart from "./components/CustomDonutChart";
+import CircularProgressBar from "./components/CircularProgressBar";
 
 import { formatIndianNumber } from "./utils";
 
 import "./Overview.css";
+
 const CACHE_EXPIRY_HOURS = 20;
 
 const Overview = () => {
@@ -157,10 +158,13 @@ const Overview = () => {
 
               {/* Circular Progress */}
               <div className="daily-limit-section progress-section">
-                <MyCircularProgress
-                  value={data?.dailyLimit?.remaining_percentage || 0}
+                <CircularProgressBar
+                  progress={data?.dailyLimit?.remaining_percentage || 0}
                   text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
                   pathColor="#3ecf8e"
+                  textColor="#374151"
+                  fontSize="13px"
+                  size={80}
                 />
               </div>
             </div>
@@ -190,12 +194,13 @@ const Overview = () => {
 
               {/* Section 2: Circular Progress */}
               <div className="payday-progress">
-                <MyCircularProgress
-                  value={100 - data?.payDay?.remaining_days_percentage || 0}
+                <CircularProgressBar
+                  progress={100 - data?.payDay?.remaining_days_percentage || 0}
                   text={`${data?.payDay?.remaining_days || 0} \ndays`}
                   pathColor="#139af5"
                   textColor="#2c6c99"
-                  textSize="16px"
+                  textSize="13px"
+                  size={90}
                 />
               </div>
             </div>

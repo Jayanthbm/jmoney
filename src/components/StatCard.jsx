@@ -1,6 +1,6 @@
 import OverviewCard from "./OverviewCard";
 import { formatIndianNumber } from "../utils";
-import MyCircularProgress from "./MyCircularProgress";
+import CircularProgressBar from "./CircularProgressBar";
 
 const COLORS = {
   income: "#3ecf8e", // green
@@ -30,13 +30,13 @@ const StatCard = ({ title, subtitle, income, expense, percentage }) => {
 
           {/* Section 2: CircularProgressbar */}
           <div className="stat-chart">
-            <MyCircularProgress
-              value={Math.round(percentage)}
+            <CircularProgressBar
+              progress={Math.round(percentage)}
               text={`${Math.round(percentage)}%`}
               pathColor={COLORS.expense}
               textColor={COLORS.text}
-              textSize="16px"
-              trailColor="#e5e7eb"
+              fontSize="16px"
+              size={80}
             />
           </div>
         </div>
