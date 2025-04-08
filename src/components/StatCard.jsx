@@ -35,8 +35,6 @@ const StatCard = ({ title, subtitle, income, expense, percentage }) => {
               text={`${Math.round(percentage)}%`}
               pathColor={COLORS.expense}
               textColor={COLORS.text}
-              fontSize="16px"
-              size={80}
             />
           </div>
         </div>

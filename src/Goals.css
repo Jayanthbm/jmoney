@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 2px;
   flex-wrap: wrap;
 }
 
@@ -43,10 +43,11 @@
 .goal-card-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin: 16px;
+  gap: 1px;
+  margin: 1px;
   justify-content: flex-start;
 }
+
 .goal-card-wrapper{
   flex: 1 1 100%;
 }

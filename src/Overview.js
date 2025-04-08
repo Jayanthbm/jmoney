@@ -163,8 +163,6 @@ const Overview = () => {
                   text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
                   pathColor="#3ecf8e"
                   textColor="#374151"
-                  fontSize="13px"
-                  size={80}
                 />
               </div>
             </div>
@@ -199,8 +197,6 @@ const Overview = () => {
                   text={`${data?.payDay?.remaining_days || 0} \ndays`}
                   pathColor="#139af5"
                   textColor="#2c6c99"
-                  textSize="13px"
-                  size={90}
                 />
               </div>
             </div>

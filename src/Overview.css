@@ -2,11 +2,10 @@
 .overview-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin: 16px;
+  gap: 1px;
+  margin: 1px;
   justify-content: flex-start;
 }
-
 /* Individual card takes full width on mobile */
 .overview-card-wrapper {
   flex: 1 1 100%;
@@ -32,14 +31,13 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding-top: 8px;
 }
 
 .daily-limit-section {
   display: flex;
+  align-items: flex-start;
+  flex: 1 1;
   flex-direction: column;
-  align-items: center;
-  flex: 1;
 }
 
 .daily-limit-label {
@@ -57,7 +55,7 @@
 }
 
 .progress-section {
-  max-width: 70px;
+  max-width: 100px;
 }
 
 .divider {
@@ -110,7 +108,7 @@
 }
 
 .payday-progress {
-  max-width: 80px;
+  max-width: 100px;
   flex-shrink: 0;
 }
 
@@ -173,7 +171,7 @@
 .stat-card-numbers {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
 }
 
 .stat-row {
@@ -201,8 +199,8 @@
 }
 
 .stat-chart {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   position: relative;
   display: flex;
   align-items: center;
