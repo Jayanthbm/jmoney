@@ -42,7 +42,7 @@ const MainLayout = ({ children }) => {
       <header className="header">
         <div className="header-left">
           <div className="logo" onClick={() => navigate("/")}>
-            jmoney
+            Jmoney
           </div>
         </div>
         <div className="header-right">
