@@ -118,14 +118,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding-top: 8px;
+  gap: 10px;
+  padding-top: 3px;
 }
 
 .category-labels {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1px;
   flex: 1;
 }
 
@@ -158,9 +158,8 @@
 }
 
 .category-donut-chart {
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
+  width: 120px;
+  height: 110px;
 }
 
 .stat-card-container {

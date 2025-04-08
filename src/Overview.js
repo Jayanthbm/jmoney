@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
 import { get, set } from "idb-keyval";
-import { PieChart } from "react-minimal-pie-chart";
 
 import AppLayout from "./components/AppLayout";
 import MyCountUp from "./components/MyCountUp";
@@ -9,6 +8,7 @@ import OverviewCard from "./components/OverviewCard";
 import ProgressBar from "./components/ProgressBar";
 import StatCard from "./components/StatCard";
 import MyCircularProgress from "./components/MyCircularProgress";
+import CustomDonutChart from "./components/CustomDonutChart";
 
 import { formatIndianNumber } from "./utils";
 
@@ -236,19 +236,12 @@ const Overview = () => {
 
               {/* Section 2: Donut Chart */}
               <div className="category-donut-chart">
-                {data?.topCategories?.length > 0 && (
-                  <PieChart
-                    data={data?.topCategories?.map((cat, index) => ({
-                      title: cat.name,
-                      value: cat.percentage,
-                      color: CATEGORY_COLORS[index],
-                    }))}
-                    lineWidth={20}
-                    rounded
-                    animate
-                    startAngle={270}
-                  />
-                )}
+                <CustomDonutChart
+                  data={data?.topCategories.map((cat) => ({
+                    value: cat.percentage,
+                  }))}
+                  colors={CATEGORY_COLORS}
+                />
               </div>
             </div>
           </OverviewCard>
