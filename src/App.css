@@ -70,3 +70,7 @@ html {
 .red-text {
   color: #f87171;
 }
+.header-container{
+  display: flex;
+  justify-content: space-between;
+}

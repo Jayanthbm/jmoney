@@ -3,7 +3,7 @@ import { FiRefreshCw } from "react-icons/fi";
 
 const PageHeader = ({ title, showRefreshButton, onRefresh, disabled }) => {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div className="header-container">
       <h1>{title}</h1>
       {showRefreshButton && (
         <button
