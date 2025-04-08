@@ -1,7 +1,7 @@
 import React from "react";
 import "./GoalCard.css";
-import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import { formatIndianNumber } from "../utils";
+import MyCircularProgress from "./MyCircularProgress";
 const GoalCard = ({
   title,
   progress,
@@ -16,14 +16,9 @@ const GoalCard = ({
       <div className="goal-card-header">
         <div className="goal-card-title">{title}</div>
         <div className="goal-progress">
-          <CircularProgressbar
+          <MyCircularProgress
             value={progress}
             text={`${Math.round(progress)}%`}
-            styles={buildStyles({
-              pathColor: "#4caf50",
-              textColor: "#374752",
-              trailColor: "#eee",
-            })}
           />
         </div>
       </div>
