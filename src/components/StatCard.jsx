@@ -1,12 +1,12 @@
-import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import OverviewCard from "./OverviewCard";
 import { formatIndianNumber } from "../utils";
+import MyCircularProgress from "./MyCircularProgress";
 
- const COLORS = {
-   income: "#3ecf8e", // green
-   expense: "#f87171", // red
-   text: "#374752", // label
- };
+const COLORS = {
+  income: "#3ecf8e", // green
+  expense: "#f87171", // red
+  text: "#374752", // label
+};
 const StatCard = ({ title, subtitle, income, expense, percentage }) => {
   return (
     <div className="overview-card-wrapper">
@@ -30,16 +30,13 @@ const StatCard = ({ title, subtitle, income, expense, percentage }) => {
 
           {/* Section 2: CircularProgressbar */}
           <div className="stat-chart">
-            <CircularProgressbar
+            <MyCircularProgress
               value={Math.round(percentage)}
               text={`${Math.round(percentage)}%`}
-              styles={buildStyles({
-                pathColor: COLORS.expense,
-                trailColor: "#e5e7eb", // light gray
-                textColor: COLORS.text,
-                textSize: "16px",
-                strokeLinecap: "round",
-              })}
+              pathColor={COLORS.expense}
+              textColor={COLORS.text}
+              textSize="16px"
+              trailColor="#e5e7eb"
             />
           </div>
         </div>

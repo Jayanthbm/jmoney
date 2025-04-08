@@ -4,13 +4,13 @@ import { get, set } from "idb-keyval";
 import "./Overview.css";
 import OverviewCard from "./components/OverviewCard";
 import ProgressBar from "./components/ProgressBar";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+
 import { PieChart } from "react-minimal-pie-chart";
 import MyCountUp from "./components/MyCountUp";
 import { formatIndianNumber } from "./utils";
 import AppLayout from "./components/AppLayout";
 import StatCard from "./components/StatCard";
+import MyCircularProgress from "./components/MyCircularProgress";
 const CACHE_EXPIRY_HOURS = 20;
 
 const Overview = () => {
@@ -155,16 +155,10 @@ const Overview = () => {
 
               {/* Circular Progress */}
               <div className="daily-limit-section progress-section">
-                <CircularProgressbar
+                <MyCircularProgress
                   value={data?.dailyLimit?.remaining_percentage || 0}
                   text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
-                  styles={buildStyles({
-                    pathColor: "#3ecf8e",
-                    strokeLinecap: "round",
-                    trailColor: "#eee",
-                    textColor: "#000",
-                    textSize: "18px",
-                  })}
+                  pathColor="#3ecf8e"
                 />
               </div>
             </div>
@@ -194,16 +188,12 @@ const Overview = () => {
 
               {/* Section 2: Circular Progress */}
               <div className="payday-progress">
-                <CircularProgressbar
+                <MyCircularProgress
                   value={100 - data?.payDay?.remaining_days_percentage || 0}
                   text={`${data?.payDay?.remaining_days || 0} \ndays`}
-                  styles={buildStyles({
-                    pathColor: "#139af5",
-                    strokeLinecap: "round",
-                    trailColor: "#eee",
-                    textColor: "#2c6c99",
-                    textSize: "16px",
-                  })}
+                  pathColor="#139af5"
+                  textColor="#2c6c99"
+                  textSize="16px"
                 />
               </div>
             </div>
