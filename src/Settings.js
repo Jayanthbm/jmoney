@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import AppLayout from "./components/AppLayout";
 import { supabase } from "./supabaseClient";
-import * as MdIcons from "react-icons/md";
-import "./Settings.css";
 import { get, set } from "idb-keyval";
+import * as MdIcons from "react-icons/md";
+
+import AppLayout from "./components/AppLayout";
+
+import "./Settings.css";
 
 const CACHE_KEY = "settings-cache";
 const CACHE_EXPIRY_DAYS = 10;
