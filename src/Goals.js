@@ -149,102 +149,97 @@ const Goals = () => {
         fetchGoals(true);
       }}
     >
-      <div className="goals-container">
-        <div className="goals-header">
-          <div className="left-controls">
-            <select
-              value={orderBy}
-              onChange={(e) => setOrderBy(e.target.value)}
-            >
-              <option value="created_at">Sort by Created</option>
-              <option value="name">Sort by Name</option>
-              <option value="goal_amount">Sort by Goal Amount</option>
-              <option value="current_amount">Sort by Current Amount</option>
-              <option value="progress">Sort by Progress</option>
-            </select>
-          </div>
-          <div className="right-controls">
-            <button
-              className="add-btn"
-              onClick={() => handleDialogOpen()}
-              disabled={loading}
-            >
-              <FaCirclePlus />
-              Add Goal
-            </button>
-          </div>
+      <div className="goals-header">
+        <div className="left-controls">
+          <select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
+            <option value="created_at">Sort by Created</option>
+            <option value="name">Sort by Name</option>
+            <option value="goal_amount">Sort by Goal Amount</option>
+            <option value="current_amount">Sort by Current Amount</option>
+            <option value="progress">Sort by Progress</option>
+          </select>
         </div>
-        <div className="goal-card-container">
-          {sortedGoals.map((goal) => {
-            const progress = goal.goal_amount
-              ? (goal.current_amount / goal.goal_amount) * 100
-              : 0;
-
-            return (
-              <div className="goal-card-wrapper">
-                <GoalCard
-                  key={goal.id}
-                  title={goal.name}
-                  progress={progress}
-                  logo={goal.logo}
-                  target={goal.goal_amount}
-                  current={goal.current_amount}
-                  onEdit={() => handleDialogOpen(goal)}
-                  onDelete={() => handleDelete(goal.id)}
-                />
-              </div>
-            );
-          })}
+        <div className="right-controls">
+          <button
+            className="add-btn"
+            onClick={() => handleDialogOpen()}
+            disabled={loading}
+          >
+            <FaCirclePlus />
+            Add Goal
+          </button>
         </div>
+      </div>
+      <div className="goal-card-container">
+        {sortedGoals.map((goal) => {
+          const progress = goal.goal_amount
+            ? (goal.current_amount / goal.goal_amount) * 100
+            : 0;
 
-        {openDialog && (
-          <div className="goal-dialog">
-            <div className="goal-dialog-content">
-              <h3>{editGoal ? "Edit Goal" : "Add Goal"}</h3>
-              <input
-                type="text"
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+          return (
+            <div className="goal-card-wrapper">
+              <GoalCard
+                key={goal.id}
+                title={goal.name}
+                progress={progress}
+                logo={goal.logo}
+                target={goal.goal_amount}
+                current={goal.current_amount}
+                onEdit={() => handleDialogOpen(goal)}
+                onDelete={() => handleDelete(goal.id)}
               />
-              <input
-                type="text"
-                placeholder="Logo URL"
-                value={formData.logo}
-                onChange={(e) =>
-                  setFormData({ ...formData, logo: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                placeholder="Goal Amount"
-                value={formData.goal_amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, goal_amount: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                placeholder="Current Amount"
-                value={formData.current_amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, current_amount: e.target.value })
-                }
-              />
-              <div className="goal-dialog-actions">
-                <button onClick={handleSave} className="goal-save-btn">
-                  Save
-                </button>
-                <button onClick={handleDialogClose} className="goal-cancel-btn">
-                  Cancel
-                </button>
-              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {openDialog && (
+        <div className="goal-dialog">
+          <div className="goal-dialog-content">
+            <h3>{editGoal ? "Edit Goal" : "Add Goal"}</h3>
+            <input
+              type="text"
+              placeholder="Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="Logo URL"
+              value={formData.logo}
+              onChange={(e) =>
+                setFormData({ ...formData, logo: e.target.value })
+              }
+            />
+            <input
+              type="number"
+              placeholder="Goal Amount"
+              value={formData.goal_amount}
+              onChange={(e) =>
+                setFormData({ ...formData, goal_amount: e.target.value })
+              }
+            />
+            <input
+              type="number"
+              placeholder="Current Amount"
+              value={formData.current_amount}
+              onChange={(e) =>
+                setFormData({ ...formData, current_amount: e.target.value })
+              }
+            />
+            <div className="goal-dialog-actions">
+              <button onClick={handleSave} className="goal-save-btn">
+                Save
+              </button>
+              <button onClick={handleDialogClose} className="goal-cancel-btn">
+                Cancel
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </AppLayout>
   );
 };

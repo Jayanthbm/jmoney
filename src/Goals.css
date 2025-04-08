@@ -11,8 +11,8 @@
 }
 
 .left-controls select {
-  padding: 10px 12px;
-  font-size: 15px;
+  padding: 0.5rem 1rem;
+  font-size: 14px;
   border-radius: 10px;
   border: 1px solid #ccc;
 }
@@ -21,7 +21,7 @@
   background-color: white;
   color: black;
   border: 1px solid black;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1rem;
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 8px;

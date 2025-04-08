@@ -12,7 +12,6 @@ const PageHeader = ({ title, showRefreshButton, onRefresh, disabled }) => {
           disabled={disabled}
         >
           <FiRefreshCw className="refresh-icon" />
-          Refresh
         </button>
       )}
     </div>
