@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
 import { get, set } from "idb-keyval";
-import "./Overview.css";
+import { PieChart } from "react-minimal-pie-chart";
+
+import AppLayout from "./components/AppLayout";
+import MyCountUp from "./components/MyCountUp";
 import OverviewCard from "./components/OverviewCard";
 import ProgressBar from "./components/ProgressBar";
-
-import { PieChart } from "react-minimal-pie-chart";
-import MyCountUp from "./components/MyCountUp";
-import { formatIndianNumber } from "./utils";
-import AppLayout from "./components/AppLayout";
 import StatCard from "./components/StatCard";
 import MyCircularProgress from "./components/MyCircularProgress";
+
+import { formatIndianNumber } from "./utils";
+
+import "./Overview.css";
 const CACHE_EXPIRY_HOURS = 20;
 
 const Overview = () => {
