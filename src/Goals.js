@@ -1,13 +1,13 @@
 // Goals.js
 import React, { useCallback, useEffect, useState } from "react";
-import "./Goals.css";
 import { supabase } from "./supabaseClient";
-import "react-circular-progressbar/dist/styles.css";
+import { get, set, del } from "idb-keyval";
+import { FaCirclePlus } from "react-icons/fa6";
+
 import AppLayout from "./components/AppLayout";
 import GoalCard from "./components/GoalCard";
-import { FaCirclePlus } from "react-icons/fa6";
-import { get, set, del } from "idb-keyval";
 
+import "./Goals.css";
 const CACHE_KEY = "cached_goals";
 const CACHE_EXPIRY_DAYS = 20;
 
