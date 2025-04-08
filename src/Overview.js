@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
+import { get, set } from "idb-keyval";
 import "./Overview.css";
 import OverviewCard from "./components/OverviewCard";
 import ProgressBar from "./components/ProgressBar";
@@ -25,13 +26,7 @@ const Overview = () => {
   const fetchOverview = useCallback(
     async (force = false) => {
       setLoading(true);
-      const user = (await supabase.auth.getUser())?.data?.user;
-      if (!user) {
-        setLoading(false);
-        return;
-      }
 
-      const uid = user.id;
       const today = new Date().toISOString().split("T")[0];
       const calls = [
         { key: "remainingForPeriod", fn: "get_user_overview_remaining" },
@@ -46,13 +41,12 @@ const Overview = () => {
       const result = {};
 
       for (const { key, fn } of calls) {
-        const storageKey = `${uid}_${fn}`;
-        const cached = localStorage.getItem(storageKey);
+        const cache = await get(fn);
         let shouldFetch = force;
 
-        if (!force && cached) {
+        if (!force && cache) {
           try {
-            const { data: cachedData, timestamp, date } = JSON.parse(cached);
+            const { data: cachedData, timestamp, date } = cache;
             if (!isCacheExpired(timestamp, date)) {
               result[key] = cachedData;
               shouldFetch = false;
@@ -62,7 +56,14 @@ const Overview = () => {
           }
         }
 
-        if (shouldFetch || cached === null) {
+        if (shouldFetch || !cache) {
+          const user = (await supabase.auth.getUser())?.data?.user;
+          if (!user) {
+            setLoading(false);
+            return;
+          }
+
+          const uid = user.id;
           const { data: freshData, error } = await supabase.rpc(fn, { uid });
           if (error) {
             console.error(`Error fetching ${key}`, error);
@@ -76,14 +77,11 @@ const Overview = () => {
 
           result[key] = normalizedData;
 
-          localStorage.setItem(
-            storageKey,
-            JSON.stringify({
-              data: normalizedData,
-              timestamp: new Date().toISOString(),
-              date: today,
-            })
-          );
+          await set(fn, {
+            data: normalizedData,
+            timestamp: new Date().toISOString(),
+            date: today,
+          });
         }
       }
 

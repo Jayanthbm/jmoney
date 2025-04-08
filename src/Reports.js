@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import AppLayout from "./components/AppLayout";
 
 const Reports = () => {
-  return <div>Reports</div>;
+  const [loading, setLoading] = useState(false);
+  return <AppLayout title="Reports" loading={loading}></AppLayout>;
 };
 
 export default Reports;

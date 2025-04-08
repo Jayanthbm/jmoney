@@ -5,9 +5,11 @@ import { supabase } from "./supabaseClient";
 import "react-circular-progressbar/dist/styles.css";
 import AppLayout from "./components/AppLayout";
 import GoalCard from "./components/GoalCard";
-
 import { FaCirclePlus } from "react-icons/fa6";
+import { get, set, del } from "idb-keyval";
+
 const CACHE_KEY = "cached_goals";
+const CACHE_EXPIRY_DAYS = 20;
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
@@ -40,32 +42,34 @@ const Goals = () => {
   const fetchGoals = useCallback(async (forceRefresh = false) => {
     setLoading(true);
 
-    const cache = localStorage.getItem(CACHE_KEY);
-    if (cache && !forceRefresh) {
-      const { data, timestamp } = JSON.parse(cache);
-      const now = new Date();
-      if (now - new Date(timestamp) < 5 * 24 * 60 * 60 * 1000) {
-        setGoals(data);
-        setLoading(false);
-        return;
+    if (!forceRefresh) {
+      const cache = await get(CACHE_KEY);
+      if (cache) {
+        const { data, timestamp } = cache;
+        const now = new Date();
+        const expiryMs = CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+
+        if (now - new Date(timestamp) < expiryMs) {
+          setGoals(data);
+          setLoading(false);
+          return;
+        }
       }
     }
 
     const { data, error } = await supabase.from("goals").select("*");
 
-    if (error) console.error("Error fetching goals:", error);
-    else {
+    if (error) {
+      console.error("Error fetching goals:", error);
+    } else {
       setGoals(data);
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({ data, timestamp: new Date() })
-      );
+      await set(CACHE_KEY, { data, timestamp: new Date() });
     }
 
     setLoading(false);
   }, []);
 
-  const clearCache = () => localStorage.removeItem(CACHE_KEY);
+  const clearCache = async () => await del(CACHE_KEY);
 
   useEffect(() => {
     fetchGoals();
@@ -116,7 +120,7 @@ const Goals = () => {
 
     if (error) console.error("Error saving goal:", error);
     else {
-      clearCache();
+      await clearCache();
       fetchGoals(true);
       handleDialogClose();
     }
@@ -134,7 +138,7 @@ const Goals = () => {
       .eq("user_id", user.id);
     if (error) console.error("Error deleting goal:", error);
     else {
-      clearCache();
+      await clearCache();
       fetchGoals(true);
     }
   };
@@ -145,9 +149,7 @@ const Goals = () => {
     <AppLayout
       title="Goals"
       loading={!goals || loading}
-      onRefresh={() => {
-        fetchGoals(true);
-      }}
+      onRefresh={() => fetchGoals(true)}
     >
       <div className="goals-header">
         <div className="left-controls">
@@ -177,9 +179,8 @@ const Goals = () => {
             : 0;
 
           return (
-            <div className="goal-card-wrapper">
+            <div className="goal-card-wrapper" key={goal.id}>
               <GoalCard
-                key={goal.id}
                 title={goal.name}
                 progress={progress}
                 logo={goal.logo}
