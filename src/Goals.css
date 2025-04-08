@@ -1,0 +1,122 @@
+.goals-container {
+  padding: 20px;
+}
+
+.goals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.left-controls select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.add-btn {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background-color: black;
+  color: white;
+  transform: scale(1.05);
+}
+
+.goal-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px;
+  justify-content: flex-start;
+}
+.goal-card-wrapper{
+  flex: 1 1 100%;
+}
+
+@media (min-width: 768px) {
+  /* Two cards per row on larger screens */
+  .goal-card-wrapper {
+    flex: 1 1 calc(50% - 16px);
+  }
+}
+
+.goal-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.goal-dialog-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-dialog-content input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.goal-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.goal-dialog-actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.goal-save-btn {
+  background-color: #3ecf8e;
+  color: white;
+}
+
+.goal-save-btn:hover {
+  background-color: #3ecf8e;
+}
+
+.goal-cancel-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.goal-cancel-btn:hover {
+  background-color: #212121;
+}
