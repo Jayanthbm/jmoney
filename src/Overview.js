@@ -238,8 +238,8 @@ const Overview = () => {
               {/* Section 2: Donut Chart */}
               <div className="category-donut-chart">
                 <CustomDonutChart
-                  data={data?.topCategories.map((cat) => ({
-                    value: cat.percentage,
+                  data={data?.topCategories?.map((cat) => ({
+                    value: cat?.percentage,
                   }))}
                   colors={CATEGORY_COLORS}
                 />

@@ -26,12 +26,12 @@ const CustomDonutChart = ({
   strokeWidth = 10,
   size = 100,
 }) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const total = data?.reduce((sum, item) => sum + item.value, 0);
   let cumulativeAngle = 0;
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} width="100%" height="100%">
-      {data.map((item, index) => {
+      {data?.map((item, index) => {
         const value = item.value;
         const percentage = value / total;
         const angle = percentage * 360;
