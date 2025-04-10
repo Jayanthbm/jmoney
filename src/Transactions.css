@@ -1,0 +1,52 @@
+/* src/Transactions.css */
+.transaction-date-header {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.transaction-group {
+  margin-bottom: 1.5rem;
+}
+
+.transaction-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transaction-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Transactions.css */
+.search-bar-wrapper {
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.clear-search-button {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+}
+
