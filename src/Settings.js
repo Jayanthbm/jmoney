@@ -6,9 +6,15 @@ import * as MdIcons from "react-icons/md";
 import AppLayout from "./components/AppLayout";
 
 import "./Settings.css";
+import { getRelativeTime } from "./utils";
 
-const CACHE_KEY = "settings-cache";
-const CACHE_EXPIRY_DAYS = 10;
+const CACHE_KEYS = {
+  income: "settings-income-categories",
+  expense: "settings-expense-categories",
+  payees: "settings-payees",
+};
+
+const LAST_REFRESHED_KEY = "settings-last-refreshed";
 
 const Settings = () => {
   const [categoryType, setCategoryType] = useState("Expense");
@@ -16,54 +22,90 @@ const Settings = () => {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [payees, setPayees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState(null);
 
-  const fetchData = useCallback(async (forceRefresh = false) => {
+  const fetchIfMissing = async (key, fetcher) => {
+    const cached = await get(key);
+    if (cached && cached.length > 0) return cached;
+    const fresh = await fetcher();
+    await set(key, fresh);
+    return fresh;
+  };
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
 
-    const now = Date.now();
-    const cache = await get(CACHE_KEY);
-
-    const isCacheValid =
-      cache &&
-      !forceRefresh &&
-      now - cache.timestamp < CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
-
-    if (isCacheValid) {
-      setExpenseCategories(cache.expenseCategories || []);
-      setIncomeCategories(cache.incomeCategories || []);
-      setPayees(cache.payees || []);
-      setLoading(false);
-      return;
-    }
-
-    const [{ data: expenseData }, { data: incomeData }, { data: payeeData }] =
-      await Promise.all([
-        supabase
+    const [expense, income, payeeList] = await Promise.all([
+      fetchIfMissing(CACHE_KEYS.expense, async () => {
+        const { data } = await supabase
           .from("categories")
           .select("*")
           .eq("type", "Expense")
-          .order("name", { ascending: true }),
-        supabase
+          .order("name", { ascending: true });
+        return data || [];
+      }),
+      fetchIfMissing(CACHE_KEYS.income, async () => {
+        const { data } = await supabase
           .from("categories")
           .select("*")
           .eq("type", "Income")
-          .order("name", { ascending: true }),
-        supabase.from("payees").select("*").order("name", { ascending: true }),
-      ]);
+          .order("name", { ascending: true });
+        return data || [];
+      }),
+      fetchIfMissing(CACHE_KEYS.payees, async () => {
+        const { data } = await supabase
+          .from("payees")
+          .select("*")
+          .order("name", { ascending: true });
+        return data || [];
+      }),
+    ]);
 
-    const newCache = {
-      timestamp: now,
-      expenseCategories: expenseData || [],
-      incomeCategories: incomeData || [],
-      payees: payeeData || [],
-    };
+    setExpenseCategories(expense);
+    setIncomeCategories(income);
+    setPayees(payeeList);
 
-    await set(CACHE_KEY, newCache);
+    const last = localStorage.getItem(LAST_REFRESHED_KEY);
+    if (last) setLastSynced(Number(last));
 
-    setExpenseCategories(newCache.expenseCategories);
-    setIncomeCategories(newCache.incomeCategories);
-    setPayees(newCache.payees);
     setLoading(false);
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    setSyncing(true);
+
+    const [expenseData, incomeData, payeeData] = await Promise.all([
+      supabase
+        .from("categories")
+        .select("*")
+        .eq("type", "Expense")
+        .order("name", { ascending: true }),
+      supabase
+        .from("categories")
+        .select("*")
+        .eq("type", "Income")
+        .order("name", { ascending: true }),
+      supabase.from("payees").select("*").order("name", { ascending: true }),
+    ]);
+
+    const expense = expenseData.data || [];
+    const income = incomeData.data || [];
+    const payees = payeeData.data || [];
+
+    await set(CACHE_KEYS.expense, expense);
+    await set(CACHE_KEYS.income, income);
+    await set(CACHE_KEYS.payees, payees);
+
+    setExpenseCategories(expense);
+    setIncomeCategories(income);
+    setPayees(payees);
+
+    const now = Date.now();
+    localStorage.setItem(LAST_REFRESHED_KEY, now);
+    setLastSynced(now);
+
+    setSyncing(false);
   }, []);
 
   useEffect(() => {
@@ -79,11 +121,15 @@ const Settings = () => {
   };
 
   return (
-    <AppLayout
-      title="Settings"
-      loading={!incomeCategories || !expenseCategories || !payees || loading}
-      onRefresh={() => fetchData(true)}
-    >
+    <AppLayout title="Settings" loading={loading} onRefresh={refreshData}>
+      <div className="sync-status">
+        {lastSynced && (
+          <small className="sync-time">
+            {syncing && <MdIcons.MdSync className="syncing-icon" />} Last
+            synced: {getRelativeTime(lastSynced)}
+          </small>
+        )}
+      </div>
       <div className="settings-wrapper">
         {/* Categories */}
         <div className="settings-section">
