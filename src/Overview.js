@@ -54,6 +54,8 @@ const Overview = () => {
             if (!isCacheExpired(timestamp, date)) {
               result[key] = cachedData;
               shouldFetch = false;
+            } else {
+              shouldFetch = true;
             }
           } catch (e) {
             console.error("Failed to parse cached data", e);
