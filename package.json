@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "fuse.js": "^7.1.0",
     "idb-keyval": "^6.2.1",
     "react": "^19.1.0",
     "react-countup": "^6.5.3",
