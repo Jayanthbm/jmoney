@@ -50,3 +50,22 @@
   border-radius: 4px;
 }
 
+.filters-wrapper {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.filters-wrapper select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.no-data-card {
+  text-align: center;
+  padding: 2rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}

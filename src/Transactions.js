@@ -1,116 +1,119 @@
+// Transactions.js
+
 import React, { useEffect, useState, useCallback } from "react";
 import AppLayout from "./components/AppLayout";
 import { MdSync } from "react-icons/md";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
+import { get } from "idb-keyval";
+
 import TransactionCard from "./components/TransactionCard";
 import { storeTransactions, getAllTransactions, clearTransactions } from "./db";
-import "./Transactions.css";
 import { getRelativeTime } from "./utils";
 import { loadTransactionsFromSupabase } from "./supabaseData";
 
+import "./Transactions.css";
+
 const Transactions = () => {
-  const [loading, setLoading] = useState(true); // for initial load
-  const [syncing, setSyncing] = useState(false); // for refreshes only
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [grouped, setGrouped] = useState({});
   const [search, setSearch] = useState("");
   const [allTransactions, setAllTransactions] = useState([]);
   const [lastSynced, setLastSynced] = useState(null);
 
-  const groupTransactions = useCallback(
-    (data) => {
-      const term = search.trim().toLowerCase();
+  const [categories, setCategories] = useState([]);
+  const [payees, setPayees] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedPayee, setSelectedPayee] = useState("");
 
-      let filtered = data;
+  const groupTransactions = useCallback(() => {
+    let filtered = [...allTransactions];
 
-      if (term) {
-        const fuse = new Fuse(data, {
-          keys: ["description", "category_name", "payee_name"],
-          threshold: 0.3,
-          includeScore: true,
-        });
+    if (search.trim()) {
+      const fuse = new Fuse(filtered, {
+        keys: ["description"],
+        threshold: 0.3,
+      });
+      filtered = fuse.search(search.trim()).map((result) => result.item);
+    }
 
-        filtered = fuse.search(term).map((result) => result.item);
-      }
+    if (selectedCategory) {
+      filtered = filtered.filter((tx) => tx.category_name === selectedCategory);
+    }
 
-      const groupedData = groupBy(filtered, "date");
-      setGrouped(groupedData);
-    },
-    [search]
-  );
+    if (selectedPayee) {
+      filtered = filtered.filter((tx) => tx.payee_name === selectedPayee);
+    }
 
-  const refreshData = useCallback(
-    async (showSyncing = true) => {
-      if (showSyncing) setSyncing(true);
+    const groupedData = groupBy(filtered, "date");
+    setGrouped(groupedData);
+  }, [search, selectedCategory, selectedPayee, allTransactions]);
 
-      await clearTransactions();
-      const fetched = await loadTransactionsFromSupabase();
-      await storeTransactions(fetched);
-      const now = Date.now();
-      localStorage.setItem("last_transaction_fetch", now);
-      setLastSynced(now);
-      setAllTransactions(fetched);
-      groupTransactions(fetched);
-
-      if (showSyncing) setSyncing(false);
-    },
-    [groupTransactions]
-  );
+  const refreshData = useCallback(async () => {
+    setSyncing(true);
+    await clearTransactions();
+    const fetched = await loadTransactionsFromSupabase();
+    await storeTransactions(fetched);
+    setLastSynced(Date.now());
+    setAllTransactions(fetched);
+    setSyncing(false);
+  }, []);
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const cached = await getAllTransactions();
 
-      // Sort cached data by date descending
+      const [cached, expenseCategories, incomeCategories, cachedPayees] =
+        await Promise.all([
+          getAllTransactions(),
+          get("settings-expense-categories"),
+          get("settings-income-categories"),
+          get("settings-payees"),
+        ]);
+
       const sorted = [...cached].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
 
-      const lastFetch = localStorage.getItem("last_transaction_fetch");
-      const oneDay = 24 * 60 * 60 * 1000;
-
-      if (sorted.length === 0) {
-        const fetched = await loadTransactionsFromSupabase();
-        await storeTransactions(fetched);
-        const now = Date.now();
-        localStorage.setItem("last_transaction_fetch", now);
-        setLastSynced(now);
-        setAllTransactions(fetched);
-        groupTransactions(fetched);
-      } else {
-        setAllTransactions(sorted);
-        groupTransactions(sorted);
-
-        if (lastFetch) setLastSynced(Number(lastFetch));
-
-        if (!lastFetch || Date.now() - Number(lastFetch) > oneDay) {
-          refreshData(false); // Background sync
-        }
-      }
-
+      setCategories([
+        ...(expenseCategories || []),
+        ...(incomeCategories || []),
+      ]);
+      setPayees(cachedPayees || []);
+      setAllTransactions(sorted);
+      setLastSynced(localStorage.getItem("last_transaction_fetch"));
       setLoading(false);
     };
 
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    // Debounce search
     const debounce = setTimeout(() => {
-      groupTransactions(allTransactions);
-    }, 250); // Slightly faster
-
+      groupTransactions();
+    }, 250);
     return () => clearTimeout(debounce);
-  }, [search, allTransactions, groupTransactions]);
+  }, [
+    search,
+    selectedCategory,
+    selectedPayee,
+    allTransactions,
+    groupTransactions,
+  ]);
 
-  const handleCategoryClick = (category) => {
-    setSearch(category);
+  const handleCategoryClick = (categoryName) => {
+    setSelectedCategory(categoryName);
   };
 
-  const handlePayeeClick = (payee) => {
-    setSearch(payee);
+  const handlePayeeClick = (payeeName) => {
+    setSelectedPayee(payeeName);
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setSelectedCategory("");
+    setSelectedPayee("");
   };
 
   return (
@@ -122,22 +125,51 @@ const Transactions = () => {
       <div className="sync-status">
         {lastSynced && (
           <small className="sync-time">
-            {syncing && <MdSync className="syncing-icon" />} Last synced:{" "}
+            {syncing && <MdSync className="syncing-icon" />} Last synced: 
             {getRelativeTime(lastSynced)}
           </small>
         )}
       </div>
+      <div className="filters-wrapper">
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedPayee}
+          onChange={(e) => setSelectedPayee(e.target.value)}
+        >
+          <option value="">All Payees</option>
+          {payees.map((p) => (
+            <option key={p.id} value={p.name}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={clearFilters} className="clear-filters-button">
+          Clear Filters
+        </button>
+      </div>
+
       <div className="search-bar-wrapper">
         <input
           type="text"
-          placeholder="Search by description, category or payee"
+          placeholder="Search by description"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-bar"
           autoFocus
           spellCheck={false}
         />
-
         {search && (
           <button className="clear-search-button" onClick={() => setSearch("")}>
             Clear
@@ -145,23 +177,34 @@ const Transactions = () => {
         )}
       </div>
 
-      <div className="transaction-page-wrapper">
-        {Object.entries(grouped).map(([date, items]) => (
-          <div key={date} className="transaction-group">
-            <h2 className="transaction-date-header">{date}</h2>
-            <div className="transaction-card-list">
-              {items.map((tx) => (
-                <TransactionCard
-                  key={tx.id}
-                  transaction={tx}
-                  onCategoryClick={() => handleCategoryClick(tx.category_name)}
-                  onPayeeClick={() => handlePayeeClick(tx.payee_name)}
-                />
-              ))}
+      {Object.keys(grouped).length === 0 ? (
+        <div className="no-data-card">
+          <p>No transactions found.</p>
+          <button onClick={clearFilters} className="clear-filters-button">
+            Clear Filters
+          </button>
+        </div>
+      ) : (
+        <div className="transaction-page-wrapper">
+          {Object.entries(grouped).map(([date, items]) => (
+            <div key={date} className="transaction-group">
+              <h2 className="transaction-date-header">{date}</h2>
+              <div className="transaction-card-list">
+                {items.map((tx) => (
+                  <TransactionCard
+                    key={tx.id}
+                    transaction={tx}
+                    onCategoryClick={() =>
+                      handleCategoryClick(tx.category_name)
+                    }
+                    onPayeeClick={() => handlePayeeClick(tx.payee_name)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </AppLayout>
   );
 };
