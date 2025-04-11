@@ -1,6 +1,6 @@
 import { supabase } from "./supabaseClient";
 import { fetchUserOverviewData } from "./supabaseData";
-
+import { format } from "date-fns";
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number") return "0";
   return num.toLocaleString("en-IN");
@@ -60,38 +60,8 @@ export const refreshOverviewCache = async () => {
 };
 
 export function formatDateToDayMonthYear(input) {
-  const date = new Date(input);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
+  return format(new Date(input), "dd MMM yyyy");
 }
-
-export const isToday = (dateStr) => {
-  const today = new Date();
-  const date = new Date(dateStr);
-  return (
-    date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear()
-  );
-};
-
-export const isSameDate = (a, b) => {
-  const dateA = new Date(a);
-  const dateB = new Date(b);
-  return (
-    dateA.getFullYear() === dateB.getFullYear() &&
-    dateA.getMonth() === dateB.getMonth() &&
-    dateA.getDate() === dateB.getDate()
-  );
-};
-
-export const formatDateVerbose = (date) => {
-  const d = new Date(date);
-  const options = { day: "numeric", month: "short", year: "numeric" };
-  return d.toLocaleDateString("en-GB", options).toUpperCase(); // 1 APR 2025
-};
 
 export const getMonthOptions = () => {
   return [

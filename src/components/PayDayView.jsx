@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { isSameDay } from "date-fns";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import TransactionCard from "./TransactionCard";
 import { getAllTransactions } from "../db";
-import { isSameDate, formatDateVerbose, formatIndianNumber } from "../utils";
+import { formatIndianNumber, formatDateToDayMonthYear } from "../utils";
 import Button from "./Button";
 
 const PayDayView = () => {
@@ -26,7 +27,7 @@ const PayDayView = () => {
       }
 
       const txForDate = allTx
-        .filter((tx) => isSameDate(tx.date, selectedDate))
+        .filter((tx) => isSameDay(new Date(tx.date), selectedDate))
         .sort(
           (a, b) =>
             new Date(a.transaction_timestamp) -
@@ -59,7 +60,7 @@ const PayDayView = () => {
     <div>
       <div className="sub-section-heading calendar-header">
         Calendar View
-        {!isSameDate(selectedDate, today) && (
+        {!isSameDay(selectedDate, today) && (
           <Button onClick={goToToday} text="Today" />
         )}
       </div>
@@ -80,7 +81,9 @@ const PayDayView = () => {
 
       {/* Date & Total Info */}
       <div className="date-summary-bar">
-        <div className="summary-date">{formatDateVerbose(selectedDate)}</div>
+        <div className="summary-date">
+          {formatDateToDayMonthYear(selectedDate)}
+        </div>
         {filteredTx.length > 0 && (
           <div className="summary-amount">₹{formatIndianNumber(netTotal)}</div>
         )}

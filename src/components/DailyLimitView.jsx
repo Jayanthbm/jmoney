@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { isToday } from "date-fns";
 import OverviewCard from "./OverviewCard";
 import CircularProgressBar from "./CircularProgressBar";
 import TransactionCard from "./TransactionCard";
 import { getAllTransactions } from "../db";
-import { formatIndianNumber, isToday } from "../utils";
+import { formatIndianNumber } from "../utils";
 import useTheme from "../hooks/useTheme";
 
 const DailyLimitView = ({ dailyLimitData, onBack }) => {
@@ -14,7 +15,7 @@ const DailyLimitView = ({ dailyLimitData, onBack }) => {
     const fetchTodayExpenses = async () => {
       const allTx = await getAllTransactions();
       const todayTx = allTx.filter(
-        (tx) => tx.type === "expense" && isToday(tx.date)
+        (tx) => tx.type === "expense" && isToday(new Date(tx.date))
       );
       setTodayExpenses(todayTx);
     };
