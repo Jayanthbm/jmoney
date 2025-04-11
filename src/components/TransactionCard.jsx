@@ -1,8 +1,9 @@
 import React from "react";
 import * as MdIcons from "react-icons/md";
 import "./TransactionCard.css";
+import { format } from "date-fns";
 
-const renderIcon = (iconName, size = 28) => {
+const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
   return Icon ? <Icon size={size} /> : null;
 };
@@ -20,7 +21,13 @@ const TransactionCard = ({
     payee_name,
     payee_logo,
     type,
+    transaction_timestamp,
+    percentage = null,
   } = transaction;
+
+  const formattedTime = transaction_timestamp
+    ? format(new Date(transaction_timestamp), "dd MMM yy hh:mm a")
+    : "";
 
   return (
     <div className="transaction-card">
@@ -30,7 +37,7 @@ const TransactionCard = ({
             type === "Expense" ? "expense" : "income"
           }`}
         >
-          {renderIcon(category_icon, 36)}
+          {renderIcon(category_icon)}
         </div>
         <div className="transaction-details">
           <div
@@ -39,26 +46,42 @@ const TransactionCard = ({
           >
             {category_name}
           </div>
+
           {description && <div className="description">{description}</div>}
+
+          {transaction_timestamp && (
+            <div className="timestamp">{formattedTime}</div>
+          )}
+
           {payee_name && (
             <div
               className="payee-info clickable"
               onClick={() => onPayeeClick(transaction)}
             >
               {payee_logo && (
-                <img src={payee_logo} alt={payee_name} className="transaction-payee-logo" />
+                <img
+                  src={payee_logo}
+                  alt={payee_name}
+                  className="transaction-payee-logo"
+                />
               )}
               <span className="payee-name">{payee_name}</span>
             </div>
           )}
         </div>
       </div>
-      <div
-        className={`transaction-amount ${
-          type === "Expense" ? "expense" : "income"
-        }`}
-      >
-        ₹{Number(amount).toFixed(2)}
+
+      <div className="transaction-amount-section">
+        <div
+          className={`transaction-amount ${
+            type === "Expense" ? "expense" : "income"
+          }`}
+        >
+          ₹{Number(amount).toFixed(2)}
+        </div>
+        {percentage && (
+          <div className="transaction-percentage">{percentage}%</div>
+        )}
       </div>
     </div>
   );
