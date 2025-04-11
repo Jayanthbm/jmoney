@@ -16,11 +16,13 @@ import {
 } from "./utils";
 
 import "./Overview.css";
+import useTheme from "./hooks/useTheme";
 
 const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const theme = useTheme();
   const refreshData = useCallback(async () => {
     const user = (await supabase.auth.getUser())?.data?.user;
     if (user) {
@@ -130,7 +132,7 @@ const Overview = () => {
                   progress={data?.dailyLimit?.remaining_percentage || 0}
                   text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
                   pathColor="#3ecf8e"
-                  textColor="#374151"
+                  textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
                 />
               </div>
             </div>
@@ -164,7 +166,7 @@ const Overview = () => {
                   progress={100 - data?.payDay?.remaining_days_percentage || 0}
                   text={`${data?.payDay?.remaining_days || 0} \ndays`}
                   pathColor="#139af5"
-                  textColor="#2c6c99"
+                  textColor={theme === "dark" ? "#5d9bff" : "#2c6c99"}
                 />
               </div>
             </div>

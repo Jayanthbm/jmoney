@@ -1,13 +1,14 @@
 import OverviewCard from "./OverviewCard";
 import CircularProgressBar from "./CircularProgressBar";
 import { formatIndianNumber } from "../utils";
+import useTheme from "../hooks/useTheme";
 
 const COLORS = {
   income: "#3ecf8e", // green
   expense: "#f87171", // red
-  text: "#374752", // label
 };
 const StatCard = ({ title, subtitle, income, expense, percentage }) => {
+  const theme = useTheme();
   return (
     <div className="overview-card-wrapper">
       <OverviewCard title={title} subtitle={subtitle}>
@@ -34,7 +35,7 @@ const StatCard = ({ title, subtitle, income, expense, percentage }) => {
               progress={Math.round(percentage)}
               text={`${Math.round(percentage)}%`}
               pathColor={COLORS.expense}
-              textColor={COLORS.text}
+              textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
             />
           </div>
         </div>

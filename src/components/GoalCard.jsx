@@ -4,6 +4,7 @@ import CircularProgressBar from "./CircularProgressBar";
 import Button from "./Button";
 import { formatIndianNumber } from "../utils";
 import "./GoalCard.css";
+import useTheme from "../hooks/useTheme";
 
 const GoalCard = ({
   title,
@@ -14,6 +15,7 @@ const GoalCard = ({
   onEdit,
   onDelete,
 }) => {
+  const theme = useTheme();
   return (
     <div className="goal-card">
       <div className="goal-card-header">
@@ -23,7 +25,7 @@ const GoalCard = ({
             progress={progress}
             text={`${Math.round(progress)}%`}
             pathColor="#3ecf8e"
-            textColor="#374151"
+            textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
             fontSize="13px"
             size={40}
             strokeWidth={4}
