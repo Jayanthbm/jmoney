@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/jmoney/static/css/main.bb3179ba.css",
-    "main.js": "/jmoney/static/js/main.0d974c2e.js",
-    "static/js/952.d2017ac9.chunk.js": "/jmoney/static/js/952.d2017ac9.chunk.js",
+    "main.css": "/jmoney/static/css/main.56894be3.css",
+    "main.js": "/jmoney/static/js/main.007a8458.js",
+    "static/js/952.d60a446b.chunk.js": "/jmoney/static/js/952.d60a446b.chunk.js",
     "index.html": "/jmoney/index.html",
-    "main.bb3179ba.css.map": "/jmoney/static/css/main.bb3179ba.css.map",
-    "main.0d974c2e.js.map": "/jmoney/static/js/main.0d974c2e.js.map",
-    "952.d2017ac9.chunk.js.map": "/jmoney/static/js/952.d2017ac9.chunk.js.map"
+    "main.56894be3.css.map": "/jmoney/static/css/main.56894be3.css.map",
+    "main.007a8458.js.map": "/jmoney/static/js/main.007a8458.js.map",
+    "952.d60a446b.chunk.js.map": "/jmoney/static/js/952.d60a446b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb3179ba.css",
-    "static/js/main.0d974c2e.js"
+    "static/css/main.56894be3.css",
+    "static/js/main.007a8458.js"
   ]
 }
