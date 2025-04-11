@@ -48,7 +48,6 @@ const Overview = () => {
     let fetchNeeded = false;
     for (const key of keys) {
       const cache = await get(key);
-      console.log("cache", cache);
       if (cache && !isCacheExpired(cache.timestamp, cache.date)) {
         result[key] = cache.data;
       } else {
