@@ -10,7 +10,7 @@ import StatCard from "./components/StatCard";
 import CustomDonutChart from "./components/CustomDonutChart";
 import CircularProgressBar from "./components/CircularProgressBar";
 
-import { formatIndianNumber } from "./utils";
+import { calculatePayDayInfo, formatIndianNumber } from "./utils";
 
 import "./Overview.css";
 
@@ -35,7 +35,6 @@ const Overview = () => {
       const calls = [
         { key: "remainingForPeriod", fn: "get_user_overview_remaining" },
         { key: "dailyLimit", fn: "get_user_overview_daily_limit" },
-        { key: "payDay", fn: "get_user_overview_pay_day" },
         { key: "topCategories", fn: "get_user_overview_top_categories" },
         { key: "current_month", fn: "get_user_overview_current_month" },
         { key: "current_year", fn: "get_user_overview_current_year" },
@@ -91,6 +90,9 @@ const Overview = () => {
         }
       }
 
+      // Compute payday locally
+      result.payDay = calculatePayDayInfo();
+      console.log(calculatePayDayInfo())
       setData(result);
       setLoading(false);
     },
