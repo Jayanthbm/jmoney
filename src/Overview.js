@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
-import { get, set } from "idb-keyval";
+import { get } from "idb-keyval";
 
 import AppLayout from "./components/AppLayout";
 import MyCountUp from "./components/MyCountUp";
@@ -10,93 +10,61 @@ import StatCard from "./components/StatCard";
 import CustomDonutChart from "./components/CustomDonutChart";
 import CircularProgressBar from "./components/CircularProgressBar";
 
-import { calculatePayDayInfo, formatIndianNumber } from "./utils";
+import {
+  calculatePayDayInfo,
+  formatIndianNumber,
+  isCacheExpired,
+} from "./utils";
 
 import "./Overview.css";
-
-const CACHE_EXPIRY_HOURS = 20;
+import { fetchUserOverviewData } from "./supabaseData";
 
 const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const isCacheExpired = useCallback((timestamp, storedDate) => {
-    const now = new Date();
-    const diffHours = (now - new Date(timestamp)) / 1000 / 60 / 60;
-    const today = now.toISOString().split("T")[0];
-    return diffHours > CACHE_EXPIRY_HOURS || storedDate !== today;
+  const refreshData = useCallback(async () => {
+    const user = (await supabase.auth.getUser())?.data?.user;
+    if (user) {
+      const freshData = await fetchUserOverviewData(user.id);
+      setData({ ...freshData, payDay: calculatePayDayInfo() });
+    }
   }, []);
 
-  const fetchOverview = useCallback(
-    async (force = false) => {
-      setLoading(true);
+  const fetchOverview = useCallback(async () => {
+    setLoading(true);
+    const keys = [
+      "remainingForPeriod",
+      "dailyLimit",
+      "topCategories",
+      "current_month",
+      "current_year",
+      "networth",
+    ];
 
-      const today = new Date().toISOString().split("T")[0];
-      const calls = [
-        { key: "remainingForPeriod", fn: "get_user_overview_remaining" },
-        { key: "dailyLimit", fn: "get_user_overview_daily_limit" },
-        { key: "topCategories", fn: "get_user_overview_top_categories" },
-        { key: "current_month", fn: "get_user_overview_current_month" },
-        { key: "current_year", fn: "get_user_overview_current_year" },
-        { key: "networth", fn: "get_user_overview_networth" },
-      ];
+    const result = {};
 
-      const result = {};
-
-      for (const { key, fn } of calls) {
-        const cache = await get(fn);
-        let shouldFetch = force;
-
-        if (!force && cache) {
-          try {
-            const { data: cachedData, timestamp, date } = cache;
-            if (!isCacheExpired(timestamp, date)) {
-              result[key] = cachedData;
-              shouldFetch = false;
-            } else {
-              shouldFetch = true;
-            }
-          } catch (e) {
-            console.error("Failed to parse cached data", e);
-          }
-        }
-
-        if (shouldFetch || !cache) {
-          const user = (await supabase.auth.getUser())?.data?.user;
-          if (!user) {
-            setLoading(false);
-            return;
-          }
-
-          const uid = user.id;
-          const { data: freshData, error } = await supabase.rpc(fn, { uid });
-          if (error) {
-            console.error(`Error fetching ${key}`, error);
-            continue;
-          }
-
-          const normalizedData =
-            Array.isArray(freshData) && freshData.length === 1
-              ? freshData[0]
-              : freshData;
-
-          result[key] = normalizedData;
-
-          await set(fn, {
-            data: normalizedData,
-            timestamp: new Date().toISOString(),
-            date: today,
-          });
-        }
+    // 1. Read from cache
+    let fetchNeeded = false;
+    for (const key of keys) {
+      const cache = await get(key);
+      console.log("cache", cache);
+      if (cache && !isCacheExpired(cache.timestamp, cache.date)) {
+        result[key] = cache.data;
+      } else {
+        fetchNeeded = true;
       }
+    }
 
-      // Compute payday locally
-      result.payDay = calculatePayDayInfo();
-      setData(result);
-      setLoading(false);
-    },
-    [isCacheExpired]
-  );
+    // 2. PayDay is always computed
+    result.payDay = calculatePayDayInfo();
+    setData(result);
+
+    setLoading(false);
+    if (fetchNeeded) {
+      await refreshData();
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     fetchOverview();
@@ -109,7 +77,7 @@ const Overview = () => {
       title="Overview"
       loading={!data || loading}
       onRefresh={() => {
-        fetchOverview(true);
+        refreshData();
       }}
     >
       <div className="overview-container">

@@ -1,3 +1,6 @@
+import { supabase } from "./supabaseClient";
+import { fetchUserOverviewData } from "./supabaseData";
+
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number") return "0";
   return num.toLocaleString("en-IN");
@@ -40,4 +43,18 @@ export const calculatePayDayInfo = () => {
     remaining_days: remainingDays,
     remaining_days_percentage: Number(remainingDaysPercentage),
   };
+};
+
+export const isCacheExpired = (timestamp, storedDate, expiryHours = 20) => {
+  const now = new Date();
+  const diffHours = (now - new Date(timestamp)) / 1000 / 60 / 60;
+  const today = now.toISOString().split("T")[0];
+  return diffHours > expiryHours || storedDate !== today;
+};
+
+export const refreshOverviewCache = async () => {
+  const user = (await supabase.auth.getUser())?.data?.user;
+  if (user) {
+    await fetchUserOverviewData(user.id);
+  }
 };
