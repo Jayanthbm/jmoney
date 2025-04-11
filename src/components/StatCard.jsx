@@ -7,10 +7,17 @@ const COLORS = {
   income: "#3ecf8e", // green
   expense: "#f87171", // red
 };
-const StatCard = ({ title, subtitle, income, expense, percentage }) => {
+const StatCard = ({
+  title,
+  subtitle,
+  income,
+  expense,
+  percentage,
+  onClick,
+}) => {
   const theme = useTheme();
   return (
-    <div className="overview-card-wrapper">
+    <div className="overview-card-wrapper" onClick={onClick}>
       <OverviewCard title={title} subtitle={subtitle}>
         <div className="stat-card-container">
           {/* Section 1: Text */}
