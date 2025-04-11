@@ -48,14 +48,14 @@ const MainLayout = ({ children }) => {
         <div className="header-right">
           {/* Settings Icon (visible only on mobile) */}
           <div
-            className="icon-button settings mobile-only"
+            className="icon-button mobile-only"
             onClick={() => navigate("/settings")}
           >
             <MdSettings size={24} />
           </div>
 
           {/* Logout Icon */}
-          <div className="icon-button logout" onClick={handleLogout}>
+          <div className="icon-button" onClick={handleLogout}>
             <MdLogout size={20} />
           </div>
         </div>

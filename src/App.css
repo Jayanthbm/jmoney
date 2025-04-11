@@ -19,11 +19,6 @@ html {
   margin-bottom: 4rem;
 }
 
-.right-align {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .refresh-button {
   background-color: white;
   color: black;

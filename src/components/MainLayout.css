@@ -9,7 +9,7 @@
 
 /* Header */
 .header {
-  background: #1e88e5;
+  background: #1976d2;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -115,38 +115,17 @@
   font-weight: bold;
 }
 
-
-
-/* Logout button - red */
-.icon-button.logout {
-  background: #e53935;
-  color: white;
-  padding: 0.4rem;
-  border-radius: 6px;
-  margin-left: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s;
-}
-
-.icon-button.logout:hover {
-  background: #d32f2f;
-}
-
-/* Settings icon - neutral/white on blue header */
-.icon-button.settings {
+.icon-button{
   background: transparent;
-  color: white;
-  padding: 0.4rem;
-  margin-left: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s;
+    color: white;
+    padding: 0.4rem;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
 }
-
-.icon-button.settings:hover {
+.icon-button:hover {
   color: #bbdefb;
 }
 
