@@ -7,7 +7,7 @@
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  color: white;
+  color: var(--btn-text-color);
   transition: background 0.25s ease, transform 0.15s ease;
 }
 
@@ -20,46 +20,46 @@
   padding: 8px;
 }
 
-/* Variants */
+/* Variants using CSS variables */
 .btn-primary {
-  background-color: #007bff;
+  background-color: var(--btn-primary-bg);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--btn-primary-hover);
 }
 
 .btn-danger {
-  background-color: #dc3545;
+  background-color: var(--btn-danger-bg);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #b02a37;
+  background-color: var(--btn-danger-hover);
 }
 
 .btn-info {
-  background-color: #17a2b8;
+  background-color: var(--btn-info-bg);
 }
 
 .btn-info:hover:not(:disabled) {
-  background-color: #117a8b;
+  background-color: var(--btn-info-hover);
 }
 
 .btn-warning {
-  background-color: #ffc107;
-  color: #212529;
+  background-color: var(--btn-warning-bg);
+  color: var(--btn-warning-text);
 }
 
 .btn-warning:hover:not(:disabled) {
-  background-color: #e0a800;
+  background-color: var(--btn-warning-hover);
 }
 
 .btn-success {
-  background-color: #3ecf8e;
+  background-color: var(--btn-success-bg);
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: #33b67c;
+  background-color: var(--btn-success-hover);
 }
 
 /* Custom variant hover: slightly darken using filter */

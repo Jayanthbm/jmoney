@@ -1,28 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Underdog&display=swap');
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-body,
-html {
-  height: 100%;
-  margin-left: 1px;
-  margin-right: 1px;
-  font-family: "Underdog", system-ui;
-  font-weight: 400;
-  font-style: normal;
-}
-.container{
+.container {
   padding-bottom: 10px;
   margin-bottom: 4rem;
 }
 
 .refresh-button {
-  background-color: white;
-  color: black;
-  border: 2px solid black;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
   padding: 0.3rem 0.6rem;
   font-size: 1rem;
   font-weight: 500;
@@ -36,8 +20,8 @@ html {
 }
 
 .refresh-button:hover {
-  background-color: black;
-  color: white;
+  background-color: var(--text-color);
+  color: var(--bg-color);
   transform: scale(1.05);
 }
 
@@ -64,37 +48,38 @@ html {
 }
 
 .green-text {
-  color: #3ecf8e;
+  color: var(--income-color, #3ecf8e);
 }
 
 .red-text {
-  color: #f87171;
+  color: var(--expense-color, #f87171);
 }
-.header-container{
+
+.header-container {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.2rem;
 }
 
-
 .sync-status {
   margin: 0 16px 10px;
   text-align: right;
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted-color);
 }
+
 .sync-time {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #555;
+  color: var(--text-muted-color);
 }
 
 .syncing-icon {
   animation: spin 1s linear infinite;
   font-size: 16px;
-  color: #888;
+  color: var(--text-muted-color);
 }
 
 @keyframes spin {
@@ -105,4 +90,84 @@ html {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* General container overrides */
+.react-select__control {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+  min-height: 38px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  box-shadow: none;
+  transition: border-color 0.2s ease;
+}
+
+.react-select__control:hover {
+  border-color: var(--accent-color) !important;
+}
+
+.react-select__control--is-focused {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--hover-bg);
+}
+
+/* Multi-value tags */
+.react-select__multi-value {
+  background-color: var(--hover-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.react-select__multi-value__label {
+  color: var(--text-color) !important;
+  font-size: 0.85rem;
+}
+
+.react-select__multi-value__remove {
+  color: var(--text-muted-color) !important;
+}
+
+.react-select__multi-value__remove:hover {
+  background-color: var(--active-bg) !important;
+  color: var(--expense-color) !important;
+}
+
+/* Dropdown menu */
+.react-select__menu {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+  border-radius: 6px;
+  z-index: 20;
+}
+
+.react-select__option {
+  font-size: 0.95rem;
+  color: var(--text-color) !important;
+  background-color: transparent !important;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.react-select__option--is-focused {
+  background-color: var(--hover-bg) !important;
+}
+
+.react-select__option--is-selected {
+  background-color: var(--accent-color) !important;
+  color: #fff !important;
+}
+
+/* Placeholder and input */
+.react-select__placeholder,
+.react-select__input {
+  color: var(--text-muted-color) !important;
+}
+
+.filters-wrapper .react-select-container {
+  min-width: 200px;
+  flex: 1;
+}
+.react-select__single-value {
+  color: var(--text-color) !important;
 }

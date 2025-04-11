@@ -1,5 +1,7 @@
+/* src/components/GoalCard.css */
+
 .goal-card {
-  background-color: #fff;
+  background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 16px;
@@ -19,14 +21,13 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .goal-card-title {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: var(--text-color);
 }
 
 .goal-progress {
@@ -61,7 +62,7 @@
   align-items: flex-start;
 }
 
-.amount-section{
+.amount-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -71,13 +72,13 @@
 .divider {
   height: 60px;
   width: 1px;
-  background-color: #ccc;
+  background-color: var(--border-color);
 }
 
 .amount-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #888;
+  color: var(--text-muted-color);
   margin-bottom: 4px;
   text-align: center;
 }
@@ -85,7 +86,7 @@
 .amount-value {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
 }
 
 .goal-card-actions {

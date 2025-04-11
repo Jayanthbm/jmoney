@@ -1,8 +1,10 @@
 /* src/Transactions.css */
+
 .transaction-date-header {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: var(--text-color);
 }
 
 .transaction-group {
@@ -44,17 +46,18 @@
   width: 100%;
   padding: 8px 32px 8px 12px;
   font-size: 0.95rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
-  background-color: #fff;
+  background-color: var(--input-bg);
+  color: var(--input-text);
   box-shadow: 0 0 0 1px transparent;
   transition: box-shadow 0.2s ease;
 }
 
 .search-bar:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #2684ff33;
-  border-color: #2684ff;
+  box-shadow: 0 0 0 2px var(--hover-bg);
+  border-color: var(--accent-color);
 }
 
 .search-clear-icon {
@@ -64,14 +67,14 @@
   transform: translateY(-50%);
   font-size: 1.25rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted-color);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .search-clear-icon:hover {
-  color: #ff4d4f;
+  color: var(--expense-color);
 }
 
 .filters-wrapper {
@@ -83,9 +86,10 @@
 .no-data-card {
   text-align: center;
   padding: 2rem;
-  background: #fafafa;
+  background: var(--card-bg);
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
 }

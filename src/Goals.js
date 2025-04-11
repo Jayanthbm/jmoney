@@ -168,6 +168,8 @@ const Goals = () => {
             value={sortOptions.find((opt) => opt.value === orderBy)}
             onChange={(selected) => setOrderBy(selected.value)}
             isSearchable={false}
+            className="react-select-container"
+            classNamePrefix="react-select"
           />
         </div>
         <div className="right-controls">

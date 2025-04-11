@@ -1,4 +1,3 @@
-/* Container for all cards */
 .overview-container {
   display: flex;
   flex-wrap: wrap;
@@ -6,14 +5,12 @@
   margin: 1px;
   justify-content: flex-start;
 }
-/* Individual card takes full width on mobile */
+
 .overview-card-wrapper {
   flex: 1 1 100%;
 }
 
 @media (min-width: 768px) {
-
-  /* Two cards per row on larger screens */
   .overview-card-wrapper {
     flex: 1 1 calc(50% - 16px);
   }
@@ -21,7 +18,7 @@
 
 .big-income-text {
   font-size: 2rem;
-  color: #3ecf8e;
+  color: var(--income-color);
   font-weight: bold;
   margin-bottom: 3px;
 }
@@ -43,7 +40,7 @@
 .daily-limit-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #888;
+  color: var(--text-muted-color);
   margin-bottom: 4px;
   text-align: center;
 }
@@ -51,7 +48,7 @@
 .daily-limit-value {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
 }
 
 .progress-section {
@@ -61,7 +58,7 @@
 .divider {
   height: 60px;
   width: 1px;
-  background-color: #ccc;
+  background-color: var(--border-color);
 }
 
 .payday-container {
@@ -82,7 +79,7 @@
   font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 12px;
-  color: #374752;
+  color: var(--text-color);
 }
 
 .dot-grid {
@@ -98,13 +95,11 @@
 }
 
 .dot-past {
-  background-color: #cbd5e1;
-  /* gray-300 */
+  background-color: var(--border-color);
 }
 
 .dot-future {
-  background-color: #139af5;
-  /* blue */
+  background-color: var(--accent-color);
 }
 
 .payday-progress {
@@ -148,11 +143,12 @@
 .category-name {
   font-weight: 600;
   font-size: 1rem;
+  color: var(--text-color);
 }
 
 .category-value {
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-muted-color);
 }
 
 .category-donut-chart {
@@ -182,19 +178,20 @@
 .stat-amount {
   font-size: 1.4rem;
   font-weight: bold;
+  color: var(--text-color);
 }
 
 .red-text {
-  color: #f87171;
+  color: var(--expense-color);
 }
 
 .green-text {
-  color: #3ecf8e;
+  color: var(--income-color);
 }
 
 .stat-label {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-muted-color);
   font-weight: 500;
 }
 
@@ -211,7 +208,7 @@
   position: absolute;
   bottom: 6px;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--text-muted-color);
   font-weight: 500;
   text-align: center;
 }

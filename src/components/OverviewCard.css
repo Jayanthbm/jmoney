@@ -1,11 +1,12 @@
 .overview-card {
-  background-color: #fff;
+  background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 16px;
   margin: 12px 0;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.3s ease;
   will-change: transform;
+  animation: fadeInUp 0.4s ease both;
 }
 
 .overview-card:hover {
@@ -22,18 +23,20 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: var(--text-color);
 }
 
 .overview-card-subtitle {
   font-size: 0.9rem;
-  color: #777;
+  color: var(--text-muted-color, #777);
+  /* fallback for now */
   margin-top: 4px;
   margin-bottom: 0;
 }
 
 .overview-card-body {
   font-size: 1rem;
+  color: var(--text-color);
 }
 
 @keyframes fadeInUp {
@@ -46,8 +49,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.overview-card {
-  animation: fadeInUp 0.4s ease both;
 }

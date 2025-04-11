@@ -1,15 +1,14 @@
-/* src/components/MainLayout.css */
-
 .main-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  color: #333;
+  color: var(--text-color);
+  background-color: var(--bg-color);
 }
 
 /* Header */
 .header {
-  background: #1976d2;
+  background: var(--accent-color);
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -31,7 +30,6 @@
   cursor: pointer;
 }
 
-
 /* Content Area */
 .content-area {
   flex: 1;
@@ -42,8 +40,10 @@
 /* Sidebar (desktop only) */
 .sidebar {
   width: 220px;
-  background: #f9f9f9;
-  border-right: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  /* changed */
+  border-right: 1px solid var(--border-color);
+  /* changed */
   padding-top: 1rem;
   display: none;
   flex-shrink: 0;
@@ -62,17 +62,19 @@
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
+  color: var(--text-color);
 }
+
 .nav-icon {
   font-size: 1.2rem;
 }
 
 .nav-item:hover {
-  background: #e3f2fd;
+  background: rgba(38, 132, 255, 0.1);
 }
 
 .nav-item.active {
-  background: #bbdefb;
+  background: rgba(38, 132, 255, 0.2);
   font-weight: bold;
 }
 
@@ -81,14 +83,16 @@
   flex: 1;
   padding: 0.9rem;
   overflow-y: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 /* Mobile Footer Navigation */
 .mobile-footer {
   display: flex;
   justify-content: space-around;
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
   padding: 0.75rem 0;
   position: fixed;
   bottom: 0;
@@ -101,7 +105,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-muted-color);
   cursor: pointer;
 }
 
@@ -111,27 +115,31 @@
 }
 
 .footer-nav-item.active {
-  color: #1e88e5;
+  color: var(--accent-color);
+  /* changed */
   font-weight: bold;
 }
 
-.icon-button{
+.icon-button {
   background: transparent;
-    color: white;
-    padding: 0.4rem;
-    margin-left: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.3s;
+  color: white;
+  padding: 0.4rem;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
 }
+
 .icon-button:hover {
   color: #bbdefb;
 }
 
+/* Show only on mobile */
 .mobile-only {
   display: block;
 }
+
 /* Responsive Breakpoints */
 @media (min-width: 768px) {
   .sidebar {
@@ -142,10 +150,7 @@
     display: none;
   }
 
-  /* Show only on mobile */
   .mobile-only {
     display: none !important;
   }
-
-
 }

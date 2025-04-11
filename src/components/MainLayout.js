@@ -10,6 +10,8 @@ import {
   MdAccountBalanceWallet,
   MdFlag,
   MdBarChart,
+  MdDarkMode,
+  MdLightMode,
 } from "react-icons/md";
 import "./MainLayout.css";
 
@@ -26,11 +28,20 @@ const MainLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selected, setSelected] = useState(location.pathname);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
     setSelected(location.pathname);
   }, [location.pathname]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
   const handleLogout = async () => {
     await supabase.auth.signOut();
     // Optionally, navigate to login page here
@@ -52,6 +63,14 @@ const MainLayout = ({ children }) => {
             onClick={() => navigate("/settings")}
           >
             <MdSettings size={24} />
+          </div>
+
+          <div className="icon-button" onClick={toggleTheme}>
+            {theme === "light" ? (
+              <MdDarkMode size={20} title="Switch to dark mode" />
+            ) : (
+              <MdLightMode size={20} title="Switch to light mode" />
+            )}
           </div>
 
           {/* Logout Icon */}

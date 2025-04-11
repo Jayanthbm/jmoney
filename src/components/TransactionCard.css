@@ -1,5 +1,5 @@
 .transaction-card {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   padding: 12px 16px;
@@ -29,11 +29,11 @@
 }
 
 .transaction-icon.expense {
-  color: #e53935;
+  color: var(--expense-color, #e53935);
 }
 
 .transaction-icon.income {
-  color: #43a047;
+  color: var(--income-color, #43a047);
 }
 
 .transaction-details {
@@ -44,12 +44,12 @@
 .category-name {
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .description {
   font-size: 13px;
-  color: #777;
+  color: var(--text-muted-color);
   margin-top: 2px;
 }
 
@@ -68,7 +68,7 @@
 
 .payee-name {
   font-size: 12px;
-  color: #999;
+  color: var(--text-muted-color);
 }
 
 .transaction-amount {
@@ -77,11 +77,11 @@
 }
 
 .transaction-amount.expense {
-  color: #e53935;
+  color: var(--expense-color, #e53935);
 }
 
 .transaction-amount.income {
-  color: #43a047;
+  color: var(--income-color, #43a047);
 }
 
 .clickable {

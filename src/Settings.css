@@ -15,14 +15,15 @@
   margin: 0 4px;
   padding: 6px 12px;
   border: none;
-  background: #e0e0e0;
+  background: var(--muted-bg-color, #e0e0e0);
   border-radius: 6px;
   cursor: pointer;
+  color: var(--text-color);
 }
 
 .category-toggle .active {
-  background: #374752;
-  color: white;
+  background: var(--primary-color, #374752);
+  color: var(--primary-text-on-dark, #ffffff);
 }
 
 .category-grid {
@@ -33,13 +34,13 @@
 }
 
 .category-card {
-  background: #f8f9fa;
+  background: var(--card-bg, #f8f9fa);
   border-radius: 8px;
   padding: 12px;
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #374752;
+  color: var(--text-color, #374752);
 }
 
 .payee-grid {
@@ -50,8 +51,8 @@
 }
 
 .payee-card {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -68,5 +69,5 @@
 
 .payee-name {
   font-size: 14px;
-  color: #374752;
+  color: var(--text-color, #374752);
 }
