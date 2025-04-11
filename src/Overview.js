@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
 import { get } from "idb-keyval";
-
 import AppLayout from "./components/AppLayout";
 import MyCountUp from "./components/MyCountUp";
 import OverviewCard from "./components/OverviewCard";
@@ -9,7 +8,7 @@ import ProgressBar from "./components/ProgressBar";
 import StatCard from "./components/StatCard";
 import CustomDonutChart from "./components/CustomDonutChart";
 import CircularProgressBar from "./components/CircularProgressBar";
-
+import { fetchUserOverviewData } from "./supabaseData";
 import {
   calculatePayDayInfo,
   formatIndianNumber,
@@ -17,7 +16,6 @@ import {
 } from "./utils";
 
 import "./Overview.css";
-import { fetchUserOverviewData } from "./supabaseData";
 
 const Overview = () => {
   const [data, setData] = useState(null);

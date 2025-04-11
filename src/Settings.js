@@ -2,11 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import { get, set } from "idb-keyval";
 import * as MdIcons from "react-icons/md";
-
 import AppLayout from "./components/AppLayout";
-
-import "./Settings.css";
 import { getRelativeTime } from "./utils";
+import "./Settings.css";
 
 const CACHE_KEYS = {
   income: "settings-income-categories",

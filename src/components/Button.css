@@ -1,0 +1,83 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: white;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-icon-only {
+  padding: 8px;
+}
+
+/* Variants */
+.btn-primary {
+  background-color: #007bff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b02a37;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: #117a8b;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.btn-success {
+  background-color: #3ecf8e;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #33b67c;
+}
+
+/* Custom variant hover: slightly darken using filter */
+.btn[style]:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+/* Optional: slight lift on hover for all buttons */
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Icon/text layout */
+.btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+.btn-text {
+  display: inline;
+}

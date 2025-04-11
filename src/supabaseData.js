@@ -1,6 +1,7 @@
+import { set } from "idb-keyval";
 import { storeTransactions } from "./db";
 import { supabase } from "./supabaseClient";
-import { set } from "idb-keyval";
+
 export const loadTransactionsFromSupabase = async () => {
   const CHUNK_SIZE = 1000;
   const user = await supabase.auth.getUser();

@@ -1,6 +1,6 @@
 import OverviewCard from "./OverviewCard";
-import { formatIndianNumber } from "../utils";
 import CircularProgressBar from "./CircularProgressBar";
+import { formatIndianNumber } from "../utils";
 
 const COLORS = {
   income: "#3ecf8e", // green

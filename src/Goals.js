@@ -2,12 +2,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import { get, set, del } from "idb-keyval";
+import Select from "react-select";
 import { FaCirclePlus } from "react-icons/fa6";
+import { FaSave, FaWindowClose } from "react-icons/fa";
 
 import AppLayout from "./components/AppLayout";
 import GoalCard from "./components/GoalCard";
 
 import "./Goals.css";
+import Button from "./components/Button";
 const CACHE_KEY = "cached_goals";
 const CACHE_EXPIRY_DAYS = 20;
 
@@ -145,6 +148,13 @@ const Goals = () => {
 
   const sortedGoals = sortGoals(goals);
 
+  const sortOptions = [
+    { value: "created_at", label: "Sort by Created" },
+    { value: "name", label: "Sort by Name" },
+    { value: "goal_amount", label: "Sort by Goal Amount" },
+    { value: "current_amount", label: "Sort by Current Amount" },
+    { value: "progress", label: "Sort by Progress" },
+  ];
   return (
     <AppLayout
       title="Goals"
@@ -153,23 +163,20 @@ const Goals = () => {
     >
       <div className="goals-header">
         <div className="left-controls">
-          <select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
-            <option value="created_at">Sort by Created</option>
-            <option value="name">Sort by Name</option>
-            <option value="goal_amount">Sort by Goal Amount</option>
-            <option value="current_amount">Sort by Current Amount</option>
-            <option value="progress">Sort by Progress</option>
-          </select>
+          <Select
+            options={sortOptions}
+            value={sortOptions.find((opt) => opt.value === orderBy)}
+            onChange={(selected) => setOrderBy(selected.value)}
+            isSearchable={false}
+          />
         </div>
         <div className="right-controls">
-          <button
-            className="add-btn"
+          <Button
+            icon={<FaCirclePlus />}
+            text="Add"
+            variant="primary"
             onClick={() => handleDialogOpen()}
-            disabled={loading}
-          >
-            <FaCirclePlus />
-            Add Goal
-          </button>
+          />
         </div>
       </div>
       <div className="goal-card-container">
@@ -231,12 +238,18 @@ const Goals = () => {
               }
             />
             <div className="goal-dialog-actions">
-              <button onClick={handleSave} className="goal-save-btn">
-                Save
-              </button>
-              <button onClick={handleDialogClose} className="goal-cancel-btn">
-                Cancel
-              </button>
+              <Button
+                icon={<FaSave />}
+                text="Save"
+                variant="success"
+                onClick={handleSave}
+              />
+              <Button
+                icon={<FaWindowClose />}
+                text="Cancel"
+                variant="warning"
+                onClick={handleDialogClose}
+              />
             </div>
           </div>
         </div>

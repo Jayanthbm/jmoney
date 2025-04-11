@@ -1,7 +1,10 @@
 import React from "react";
-import "./GoalCard.css";
-import { formatIndianNumber } from "../utils";
+import { MdModeEditOutline, MdDelete } from "react-icons/md";
 import CircularProgressBar from "./CircularProgressBar";
+import Button from "./Button";
+import { formatIndianNumber } from "../utils";
+import "./GoalCard.css";
+
 const GoalCard = ({
   title,
   progress,
@@ -53,12 +56,12 @@ const GoalCard = ({
         </div>
       </div>
       <div className="goal-card-actions">
-        <button className="goal-edit-btn" onClick={onEdit}>
-          Edit
-        </button>
-        <button className="goal-delete-btn" onClick={onDelete}>
-          Delete
-        </button>
+        <Button
+          icon={<MdModeEditOutline />}
+          variant="primary"
+          onClick={onEdit}
+        />
+        <Button icon={<MdDelete />} variant="danger" onClick={onDelete} />
       </div>
     </div>
   );

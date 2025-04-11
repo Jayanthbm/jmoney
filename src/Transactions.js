@@ -5,8 +5,8 @@ import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
 import { get } from "idb-keyval";
-
 import TransactionCard from "./components/TransactionCard";
+import Button from "./components/Button";
 import { storeTransactions, getAllTransactions, clearTransactions } from "./db";
 import { formatDateToDayMonthYear, getRelativeTime } from "./utils";
 import { loadTransactionsFromSupabase } from "./supabaseData";
@@ -190,9 +190,12 @@ const Transactions = () => {
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
         <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
           <p>No transactions found.</p>
-          <button onClick={clearFilters} className="clear-filters-button">
-            Clear Filters
-          </button>
+          <Button
+            icon={<MdClose />}
+            text="Clear Filters"
+            variant="danger"
+            onClick={clearFilters}
+          />
         </div>
       ) : (
         !loading &&

@@ -111,19 +111,3 @@ html {
     transform: rotate(360deg);
   }
 }
-
-.clear-filters-button {
-  padding: 6px 12px;
-  font-size: 0.875rem;
-  border: none;
-  border-radius: 6px;
-  background-color: #f44336;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-top: 1rem;
-}
-
-.clear-filters-button:hover {
-  background-color: #d32f2f;
-}

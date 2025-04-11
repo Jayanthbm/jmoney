@@ -80,12 +80,6 @@
   margin-bottom: 1rem;
 }
 
-.filters-wrapper select {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
 .no-data-card {
   text-align: center;
   padding: 2rem;

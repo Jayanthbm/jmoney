@@ -94,31 +94,3 @@
   justify-content: flex-end;
   margin-top: 0.8rem;
 }
-
-.goal-card-actions button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.goal-edit-btn {
-  background-color: #2196f3;
-  color: white;
-}
-
-.goal-edit-btn:hover {
-  background-color: #212121;
-}
-
-.goal-delete-btn {
-  background-color: #f44336;
-  color: white;
-}
-
-.goal-delete-btn:hover {
-  background-color: #d32f2f;
-}
