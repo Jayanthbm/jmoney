@@ -171,3 +171,28 @@
 .react-select__single-value {
   color: var(--text-color) !important;
 }
+[data-theme="dark"] .react-calendar {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #333;
+}
+
+[data-theme="dark"] .react-calendar__tile {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .react-calendar__tile--active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+[data-theme="dark"] .react-calendar__tile--now {
+  background-color: #2563eb;
+  color: white;
+}
+
+[data-theme="dark"] .react-calendar__navigation button {
+  background-color: transparent;
+  color: #ffffff;
+}
