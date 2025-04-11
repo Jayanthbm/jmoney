@@ -14,3 +14,30 @@ export const getRelativeTime = (timestamp) => {
   const days = Math.floor(hours / 24);
   return `${days} day${days > 1 ? "s" : ""} ago`;
 };
+
+export const calculatePayDayInfo = () => {
+  const today = new Date();
+  const currentDay = today.getDate();
+  const daysInMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    0
+  ).getDate();
+
+  const remainingDays = daysInMonth - currentDay + 1; // include today
+  const remainingDaysPercentage = ((remainingDays / daysInMonth) * 100).toFixed(
+    0
+  );
+
+  const nextMonthFirst = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  const monthName = nextMonthFirst.toLocaleString("en-US", { month: "short" });
+  const formattedNextMonth = `${monthName} 01`;
+
+  return {
+    date: formattedNextMonth,
+    today: currentDay,
+    days_in_month: daysInMonth,
+    remaining_days: remainingDays,
+    remaining_days_percentage: Number(remainingDaysPercentage),
+  };
+};
