@@ -27,31 +27,40 @@ const Transactions = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedPayees, setSelectedPayees] = useState([]);
 
+  const [fadeOut, setFadeOut] = useState(false);
+
   const groupTransactions = useCallback(() => {
-    let filtered = [...allTransactions];
+    setFadeOut(true);
+    setTimeout(() => {
+      let filtered = [...allTransactions];
 
-    if (search.trim()) {
-      const fuse = new Fuse(filtered, {
-        keys: ["description"],
-        threshold: 0.3,
-      });
-      filtered = fuse.search(search.trim()).map((result) => result.item);
-    }
+      if (search.trim()) {
+        const fuse = new Fuse(filtered, {
+          keys: ["description"],
+          threshold: 0.3,
+        });
+        filtered = fuse.search(search.trim()).map((result) => result.item);
+      }
 
-    if (selectedCategories.length > 0) {
-      const selectedNames = selectedCategories.map((c) => c.value);
-      filtered = filtered.filter((tx) =>
-        selectedNames.includes(tx.category_name)
-      );
-    }
+      if (selectedCategories.length > 0) {
+        const selectedNames = selectedCategories.map((c) => c.value);
+        filtered = filtered.filter((tx) =>
+          selectedNames.includes(tx.category_name)
+        );
+      }
 
-    if (selectedPayees.length > 0) {
-      const selectedNames = selectedPayees.map((p) => p.value);
-      filtered = filtered.filter((tx) => selectedNames.includes(tx.payee_name));
-    }
+      if (selectedPayees.length > 0) {
+        const selectedNames = selectedPayees.map((p) => p.value);
+        filtered = filtered.filter((tx) =>
+          selectedNames.includes(tx.payee_name)
+        );
+      }
 
-    const groupedData = groupBy(filtered, "date");
-    setGrouped(groupedData);
+      const groupedData = groupBy(filtered, "date");
+      setGrouped(groupedData);
+      setHasGrouped(true);
+      setFadeOut(false); // turn transition off after update
+    }, 150); // syncs with CSS transition duration
   }, [search, selectedCategories, selectedPayees, allTransactions]);
 
   const refreshData = useCallback(async () => {
@@ -179,7 +188,7 @@ const Transactions = () => {
       </div>
 
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
-        <div className="no-data-card">
+        <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
           <p>No transactions found.</p>
           <button onClick={clearFilters} className="clear-filters-button">
             Clear Filters
@@ -188,7 +197,9 @@ const Transactions = () => {
       ) : (
         !loading &&
         hasGrouped && (
-          <div className="transaction-page-wrapper">
+          <div
+            className={`transaction-page-wrapper ${fadeOut ? "fade-out" : ""}`}
+          >
             {Object.entries(grouped).map(([date, items]) => (
               <div key={date} className="transaction-group">
                 <h2 className="transaction-date-header">{date}</h2>

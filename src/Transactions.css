@@ -19,6 +19,12 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.transaction-page-wrapper.fade-out {
+  opacity: 0;
 }
 
 .search-bar-wrapper {
@@ -86,4 +92,10 @@
   background: #fafafa;
   border-radius: 8px;
   border: 1px solid #eee;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.no-data-card.fade-out {
+  opacity: 0;
 }
