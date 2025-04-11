@@ -92,7 +92,6 @@ const Overview = () => {
 
       // Compute payday locally
       result.payDay = calculatePayDayInfo();
-      console.log(calculatePayDayInfo())
       setData(result);
       setLoading(false);
     },
