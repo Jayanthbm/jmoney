@@ -8,7 +8,7 @@ import { get } from "idb-keyval";
 
 import TransactionCard from "./components/TransactionCard";
 import { storeTransactions, getAllTransactions, clearTransactions } from "./db";
-import { getRelativeTime } from "./utils";
+import { formatDateToDayMonthYear, getRelativeTime } from "./utils";
 import { loadTransactionsFromSupabase } from "./supabaseData";
 
 import "./Transactions.css";
@@ -202,7 +202,9 @@ const Transactions = () => {
           >
             {Object.entries(grouped).map(([date, items]) => (
               <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">{date}</h2>
+                <h2 className="transaction-date-header">
+                  {formatDateToDayMonthYear(date)}
+                </h2>
                 <div className="transaction-card-list">
                   {items.map((tx) => (
                     <TransactionCard key={tx.id} transaction={tx} />

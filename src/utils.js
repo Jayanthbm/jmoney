@@ -58,3 +58,11 @@ export const refreshOverviewCache = async () => {
     await fetchUserOverviewData(user.id);
   }
 };
+
+export function formatDateToDayMonthYear(input) {
+  const date = new Date(input);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
