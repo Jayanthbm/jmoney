@@ -2,8 +2,12 @@ import { supabase } from "./supabaseClient";
 import { fetchUserOverviewData } from "./supabaseData";
 import { format } from "date-fns";
 export const formatIndianNumber = (num) => {
-  if (typeof num !== "number") return "0";
-  return num.toLocaleString("en-IN");
+  if (typeof num !== "number" || isNaN(num)) return "₹0";
+  const isNegative = num < 0;
+  const absoluteValue = Math.abs(num);
+  const formatted = absoluteValue.toLocaleString("en-IN");
+
+  return isNegative ? `-₹${formatted}` : `₹${formatted}`;
 };
 
 // Utility to get relative time

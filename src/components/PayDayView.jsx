@@ -85,7 +85,7 @@ const PayDayView = () => {
           {formatDateToDayMonthYear(selectedDate)}
         </div>
         {filteredTx.length > 0 && (
-          <div className="summary-amount">₹{formatIndianNumber(netTotal)}</div>
+          <div className="summary-amount">{formatIndianNumber(netTotal)}</div>
         )}
       </div>
 

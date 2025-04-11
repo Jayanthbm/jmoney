@@ -7,7 +7,7 @@ import { getAllTransactions } from "../db";
 import { formatIndianNumber } from "../utils";
 import useTheme from "../hooks/useTheme";
 
-const DailyLimitView = ({ dailyLimitData, onBack }) => {
+const DailyLimitView = ({ dailyLimitData }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);
   const theme = useTheme();
 
@@ -31,7 +31,7 @@ const DailyLimitView = ({ dailyLimitData, onBack }) => {
         <div className="overview-card-wrapper">
           <OverviewCard
             title="Daily Limit"
-            subtitle={`Limit: ₹${formatIndianNumber(
+            subtitle={`Limit: ${formatIndianNumber(
               dailyLimitData?.daily_limit
             )}`}
           >
@@ -40,7 +40,7 @@ const DailyLimitView = ({ dailyLimitData, onBack }) => {
               <div className="daily-limit-section">
                 <div className="daily-limit-label">REMAINING</div>
                 <div className="daily-limit-value green-text">
-                  ₹{formatIndianNumber(dailyLimitData?.remaining || 0)}
+                  {formatIndianNumber(dailyLimitData?.remaining || 0)}
                 </div>
               </div>
 
@@ -50,7 +50,7 @@ const DailyLimitView = ({ dailyLimitData, onBack }) => {
               <div className="daily-limit-section">
                 <div className="daily-limit-label">SPENT</div>
                 <div className="daily-limit-value red-text">
-                  ₹{formatIndianNumber(dailyLimitData?.spent || 0)}
+                  {formatIndianNumber(dailyLimitData?.spent || 0)}
                 </div>
               </div>
 

@@ -24,13 +24,13 @@ const StatCard = ({
           <div className="stat-card-numbers">
             <div className="stat-row">
               <div className="stat-amount red-text">
-                ₹{formatIndianNumber(expense)}
+                {formatIndianNumber(expense)}
               </div>
               <div className="stat-label">EXPENSE</div>
             </div>
             <div className="stat-row">
               <div className="stat-amount green-text">
-                ₹{formatIndianNumber(income)}
+                {formatIndianNumber(income)}
               </div>
               <div className="stat-label">INCOME</div>
             </div>

@@ -98,7 +98,7 @@ const Overview = () => {
             >
               <div>
                 <div className="big-income-text">
-                  ₹<MyCountUp end={data?.remainingForPeriod?.remaining || 0} />
+                  <MyCountUp end={data?.remainingForPeriod?.remaining || 0} />
                 </div>
                 <ProgressBar
                   value={data?.remainingForPeriod?.spent_percentage || 0}
@@ -115,7 +115,7 @@ const Overview = () => {
           >
             <OverviewCard
               title="Daily Limit"
-              subtitle={`Limit: ₹${formatIndianNumber(
+              subtitle={`Limit: ${formatIndianNumber(
                 data?.dailyLimit?.daily_limit
               )}`}
             >
@@ -124,7 +124,7 @@ const Overview = () => {
                 <div className="daily-limit-section">
                   <div className="daily-limit-label">REMAINING</div>
                   <div className="daily-limit-value green-text">
-                    ₹{formatIndianNumber(data?.dailyLimit?.remaining || 0)}
+                    {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
                   </div>
                 </div>
 
@@ -135,7 +135,7 @@ const Overview = () => {
                 <div className="daily-limit-section">
                   <div className="daily-limit-label">SPENT</div>
                   <div className="daily-limit-value red-text">
-                    ₹{formatIndianNumber(data?.dailyLimit?.spent || 0)}
+                    {formatIndianNumber(data?.dailyLimit?.spent || 0)}
                   </div>
                 </div>
 
@@ -218,7 +218,7 @@ const Overview = () => {
                           <div className="category-text">
                             <div className="category-name">{cat.name}</div>
                             <div className="category-value">
-                              ₹{formatIndianNumber(cat?.amount || 0)} |{" "}
+                              {formatIndianNumber(cat?.amount || 0)} |{" "}
                               {cat?.percentage || 0}%
                             </div>
                           </div>
@@ -266,7 +266,7 @@ const Overview = () => {
             <OverviewCard title="Net Worth" subtitle="ALL TIME">
               <div>
                 <div className="big-income-text">
-                  ₹<MyCountUp end={data?.networth?.amount || 0} />
+                  <MyCountUp end={data?.networth?.amount || 0} />
                 </div>
               </div>
             </OverviewCard>

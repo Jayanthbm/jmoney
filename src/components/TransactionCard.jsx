@@ -2,6 +2,7 @@ import React from "react";
 import * as MdIcons from "react-icons/md";
 import "./TransactionCard.css";
 import { format } from "date-fns";
+import { formatIndianNumber } from "../utils";
 
 const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
@@ -77,7 +78,7 @@ const TransactionCard = ({
             type === "Expense" ? "expense" : "income"
           }`}
         >
-          ₹{Number(amount).toFixed(2)}
+          {formatIndianNumber(Number(amount))}
         </div>
         {percentage && (
           <div className="transaction-percentage">{percentage}%</div>

@@ -41,7 +41,7 @@ const GoalCard = ({
           <div className="amount-section">
             <div className="amount-label">TARGET</div>
             <div className="amount-value red-text">
-              ₹{formatIndianNumber(target || 0)}
+              {formatIndianNumber(target || 0)}
             </div>
           </div>
 
@@ -52,7 +52,7 @@ const GoalCard = ({
           <div className="amount-section">
             <div className="amount-label">CURRENT</div>
             <div className="amount-value green-text">
-              ₹{formatIndianNumber(current || 0)}
+              {formatIndianNumber(current || 0)}
             </div>
           </div>
         </div>
