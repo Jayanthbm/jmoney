@@ -21,33 +21,51 @@
   gap: 1.5rem;
 }
 
-/* Transactions.css */
-.search-bar-wrapper {
-  margin-bottom: 1rem;
-}
-
-.search-bar {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
 .search-bar-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
-.clear-search-button {
-  padding: 6px 10px;
-  font-size: 0.875rem;
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px transparent;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2684ff33;
+  border-color: #2684ff;
+}
+
+.search-clear-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
   cursor: pointer;
-  background: #eee;
-  border: none;
-  border-radius: 4px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-clear-icon:hover {
+  color: #ff4d4f;
 }
 
 .filters-wrapper {

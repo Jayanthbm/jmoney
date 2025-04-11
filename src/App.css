@@ -8,7 +8,8 @@
 body,
 html {
   height: 100%;
-  margin: 0;
+  margin-left: 1px;
+  margin-right: 1px;
   font-family: "Underdog", system-ui;
   font-weight: 400;
   font-style: normal;
@@ -111,19 +112,18 @@ html {
   }
 }
 
-.clear-filters-button{
-  background-color: white;
-  color: black;
-  border: 2px solid black;
-  padding: 0.3rem 0.6rem;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 8px;
+.clear-filters-button {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #f44336;
+  color: white;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 2px;
+  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+}
+
+.clear-filters-button:hover {
+  background-color: #d32f2f;
 }
