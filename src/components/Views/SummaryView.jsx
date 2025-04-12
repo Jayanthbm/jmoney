@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { getAllTransactions } from "../db";
+
+import DonutChart from "../Charts/DonutChart";
+import TransactionCard from "../Cards/TransactionCard";
+
+import { getAllTransactions } from "../../db";
 import {
   getMonthOptions,
   getTopCategoryColors,
   getYearOptions,
-} from "../utils"; // assumes you have a mapping
-import TransactionCard from "./TransactionCard";
-import DonutChart from "./DonutChart";
+} from "../../utils";
 
 const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
   const [type, setType] = useState("Expense");

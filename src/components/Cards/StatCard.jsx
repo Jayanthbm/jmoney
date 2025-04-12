@@ -1,7 +1,7 @@
 import OverviewCard from "./OverviewCard";
-import CircularProgressBar from "./CircularProgressBar";
-import { formatIndianNumber } from "../utils";
-import useTheme from "../hooks/useTheme";
+import CircularProgressBar from "../Charts/CircularProgressBar";
+import useTheme from "../../hooks/useTheme";
+import { formatIndianNumber } from "../../utils";
 
 const COLORS = {
   income: "#3ecf8e", // green

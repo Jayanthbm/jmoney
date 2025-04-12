@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
-import { HashRouter as Router, Route, Routes } from "react-router-dom"; 
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 
-import Overview from "./Overview";
-import Transactions from "./Transactions";
-import Settings from "./Settings";
-import Reports from "./Reports";
-import Login from "./Login";
-import Budgets from "./Budgets";
-import Goals from "./Goals";
-import MainLayout from "./components/MainLayout";
-import Loading from "./components/Loading";
+import Login from "./pages/Login/Login";
+import Transactions from "./pages/Transactions/Transactions";
+import Overview from "./pages/Overview/Overview";
+import Budgets from "./pages/Budgets/Budgets";
+import Goals from "./pages/Goals/Goals";
+import Reports from "./pages/Reports/Reports";
+import Settings from "./pages/Settings/Settings";
+import Loading from "./components/Layouts/Loading";
+import MainLayout from "./components/Layouts/MainLayout";
+
+import { supabase } from "./supabaseClient";
+
 import "./App.css";
 
 function App() {

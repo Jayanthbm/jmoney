@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { isSameDay } from "date-fns";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import TransactionCard from "./TransactionCard";
-import { getAllTransactions } from "../db";
-import { formatIndianNumber, formatDateToDayMonthYear } from "../utils";
-import Button from "./Button";
+
+import TransactionCard from "../Cards/TransactionCard";
+import Button from "../Button/Button";
+
+import { getAllTransactions } from "../../db";
+import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 
 const PayDayView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());

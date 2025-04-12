@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { isToday } from "date-fns";
-import OverviewCard from "./OverviewCard";
-import CircularProgressBar from "./CircularProgressBar";
-import TransactionCard from "./TransactionCard";
-import { getAllTransactions } from "../db";
-import { formatIndianNumber } from "../utils";
-import useTheme from "../hooks/useTheme";
+
+import OverviewCard from "../Cards/OverviewCard";
+import CircularProgressBar from "../Charts/CircularProgressBar";
+import TransactionCard from "../Cards/TransactionCard";
+
+import useTheme from "../../hooks/useTheme";
+import { getAllTransactions } from "../../db";
+import { formatIndianNumber } from "../../utils";
 
 const DailyLimitView = ({ dailyLimitData }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);

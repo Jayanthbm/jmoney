@@ -1,25 +1,27 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../../supabaseClient";
 import { get } from "idb-keyval";
-import AppLayout from "./components/AppLayout";
-import MyCountUp from "./components/MyCountUp";
-import OverviewCard from "./components/OverviewCard";
-import ProgressBar from "./components/ProgressBar";
-import StatCard from "./components/StatCard";
-import CustomDonutChart from "./components/CustomDonutChart";
-import CircularProgressBar from "./components/CircularProgressBar";
-import { fetchUserOverviewData } from "./supabaseData";
+
+import AppLayout from "../../components/Layouts/AppLayout";
+import OverviewCard from "../../components/Cards/OverviewCard";
+import MyCountUp from "../../components/Charts/MyCountUp";
+import ProgressBar from "../../components/Charts/ProgressBar";
+import CircularProgressBar from "../../components/Charts/CircularProgressBar";
+import CustomDonutChart from "../../components/Charts/CustomDonutChart";
+import StatCard from "../../components/Cards/StatCard";
+import DailyLimitView from "../../components/Views/DailyLimitView";
+import PayDayView from "../../components/Views/PayDayView";
+import SummaryView from "../../components/Views/SummaryView";
+
+import useTheme from "../../hooks/useTheme";
+import { fetchUserOverviewData } from "../../supabaseData";
 import {
   calculatePayDayInfo,
   formatIndianNumber,
   isCacheExpired,
-} from "./utils";
+} from "../../utils";
 
 import "./Overview.css";
-import useTheme from "./hooks/useTheme";
-import DailyLimitView from "./components/DailyLimitView";
-import PayDayView from "./components/PayDayView";
-import SummaryView from "./components/SummaryView";
 
 const Overview = () => {
   const [data, setData] = useState(null);
@@ -278,9 +280,7 @@ const Overview = () => {
       )}
       {viewMode === "payDay" && <PayDayView />}
       {viewMode === "topCategories" && <SummaryView />}
-      {viewMode === "thisMonth" && (
-        <SummaryView title="Summary For Month" filterToCurrentMonth />
-      )}
+      {viewMode === "thisMonth" && <SummaryView title="Summary For Month" />}
       {viewMode === "currentYear" && (
         <SummaryView title="Summary For Year" showMonthSelect={false} />
       )}

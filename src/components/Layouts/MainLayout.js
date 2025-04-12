@@ -1,7 +1,6 @@
 // src/components/MainLayout.js
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "../supabaseClient";
 import {
   MdLogout,
   MdSettings,
@@ -13,6 +12,7 @@ import {
   MdDarkMode,
   MdLightMode,
 } from "react-icons/md";
+import { supabase } from "../../supabaseClient";
 import "./MainLayout.css";
 
 const navItems = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AppLayout from "./components/AppLayout";
+import AppLayout from "../../components/Layouts/AppLayout";
 
 const Budgets = () => {
   const [loading, setLoading] = useState(true);

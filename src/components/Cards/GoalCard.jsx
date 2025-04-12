@@ -1,11 +1,13 @@
 import React from "react";
 import { MdModeEditOutline, MdDelete } from "react-icons/md";
-import CircularProgressBar from "./CircularProgressBar";
-import Button from "./Button";
-import { formatIndianNumber } from "../utils";
-import "./GoalCard.css";
-import useTheme from "../hooks/useTheme";
 
+import CircularProgressBar from "../Charts/CircularProgressBar";
+import Button from "../Button/Button";
+
+import useTheme from "../../hooks/useTheme";
+import { formatIndianNumber } from "../../utils";
+
+import "./GoalCard.css";
 const GoalCard = ({
   title,
   progress,

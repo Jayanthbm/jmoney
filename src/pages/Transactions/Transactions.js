@@ -1,15 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
-import AppLayout from "./components/AppLayout";
+import { get } from "idb-keyval";
 import { MdSync, MdClose } from "react-icons/md";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
-import { get } from "idb-keyval";
-import TransactionCard from "./components/TransactionCard";
-import Button from "./components/Button";
-import { storeTransactions, getAllTransactions, clearTransactions } from "./db";
-import { formatDateToDayMonthYear, getRelativeTime } from "./utils";
-import { loadTransactionsFromSupabase } from "./supabaseData";
+
+import AppLayout from "../../components/Layouts/AppLayout";
+import Button from "../../components/Button/Button";
+import TransactionCard from "../../components/Cards/TransactionCard";
+
+import {
+  storeTransactions,
+  getAllTransactions,
+  clearTransactions,
+} from "../../db";
+import { formatDateToDayMonthYear, getRelativeTime } from "../../utils";
+import { loadTransactionsFromSupabase } from "../../supabaseData";
 
 import "./Transactions.css";
 

@@ -1,6 +1,8 @@
+import { format } from "date-fns";
+
 import { supabase } from "./supabaseClient";
 import { fetchUserOverviewData } from "./supabaseData";
-import { format } from "date-fns";
+
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
   const isNegative = num < 0;
@@ -84,26 +86,15 @@ export const getMonthOptions = () => {
   ];
 };
 
-export const getYearOptions = () => {
-  return [
-    { value: new Date().getFullYear(), label: new Date().getFullYear() },
-    {
-      value: new Date().getFullYear() - 1,
-      label: new Date().getFullYear() - 1,
-    },
-    {
-      value: new Date().getFullYear() - 2,
-      label: new Date().getFullYear() - 2,
-    },
-    {
-      value: new Date().getFullYear() - 3,
-      label: new Date().getFullYear() - 3,
-    },
-    {
-      value: new Date().getFullYear() - 4,
-      label: new Date().getFullYear() - 4,
-    },
-  ];
+export const getYearOptions = (startYear = 2022) => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+
+  for (let year = currentYear; year >= startYear; year--) {
+    years.push({ value: year, label: year });
+  }
+
+  return years;
 };
 
 export const getTopCategoryColors = (count) => {

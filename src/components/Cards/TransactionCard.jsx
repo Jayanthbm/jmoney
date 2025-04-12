@@ -1,8 +1,8 @@
 import React from "react";
-import * as MdIcons from "react-icons/md";
-import "./TransactionCard.css";
 import { format } from "date-fns";
-import { formatIndianNumber } from "../utils";
+import * as MdIcons from "react-icons/md";
+import { formatIndianNumber } from "../../utils";
+import "./TransactionCard.css";
 
 const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
