@@ -1,16 +1,14 @@
-// Goals.js
+// src/pages/Goals/Goals.js
+
 import React, { useCallback, useEffect, useState } from "react";
 import { get, set, del } from "idb-keyval";
 import Select from "react-select";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaSave, FaWindowClose } from "react-icons/fa";
-
 import AppLayout from "../../components/Layouts/AppLayout";
 import GoalCard from "../../components/Cards/GoalCard";
 import Button from "../../components/Button/Button";
-
 import { supabase } from "../../supabaseClient";
-
 import "./Goals.css";
 
 const CACHE_KEY = "cached_goals";

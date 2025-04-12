@@ -1,3 +1,5 @@
+// src/components/Views/TotalSummaryView.jsx
+
 import React from "react";
 
 const TotalSummaryView = () => {

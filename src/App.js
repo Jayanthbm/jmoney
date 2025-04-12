@@ -1,6 +1,7 @@
+// src/App.js
+
 import { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
-
 import Login from "./pages/Login/Login";
 import Transactions from "./pages/Transactions/Transactions";
 import Overview from "./pages/Overview/Overview";
@@ -10,9 +11,7 @@ import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
 import Loading from "./components/Layouts/Loading";
 import MainLayout from "./components/Layouts/MainLayout";
-
 import { supabase } from "./supabaseClient";
-
 import "./App.css";
 
 function App() {

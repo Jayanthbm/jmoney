@@ -1,3 +1,5 @@
+// src/components/Views/MonthlyLivingCostsView.jsx
+
 import React from "react";
 
 const MonthlyLivingCostsView = () => {

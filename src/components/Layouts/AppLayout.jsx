@@ -1,3 +1,5 @@
+// src/components/Layouts/AppLayout.jsx
+
 import React from "react";
 import PageHeader from "./PageHeader";
 import Loading from "./Loading";

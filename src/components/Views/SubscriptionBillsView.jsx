@@ -1,3 +1,5 @@
+// src/components/Views/SubscriptionBillsView.jsx
+
 import React from "react";
 
 const SubscriptionBillsView = () => {

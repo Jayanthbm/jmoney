@@ -1,14 +1,14 @@
+// src/pages/Transactions/Transactions.js
+
 import React, { useEffect, useState, useCallback } from "react";
 import { get } from "idb-keyval";
 import { MdSync, MdClose } from "react-icons/md";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
-
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import TransactionCard from "../../components/Cards/TransactionCard";
-
 import {
   storeTransactions,
   getAllTransactions,
@@ -16,7 +16,6 @@ import {
 } from "../../db";
 import { formatDateToDayMonthYear, getRelativeTime } from "../../utils";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
-
 import "./Transactions.css";
 
 const Transactions = () => {

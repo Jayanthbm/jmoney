@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Underdog&display=swap');
+/* src/index.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Underdog&display=swap");
 
 :root {
   --bg-color: #ffffff;

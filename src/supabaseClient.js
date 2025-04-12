@@ -1,3 +1,5 @@
+// src/supabaseClient.js
+
 import { createClient } from "@supabase/supabase-js";
 
 // CRA uses REACT_APP_ prefix for env variables

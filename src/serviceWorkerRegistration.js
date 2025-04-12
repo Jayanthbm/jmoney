@@ -1,4 +1,4 @@
-// serviceWorkerRegistration.js
+// src/serviceWorkerRegistration.js
 
 // This is mostly boilerplate from CRA’s default PWA setup
 

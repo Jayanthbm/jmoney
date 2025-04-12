@@ -1,3 +1,5 @@
+// src/components/Views/YearlySummaryView.jsx
+
 import React from "react";
 
 const YearlySummaryView = () => {

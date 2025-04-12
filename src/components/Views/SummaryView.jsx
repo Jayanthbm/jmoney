@@ -1,9 +1,9 @@
+// src/components/Views/SummaryView.jsx
+
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-
 import DonutChart from "../Charts/DonutChart";
 import TransactionCard from "../Cards/TransactionCard";
-
 import { getAllTransactions } from "../../db";
 import {
   getMonthOptions,

@@ -1,3 +1,5 @@
+// src/hooks/useTheme.js
+
 import { useEffect, useState } from "react";
 
 const useTheme = () => {

@@ -1,4 +1,5 @@
-// src/components/Loading.jsx
+// src/components/Layouts/Loading.jsx
+
 import "./Loading.css";
 
 const Loading = () => {

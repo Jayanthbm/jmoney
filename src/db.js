@@ -1,4 +1,5 @@
 // src/db.js
+
 import { createStore, set, get, del, keys } from "idb-keyval";
 
 const txStore = createStore("transactions-db", "transactions-store");

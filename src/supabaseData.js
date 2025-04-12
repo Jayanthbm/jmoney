@@ -1,3 +1,5 @@
+// src/supabaseData.js
+
 import { set } from "idb-keyval";
 import { storeTransactions } from "./db";
 import { supabase } from "./supabaseClient";

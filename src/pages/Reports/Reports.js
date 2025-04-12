@@ -1,3 +1,5 @@
+// src/pages/Reports/Reports.js
+
 import React, { useEffect, useState } from "react";
 import AppLayout from "../../components/Layouts/AppLayout";
 import SummaryView from "../../components/Views/SummaryView";
@@ -8,8 +10,8 @@ import PayeesView from "../../components/Views/PayeesView";
 import CategoriesView from "../../components/Views/CategoriesView";
 import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
 import TotalSummaryView from "../../components/Views/TotalSummaryView";
-
 import "./Reports.css";
+
 const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("reportList");

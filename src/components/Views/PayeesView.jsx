@@ -1,3 +1,5 @@
+// src/components/Views/PayeesView.jsx
+
 import React from "react";
 
 const PayeesView = () => {

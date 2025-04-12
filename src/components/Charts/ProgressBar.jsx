@@ -1,3 +1,5 @@
+// src/components/Charts/ProgressBar.jsx
+
 import React, { useRef, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import "./ProgressBar.css";

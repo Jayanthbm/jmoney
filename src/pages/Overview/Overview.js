@@ -1,7 +1,8 @@
+// src/pages/Overview/Overview.js
+
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { get } from "idb-keyval";
-
 import AppLayout from "../../components/Layouts/AppLayout";
 import OverviewCard from "../../components/Cards/OverviewCard";
 import MyCountUp from "../../components/Charts/MyCountUp";
@@ -12,7 +13,6 @@ import StatCard from "../../components/Cards/StatCard";
 import DailyLimitView from "../../components/Views/DailyLimitView";
 import PayDayView from "../../components/Views/PayDayView";
 import SummaryView from "../../components/Views/SummaryView";
-
 import useTheme from "../../hooks/useTheme";
 import { fetchUserOverviewData } from "../../supabaseData";
 import {
@@ -20,7 +20,6 @@ import {
   formatIndianNumber,
   isCacheExpired,
 } from "../../utils";
-
 import "./Overview.css";
 
 const Overview = () => {
