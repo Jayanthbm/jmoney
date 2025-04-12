@@ -10,6 +10,7 @@ import PayeesView from "../../components/Views/PayeesView";
 import CategoriesView from "../../components/Views/CategoriesView";
 import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
 import TotalSummaryView from "../../components/Views/TotalSummaryView";
+import ReportCard from "../../components/Cards/ReportCard";
 import "./Reports.css";
 
 const Reports = () => {
@@ -19,9 +20,6 @@ const Reports = () => {
     setLoading(false);
   }, []);
 
-  const ReportCard = ({ title }) => {
-    return <>{title}</>;
-  };
   return (
     <AppLayout title="Reports" loading={loading}>
       {viewMode !== "reportList" && (
