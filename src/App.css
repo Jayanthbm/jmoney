@@ -170,9 +170,11 @@
   min-width: 200px;
   flex: 1;
 }
+
 .react-select__single-value {
   color: var(--text-color) !important;
 }
+
 [data-theme="dark"] .react-calendar {
   background-color: #1e1e1e;
   color: #ffffff;
@@ -197,4 +199,35 @@
 [data-theme="dark"] .react-calendar__navigation button {
   background-color: transparent;
   color: #ffffff;
+}
+
+.back-button-container {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.back-button-container:hover {
+  color: var(--primary-color-hover);
+}
+
+.back-button {
+  all: unset;
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+}
+
+.back-button-container svg {
+  transition: transform 0.2s ease;
+}
+
+.back-button-container:hover svg {
+  transform: translateX(-2px);
 }

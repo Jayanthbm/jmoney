@@ -35,6 +35,7 @@
   --btn-success-bg: #3ecf8e;
   --btn-success-hover: #33b67c;
   --btn-text-color: #ffffff;
+  --primary-color-hover: #2c3a44;
 }
 
 [data-theme="dark"] {
@@ -68,6 +69,7 @@
   --btn-success-bg: #66bb6a;
   --btn-success-hover: #388e3c;
   --btn-text-color: #ffffff;
+  --primary-color-hover: #d0d0d0;
 }
 
 * {
