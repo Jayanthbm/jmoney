@@ -1,7 +1,19 @@
 // src/pages/Reports/Reports.js
 
 import React, { useEffect, useState } from "react";
+import {
+  MdCategory,
+  MdCalendarToday,
+  MdCompareArrows,
+  MdSubscriptions,
+  MdPeople,
+  MdLabel,
+  MdHome,
+  MdSummarize,
+} from "react-icons/md";
+import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
+import ReportCard from "../../components/Cards/ReportCard";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
 import IncomeExpenseView from "../../components/Views/IncomeExpenseView";
@@ -10,94 +22,125 @@ import PayeesView from "../../components/Views/PayeesView";
 import CategoriesView from "../../components/Views/CategoriesView";
 import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
 import TotalSummaryView from "../../components/Views/TotalSummaryView";
-import ReportCard from "../../components/Cards/ReportCard";
 import "./Reports.css";
+
+const reportsList = [
+  {
+    title: "Transactions By Category",
+    description: "See the complete history about a category",
+    icon: <MdCategory size={28} />,
+    view: "transactionsByCategory",
+  },
+  {
+    title: "Yearly Summary",
+    description: "Review your yearly financial performance",
+    icon: <MdCalendarToday size={28} />,
+    view: "yearlySummary",
+  },
+  {
+    title: "Income vs Expense",
+    description: "Compare how much you earned vs spent",
+    icon: <MdCompareArrows size={28} />,
+    view: "incomeVsExpense",
+  },
+  {
+    title: "Subscription and Bills",
+    description: "Keep track of your recurring payments",
+    icon: <MdSubscriptions size={28} />,
+    view: "subscriptionAndBills",
+  },
+  {
+    title: "Payees",
+    description: "Analyze transactions by payees",
+    icon: <MdPeople size={28} />,
+    view: "payees",
+  },
+  {
+    title: "Categories",
+    description: "Understand your spending across categories",
+    icon: <MdLabel size={28} />,
+    view: "categories",
+  },
+  {
+    title: "Monthly Living Costs",
+    description: "Track your monthly essential expenses",
+    icon: <MdHome size={28} />,
+    view: "monthlyLivingCosts",
+  },
+  {
+    title: "Summary",
+    description: "View total income, expense, and balance",
+    icon: <MdSummarize size={28} />,
+    view: "summary",
+  },
+];
 
 const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("reportList");
+
   useEffect(() => {
     setLoading(false);
   }, []);
 
+  const renderView = () => {
+    switch (viewMode) {
+      case "transactionsByCategory":
+        return <SummaryView title="Transactions By Category" />;
+      case "yearlySummary":
+        return <YearlySummaryView />;
+      case "incomeVsExpense":
+        return <IncomeExpenseView />;
+      case "subscriptionAndBills":
+        return <SubscriptionBillsView />;
+      case "payees":
+        return <PayeesView />;
+      case "categories":
+        return <CategoriesView />;
+      case "monthlyLivingCosts":
+        return <MonthlyLivingCostsView />;
+      case "summary":
+        return <TotalSummaryView />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <AppLayout title="Reports" loading={loading}>
       {viewMode !== "reportList" && (
-        <button
-          className="back-button"
+        <div
+          className="back-button-container"
+          role="button"
+          tabIndex={0}
           onClick={() => setViewMode("reportList")}
+          onKeyDown={(e) => e.key === "Enter" && setViewMode("reportList")}
         >
-          ← Reports
-        </button>
-      )}
-      {viewMode === "reportList" && (
-        <div className="report-container">
-          <div
-            className="report-card-wrapper"
-            onClick={() => setViewMode("transactionsByCategory")}
-          >
-            <ReportCard title="Transactions By Category" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => setViewMode("yearlySummary")}
-          >
-            <ReportCard title="Yearly Summary" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => setViewMode("incomeVsExpense")}
-          >
-            <ReportCard title="Income vs Expense" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => setViewMode("subscriptionAndBills")}
-          >
-            <ReportCard title="Subscription and Bills" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => setViewMode("payees")}
-          >
-            <ReportCard title="Payees" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => {
-              setViewMode("categories");
-            }}
-          >
-            <ReportCard title="Categories" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => {
-              setViewMode("monthlyLivingCosts");
-            }}
-          >
-            <ReportCard title="Monthly Living Costs" />
-          </div>
-          <div
-            className="report-card-wrapper"
-            onClick={() => {
-              setViewMode("summary");
-            }}
-          >
-            <ReportCard title="Summary" />
-          </div>
+          <IoIosArrowBack />
+          <span className="back-button">Reports</span>
         </div>
       )}
-      {viewMode === "transactionsByCategory" && (
-        <SummaryView title="Transactions By Category" />
+
+      {viewMode === "reportList" ? (
+        <div className="report-container">
+          {reportsList.map((report, index) => (
+            <div
+              key={report.title}
+              className="report-card-wrapper"
+              style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => setViewMode(report.view)}
+            >
+              <ReportCard
+                icon={report.icon}
+                title={report.title}
+                description={report.description}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        renderView()
       )}
-      {viewMode === "yearlySummary" && <YearlySummaryView />}
-      {viewMode === "incomeVsExpense" && <IncomeExpenseView />}
-      {viewMode === "subscriptionAndBills" && <SubscriptionBillsView />}
-      {viewMode === "Payees" && <PayeesView />}
-      {viewMode === "Categories" && <CategoriesView />}
-      {viewMode === "Monthly Living Costs" && <MonthlyLivingCostsView />}
-      {viewMode === "summary" && <TotalSummaryView />}
     </AppLayout>
   );
 };
