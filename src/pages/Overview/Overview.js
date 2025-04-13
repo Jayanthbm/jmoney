@@ -1,7 +1,6 @@
 // src/pages/Overview/Overview.js
 
 import React, { useEffect, useState, useCallback } from "react";
-import { supabase } from "../../supabaseClient";
 import { get } from "idb-keyval";
 import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -19,6 +18,7 @@ import { fetchUserOverviewData } from "../../supabaseData";
 import {
   calculatePayDayInfo,
   formatIndianNumber,
+  getSupabaseUserIdFromLocalStorage,
   isCacheExpired,
 } from "../../utils";
 import "./Overview.css";
@@ -29,9 +29,9 @@ const Overview = () => {
 
   const theme = useTheme();
   const refreshData = useCallback(async () => {
-    const user = (await supabase.auth.getUser())?.data?.user;
-    if (user) {
-      const freshData = await fetchUserOverviewData(user.id);
+    const userId = getSupabaseUserIdFromLocalStorage();
+    if (userId) {
+      const freshData = await fetchUserOverviewData(userId);
       setData({ ...freshData, payDay: calculatePayDayInfo() });
     }
   }, []);

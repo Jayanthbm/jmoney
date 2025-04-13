@@ -1,8 +1,6 @@
 // src/utils.js
 
 import { format } from "date-fns";
-
-import { supabase } from "./supabaseClient";
 import { fetchUserOverviewData } from "./supabaseData";
 
 export const formatIndianNumber = (num) => {
@@ -61,9 +59,9 @@ export const isCacheExpired = (timestamp, storedDate, expiryHours = 20) => {
 };
 
 export const refreshOverviewCache = async () => {
-  const user = (await supabase.auth.getUser())?.data?.user;
-  if (user) {
-    await fetchUserOverviewData(user.id);
+  const userId = getSupabaseUserIdFromLocalStorage();
+  if (userId) {
+    await fetchUserOverviewData(userId);
   }
 };
 
@@ -128,3 +126,25 @@ export const getTopCategoryColors = (count) => {
   ];
   return COLOR_PALETTE.slice(0, count);
 };
+
+export function getSupabaseUserIdFromLocalStorage() {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+
+    if (key.endsWith("-auth-token")) {
+      try {
+        const value = localStorage.getItem(key);
+        if (value) {
+          const session = JSON.parse(value);
+          const userId = session?.user?.id;
+          if (userId) {
+            return userId;
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to parse auth token for key: ${key}`, error);
+      }
+    }
+  }
+  return null; // Return null if no user ID found
+}

@@ -10,6 +10,7 @@ import GoalCard from "../../components/Cards/GoalCard";
 import Button from "../../components/Button/Button";
 import { supabase } from "../../supabaseClient";
 import "./Goals.css";
+import { getSupabaseUserIdFromLocalStorage } from "../../utils";
 
 const CACHE_KEY = "cached_goals";
 const CACHE_EXPIRY_DAYS = 20;
@@ -99,14 +100,12 @@ const Goals = () => {
 
   const handleSave = async () => {
     if (!formData.name || !formData.goal_amount) return;
-
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
-    if (!user?.id) return;
+    const userId = getSupabaseUserIdFromLocalStorage();
+    if (!userId) return;
 
     const payload = {
       ...formData,
-      user_id: user.id,
+      user_id: userId,
       goal_amount: parseFloat(formData.goal_amount),
       current_amount: parseFloat(formData.current_amount) || 0,
     };
@@ -117,7 +116,7 @@ const Goals = () => {
             .from("goals")
             .update(payload)
             .eq("id", editGoal.id)
-            .eq("user_id", user.id)
+            .eq("user_id", userId)
         ).error
       : (await supabase.from("goals").insert([payload])).error;
 
@@ -130,15 +129,14 @@ const Goals = () => {
   };
 
   const handleDelete = async (id) => {
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
-    if (!user?.id) return;
+    const userId = getSupabaseUserIdFromLocalStorage();
+    if (!userId) return;
 
     const { error } = await supabase
       .from("goals")
       .delete()
       .eq("id", id)
-      .eq("user_id", user.id);
+      .eq("user_id", userId);
     if (error) console.error("Error deleting goal:", error);
     else {
       await clearCache();
