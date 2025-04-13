@@ -66,7 +66,7 @@ export const fetchUserOverviewData = async (uid) => {
     result[key] = normalizedData;
 
     // ✅ Store to IndexedDB
-    await set(key, {
+    await set(uid + "_" + key, {
       data: normalizedData,
       timestamp: new Date().toISOString(),
       date: today,

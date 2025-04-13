@@ -49,10 +49,11 @@ const Overview = () => {
 
     const result = {};
 
+    const userId = getSupabaseUserIdFromLocalStorage();
     // 1. Read from cache
     let fetchNeeded = false;
     for (const key of keys) {
-      const cache = await get(key);
+      const cache = await get(userId + "_" + key);
       if (cache && !isCacheExpired(cache.timestamp, cache.date)) {
         result[key] = cache.data;
       } else {

@@ -14,7 +14,11 @@ import {
   getAllTransactions,
   clearTransactions,
 } from "../../db";
-import { formatDateToDayMonthYear, getRelativeTime } from "../../utils";
+import {
+  formatDateToDayMonthYear,
+  getRelativeTime,
+  getSupabaseUserIdFromLocalStorage,
+} from "../../utils";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
 import "./Transactions.css";
 
@@ -81,7 +85,7 @@ const Transactions = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-
+      const userId = getSupabaseUserIdFromLocalStorage();
       const [cached, expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
           getAllTransactions(),
@@ -100,7 +104,14 @@ const Transactions = () => {
       ]);
       setPayees(cachedPayees || []);
       setAllTransactions(sorted);
-      setLastSynced(localStorage.getItem("last_transaction_fetch"));
+      const last = localStorage.getItem(userId + "_last_transaction_fetch");
+      if (last) {
+        setLastSynced(Number(last));
+      } else {
+        const now = Date.now();
+        localStorage.setItem(userId + "_last_transaction_fetch", now);
+        setLastSynced(now);
+      }
       setLoading(false);
     };
 

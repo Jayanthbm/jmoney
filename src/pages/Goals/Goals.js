@@ -45,9 +45,9 @@ const Goals = () => {
 
   const fetchGoals = useCallback(async (forceRefresh = false) => {
     setLoading(true);
-
+    const userId = getSupabaseUserIdFromLocalStorage();
     if (!forceRefresh) {
-      const cache = await get(CACHE_KEY);
+      const cache = await get(userId + "_" + CACHE_KEY);
       if (cache) {
         const { data, timestamp } = cache;
         const now = new Date();
@@ -67,13 +67,16 @@ const Goals = () => {
       console.error("Error fetching goals:", error);
     } else {
       setGoals(data);
-      await set(CACHE_KEY, { data, timestamp: new Date() });
+      await set(userId + "_" + CACHE_KEY, { data, timestamp: new Date() });
     }
 
     setLoading(false);
   }, []);
 
-  const clearCache = async () => await del(CACHE_KEY);
+  const clearCache = async () => {
+    const userId = getSupabaseUserIdFromLocalStorage();
+    await del(userId + "_" + CACHE_KEY);
+  };
 
   useEffect(() => {
     fetchGoals();

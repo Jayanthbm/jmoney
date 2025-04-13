@@ -5,7 +5,10 @@ import { supabase } from "../../supabaseClient";
 import { get, set } from "idb-keyval";
 import * as MdIcons from "react-icons/md";
 import AppLayout from "../../components/Layouts/AppLayout";
-import { getRelativeTime } from "../../utils";
+import {
+  getRelativeTime,
+  getSupabaseUserIdFromLocalStorage,
+} from "../../utils";
 import "./Settings.css";
 
 const CACHE_KEYS = {
@@ -35,9 +38,10 @@ const Settings = () => {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    const userId = getSupabaseUserIdFromLocalStorage();
 
     const [expense, income, payeeList] = await Promise.all([
-      fetchIfMissing(CACHE_KEYS.expense, async () => {
+      fetchIfMissing(userId + "_" + CACHE_KEYS.expense, async () => {
         const { data } = await supabase
           .from("categories")
           .select("*")
@@ -45,7 +49,7 @@ const Settings = () => {
           .order("name", { ascending: true });
         return data || [];
       }),
-      fetchIfMissing(CACHE_KEYS.income, async () => {
+      fetchIfMissing(userId + "_" + CACHE_KEYS.income, async () => {
         const { data } = await supabase
           .from("categories")
           .select("*")
@@ -53,7 +57,7 @@ const Settings = () => {
           .order("name", { ascending: true });
         return data || [];
       }),
-      fetchIfMissing(CACHE_KEYS.payees, async () => {
+      fetchIfMissing(userId + "_" + CACHE_KEYS.payees, async () => {
         const { data } = await supabase
           .from("payees")
           .select("*")
@@ -66,15 +70,21 @@ const Settings = () => {
     setIncomeCategories(income);
     setPayees(payeeList);
 
-    const last = localStorage.getItem(LAST_REFRESHED_KEY);
-    if (last) setLastSynced(Number(last));
+    const last = localStorage.getItem(userId + "_" + LAST_REFRESHED_KEY);
+    if (last) {
+      setLastSynced(Number(last));
+    } else {
+      const now = Date.now();
+      localStorage.setItem(userId + "_" + LAST_REFRESHED_KEY, now);
+      setLastSynced(now);
+    }
 
     setLoading(false);
   }, []);
 
   const refreshData = useCallback(async () => {
     setSyncing(true);
-
+    const userId = getSupabaseUserIdFromLocalStorage();
     const [expenseData, incomeData, payeeData] = await Promise.all([
       supabase
         .from("categories")
@@ -93,16 +103,16 @@ const Settings = () => {
     const income = incomeData.data || [];
     const payees = payeeData.data || [];
 
-    await set(CACHE_KEYS.expense, expense);
-    await set(CACHE_KEYS.income, income);
-    await set(CACHE_KEYS.payees, payees);
+    await set(userId + "_" + CACHE_KEYS.expense, expense);
+    await set(userId + "_" + CACHE_KEYS.income, income);
+    await set(userId + "_" + CACHE_KEYS.payees, payees);
 
     setExpenseCategories(expense);
     setIncomeCategories(income);
     setPayees(payees);
 
     const now = Date.now();
-    localStorage.setItem(LAST_REFRESHED_KEY, now);
+    localStorage.setItem(userId + "_" + LAST_REFRESHED_KEY, now);
     setLastSynced(now);
 
     setSyncing(false);
