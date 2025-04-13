@@ -167,7 +167,7 @@
 }
 
 .filters-wrapper .react-select-container {
-  min-width: 200px;
+  min-width: max-content;
   flex: 1;
 }
 
