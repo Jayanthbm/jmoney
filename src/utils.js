@@ -1,7 +1,10 @@
 // src/utils.js
 
 import { format } from "date-fns";
-import { fetchUserOverviewData } from "./supabaseData";
+import {
+  fetchUserOverviewData,
+  loadTransactionsFromSupabase,
+} from "./supabaseData";
 
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
@@ -148,3 +151,21 @@ export function getSupabaseUserIdFromLocalStorage() {
   }
   return null; // Return null if no user ID found
 }
+
+export const refreshTransactionsCache = async (force = false) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  const CACHE_KEY = `${userId}_last_transaction_fetch`;
+  const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  const lastFetch = localStorage.getItem(CACHE_KEY);
+  const now = Date.now();
+
+  const isExpired = !lastFetch || now - Number(lastFetch) > EXPIRY_MS;
+
+  if (force || isExpired) {
+    await loadTransactionsFromSupabase(); // This function handles updating localStorage
+    return true;
+  }
+
+  return false;
+};
