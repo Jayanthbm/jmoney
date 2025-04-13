@@ -89,9 +89,9 @@ const Transactions = () => {
       const [cached, expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
           getAllTransactions(),
-          get("settings-expense-categories"),
-          get("settings-income-categories"),
-          get("settings-payees"),
+          get(`${userId}_settings-expense-categories`),
+          get(`${userId}_settings-income-categories`),
+          get(`${userId}_settings-payees`),
         ]);
 
       const sorted = [...cached].sort(
