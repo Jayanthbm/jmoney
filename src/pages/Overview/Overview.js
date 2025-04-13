@@ -20,6 +20,7 @@ import {
   formatIndianNumber,
   getSupabaseUserIdFromLocalStorage,
   isCacheExpired,
+  refreshTransactionsCache,
 } from "../../utils";
 import "./Overview.css";
 
@@ -71,9 +72,14 @@ const Overview = () => {
     }
   }, [refreshData]);
 
+  const fetchTransactions = useCallback(async () => {
+    await refreshTransactionsCache();
+  }, []);
+
   useEffect(() => {
     fetchOverview();
-  }, [fetchOverview]);
+    fetchTransactions();
+  }, [fetchOverview, fetchTransactions]);
 
   const CATEGORY_COLORS = ["#3b82f6", "#10b981", "#9ca3af"];
 
