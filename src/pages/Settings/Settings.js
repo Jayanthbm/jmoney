@@ -28,6 +28,35 @@ const Settings = () => {
   const [syncing, setSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState(null);
 
+  const getVisibleLimit = useCallback(() => {
+    const width = window.innerWidth;
+    if (width < 768) return 6; // Mobile
+    if (width < 1024) return 9; // Tablet
+    return 12;
+  }, []);
+
+  const [visibleLimit, setVisibleLimit] = useState(getVisibleLimit());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleLimit(getVisibleLimit());
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [getVisibleLimit]);
+
+  const categoriesToShow =
+    categoryType === "Expense" ? expenseCategories : incomeCategories;
+
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllPayees, setShowAllPayees] = useState(false);
+
+  const visibleCategories = showAllCategories
+    ? categoriesToShow
+    : categoriesToShow.slice(0, visibleLimit);
+
+  const visiblePayees = showAllPayees ? payees : payees.slice(0, visibleLimit);
+
   const fetchIfMissing = async (key, fetcher) => {
     const cached = await get(key);
     if (cached && cached.length > 0) return cached;
@@ -122,12 +151,29 @@ const Settings = () => {
     fetchData();
   }, [fetchData]);
 
-  const categoriesToShow =
-    categoryType === "Expense" ? expenseCategories : incomeCategories;
-
   const renderIcon = (iconName) => {
     const Icon = MdIcons[iconName];
     return Icon ? <Icon size={16} style={{ marginRight: 8 }} /> : null;
+  };
+
+  const handleClearAndLogout = async () => {
+    // Clear localStorage & sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Clear IndexedDB
+    indexedDB.databases().then((dbs) => {
+      dbs.forEach((db) => indexedDB.deleteDatabase(db.name));
+    });
+
+    // Clear cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+
+    await supabase.auth.signOut();
   };
 
   return (
@@ -161,27 +207,50 @@ const Settings = () => {
             </div>
           </div>
           <div className="category-grid">
-            {categoriesToShow.map((category) => (
+            {visibleCategories.map((category) => (
               <div className="category-card" key={category.id}>
                 {renderIcon(category.icon)}
                 <span>{category.name}</span>
               </div>
             ))}
           </div>
+
+          {categoriesToShow.length > visibleLimit && (
+            <button
+              className="show-more-btn"
+              onClick={() => setShowAllCategories((prev) => !prev)}
+            >
+              {showAllCategories ? "Show Less" : "Show More"}
+            </button>
+          )}
         </div>
 
         {/* Payees */}
         <div className="settings-section">
           <h2>Payees</h2>
           <div className="payee-grid">
-            {payees.map((payee) => (
+            {visiblePayees.map((payee) => (
               <div className="payee-card" key={payee.id}>
                 <img src={payee.logo} alt={payee.name} className="payee-logo" />
                 <div className="payee-name">{payee.name}</div>
               </div>
             ))}
           </div>
+
+          {payees.length > visibleLimit && (
+            <button
+              className="show-more-btn"
+              onClick={() => setShowAllPayees((prev) => !prev)}
+            >
+              {showAllPayees ? "Show Less" : "Show More"}
+            </button>
+          )}
         </div>
+      </div>
+      <div className="settings-footer">
+        <button className="clear-cache-btn" onClick={handleClearAndLogout}>
+          Clear Cache and Logout
+        </button>
       </div>
     </AppLayout>
   );
