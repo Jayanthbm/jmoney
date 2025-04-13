@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { get } from "idb-keyval";
+import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
 import OverviewCard from "../../components/Cards/OverviewCard";
 import MyCountUp from "../../components/Charts/MyCountUp";
@@ -85,9 +86,16 @@ const Overview = () => {
       }}
     >
       {viewMode !== "overview" && (
-        <button className="back-button" onClick={() => setViewMode("overview")}>
-          ← Overview
-        </button>
+        <div
+          className="back-button-container"
+          role="button"
+          tabIndex={0}
+          onClick={() => setViewMode("overview")}
+          onKeyDown={(e) => e.key === "Enter" && setViewMode("reportList")}
+        >
+          <IoIosArrowBack />
+          <span className="back-button">Overview</span>
+        </div>
       )}
       {viewMode === "overview" && (
         <div className="overview-container">
