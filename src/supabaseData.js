@@ -140,3 +140,58 @@ export const deleteTransaction = async (id) => {
       }
     });
 };
+
+export const addTransaction = async (payload, options = {}) => {
+  const {
+    incomeCategories = [],
+    expenseCategories = [],
+    payees = [],
+  } = options;
+
+  const allCategories = [...incomeCategories, ...expenseCategories];
+  const category = allCategories.find((cat) => cat.id === payload.category_id);
+  const payee = payees.find((p) => p.id === payload.payee_id);
+
+  const newId = crypto.randomUUID();
+  const newTransaction = {
+    id: newId,
+    amount: payload.amount,
+    description: payload.description,
+    transaction_timestamp: payload.transaction_timestamp,
+    category_id: payload.category_id,
+    category_name: category?.name || "",
+    category_icon: category?.icon || "",
+    payee_id: payload.payee_id || null,
+    payee_name: payee?.name || null,
+    payee_logo: payee?.logo || null,
+    type: category?.type || "Expense",
+    date: payload.transaction_timestamp.split("T")[0],
+    user_id: getSupabaseUserIdFromLocalStorage(),
+  };
+
+  // 1. Store in IndexedDB first
+  await updateTransactionInDb(newTransaction); // reuse update logic
+
+  // 2. Sync with Supabase in the background
+  supabase
+    .from("transactions")
+    .insert([
+      {
+        id: newTransaction.id,
+        amount: newTransaction.amount,
+        description: newTransaction.description,
+        transaction_timestamp: newTransaction.transaction_timestamp,
+        category_id: newTransaction.category_id,
+        payee_id: newTransaction.payee_id,
+        type: newTransaction.type,
+        user_id: newTransaction.user_id,
+      },
+    ])
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase insert failed:", error);
+      }
+    });
+
+  return newTransaction;
+};
