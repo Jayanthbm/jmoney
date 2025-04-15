@@ -1,121 +1,165 @@
-import React, { useEffect, useState } from "react";
-import "./SingleTransaction.css";
+// src/components/Views/SingleTransaction.jsx
+
+import React, { useState } from "react";
 import Select from "react-select";
-import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
+import "./SingleTransaction.css";
+import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
+import { deleteTransaction, updateTransaction } from "../../supabaseData";
+import Button from "../Button/Button";
+
 const SingleTransaction = ({
   incomeCategories,
   expenseCategories,
   payees,
   transaction,
+  onClose,
+  onTransactionUpdated,
 }) => {
   const {
     id,
+    type,
+    amount,
+    transaction_timestamp,
+    description,
     category_id,
     payee_id,
-    amount,
-    category_name,
-    category_icon,
-    description,
-    payee_name,
-    payee_logo,
-    type,
-    transaction_timestamp,
   } = transaction;
 
-  const [categoryOptions, setCategoryOptions] = useState([]);
-  const [payeeOptions, setPayeeOptions] = useState([]);
+  const [updatedAmount, setUpdatedAmount] = useState(amount);
+  const [updatedDescription, setUpdatedDescription] = useState(
+    description || ""
+  );
+  const [updatedTimestamp, setUpdatedTimestamp] = useState(
+    transaction_timestamp
+  );
   const [selectedCategory, setSelectedCategory] = useState(category_id);
   const [selectedPayee, setSelectedPayee] = useState(payee_id);
 
-  const [editMode, setEditMode] = useState(false);
-  useEffect(() => {
-    if (type === "Expense") {
-      setCategoryOptions(
-        (expenseCategories || []).map((cat) => ({
-          value: cat.id,
-          label: cat.name,
-        }))
-      );
-    } else {
-      setCategoryOptions(
-        (incomeCategories || []).map((cat) => ({
-          value: cat.id,
-          label: cat.name,
-        }))
-      );
-    }
-    setPayeeOptions(
-      payees.map((payee) => ({
-        value: payee.id,
-        label: payee.name,
-      }))
+  const categoryOptions = (
+    type === "Expense" ? expenseCategories : incomeCategories
+  ).map((cat) => ({
+    value: cat.id,
+    label: cat.name,
+  }));
+
+  const payeeOptions = payees.map((payee) => ({
+    value: payee.id,
+    label: payee.name,
+  }));
+
+  const [isSaving, setIsSaving] = useState(false);
+  const handleSave = async () => {
+    setIsSaving(true);
+    const updatedData = {
+      amount: updatedAmount,
+      description: updatedDescription,
+      transaction_timestamp: updatedTimestamp,
+      category_id: selectedCategory,
+      payee_id: selectedPayee,
+    };
+
+    // Optimistic UI update
+    onTransactionUpdated?.(id, updatedData); // Send the updated data back
+    onClose?.();
+
+    await updateTransaction(id, updatedData, {
+      incomeCategories,
+      expenseCategories,
+      payees,
+    });
+    setIsSaving(false);
+  };
+
+  const handleDelete = async () => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this transaction?"
     );
-    setSelectedCategory(category_id);
-    setSelectedPayee(payee_id);
-  }, [
-    expenseCategories,
-    id,
-    incomeCategories,
-    payees,
-    type,
-    category_id,
-    payee_id,
-  ]);
-  console.log("category_id", category_id, selectedCategory);
+    if (!confirm) return;
+    await deleteTransaction(id);
+    onTransactionUpdated?.();
+    onClose?.();
+  };
+
   return (
-    <div className="single-transaction">
-      <div className="single-transaction-header">
-        <div>Edit</div>
-        <div>Delete</div>
-      </div>
-      <div className="single-transaction-filters-wrapper">
-        <Select
-          options={categoryOptions}
-          value={categoryOptions.find((opt) => opt.value === selectedCategory)}
-          onChange={(selected) => setSelectedCategory(selected.value)}
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          placeholder="Select Category"
-          isDisabled={!editMode}
-        />
-
-        <Select
-          options={payeeOptions}
-          value={payeeOptions.find((opt) => opt.value === selectedPayee)}
-          onChange={(selected) => setSelectedPayee(selected.value)}
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          placeholder="Select Payee"
-          readonly={true}
-          isDisabled={!editMode}
-        />
-      </div>
-
-      <div className="single-transaction-content">
-        <div className="single-transaction-content-left">
-          <div className="single-transaction-content-left-icon">
-            {renderIcon(category_icon)}
-          </div>
-          <div className="single-transaction-content-left-details">
-            <div className="single-transaction-content-left-details-category-name">
-              {category_name}
-            </div>
-            {description && (
-              <div className="single-transaction-content-left-details-description">
-                {description}
-              </div>
-            )}
-          </div>
+    <div className="single-transaction-container">
+      <div className="edit-form">
+        <div className="form-group">
+          <label>Amount</label>
+          <input
+            type="number"
+            value={updatedAmount}
+            onChange={(e) => setUpdatedAmount(e.target.value)}
+            className="input"
+          />
         </div>
-        <div className="single-transaction-content-right">
-          <div className="single-transaction-content-right-amount">
-            {formatIndianNumber(amount)}
-          </div>
-          <div className="single-transaction-content-right-date">
-            {formatTimestamp(transaction_timestamp)}
-          </div>
+
+        <div className="form-group">
+          <label>Date</label>
+          <input
+            type="datetime-local"
+            value={updatedTimestamp.slice(0, 16)}
+            onChange={(e) => setUpdatedTimestamp(e.target.value)}
+            className="input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Description</label>
+          <textarea
+            value={updatedDescription}
+            onChange={(e) => setUpdatedDescription(e.target.value)}
+            className="textarea"
+            placeholder="Description"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Category</label>
+          <Select
+            options={categoryOptions}
+            value={categoryOptions.find(
+              (opt) => opt.value === selectedCategory
+            )}
+            onChange={(selected) => setSelectedCategory(selected.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Payee</label>
+          <Select
+            options={payeeOptions}
+            value={payeeOptions.find((opt) => opt.value === selectedPayee)}
+            onChange={(selected) => setSelectedPayee(selected.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+        </div>
+
+        <div className="button-group">
+          <Button
+            onClick={handleSave}
+            text={isSaving ? "Saving..." : "Save"}
+            disabled={isSaving}
+            icon={<FaSave />}
+            variant="success"
+          />
+          <Button
+            onClick={onClose}
+            text="Cancel"
+            icon={<FaTimes />}
+            variant="info"
+          />
+        </div>
+        <div className="delete-btn-group">
+          <Button
+            onClick={handleDelete}
+            text="Delete"
+            icon={<FaTrash />}
+            variant="danger"
+            fullWidth
+          />
         </div>
       </div>
     </div>
