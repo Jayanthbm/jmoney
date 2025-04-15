@@ -11,6 +11,7 @@ const Button = ({
   className = "",
   disabled = false,
   type = "button",
+  fullWidth,
 }) => {
   const isIconOnly = icon && !text;
 
@@ -40,7 +41,7 @@ const Button = ({
       type={type}
       className={`btn ${getVariantClass()} ${
         isIconOnly ? "btn-icon-only" : ""
-      } ${className}`}
+      } ${className} ${fullWidth ? "full-width" : ""}`}
       style={styles}
       onClick={onClick}
       disabled={disabled}

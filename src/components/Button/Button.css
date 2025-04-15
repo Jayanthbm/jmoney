@@ -83,3 +83,7 @@
 .btn-text {
   display: inline;
 }
+
+.full-width {
+  width: 100%;
+}
