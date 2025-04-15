@@ -1,26 +1,30 @@
 // src/pages/Goals/Goals.js
 
 import React, { useCallback, useEffect, useState } from "react";
-import { get, set, del } from "idb-keyval";
+import { get } from "idb-keyval";
 import Select from "react-select";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaSave, FaWindowClose } from "react-icons/fa";
 import AppLayout from "../../components/Layouts/AppLayout";
 import GoalCard from "../../components/Cards/GoalCard";
 import Button from "../../components/Button/Button";
-import { supabase } from "../../supabaseClient";
 import "./Goals.css";
-import { getSupabaseUserIdFromLocalStorage } from "../../utils";
-
-const CACHE_KEY = "cached_goals";
-const CACHE_EXPIRY_DAYS = 20;
+import {
+  getSupabaseUserIdFromLocalStorage,
+  refreshGoalsCache,
+} from "../../utils";
+import {
+  addGoalInDb,
+  deleteGoalInDb,
+  updateGoalInDb,
+} from "../../supabaseData";
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [editGoal, setEditGoal] = useState(null);
-  const [orderBy, setOrderBy] = useState("created_at");
+  const [orderBy, setOrderBy] = useState("updated_at");
   const [formData, setFormData] = useState({
     name: "",
     logo: "",
@@ -29,7 +33,7 @@ const Goals = () => {
   });
 
   const sortGoals = (list) => {
-    return [...list].sort((a, b) => {
+    return [...list]?.sort((a, b) => {
       if (orderBy === "name") return a.name.localeCompare(b.name);
       if (orderBy === "goal_amount") return b.goal_amount - a.goal_amount;
       if (orderBy === "current_amount")
@@ -39,44 +43,37 @@ const Goals = () => {
         const bProg = b.goal_amount ? b.current_amount / b.goal_amount : 0;
         return bProg - aProg;
       }
+      if (orderBy === "created_at") {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+      if (orderBy === "updated_at") {
+        return new Date(b.updated_at) - new Date(a.updated_at);
+      }
+
       return 0;
     });
   };
 
-  const fetchGoals = useCallback(async (forceRefresh = false) => {
+  const refreshData = useCallback(async () => {
+    const freshData = await refreshGoalsCache(true);
+    console.log("Goals from Supabase:", freshData);
+    setGoals(freshData);
+  }, []);
+
+  const fetchGoals = useCallback(async () => {
     setLoading(true);
     const userId = getSupabaseUserIdFromLocalStorage();
-    if (!forceRefresh) {
-      const cache = await get(userId + "_" + CACHE_KEY);
-      if (cache) {
-        const { data, timestamp } = cache;
-        const now = new Date();
-        const expiryMs = CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+    const CACHE_KEY = `${userId}_goals`;
+    const goals = await get(CACHE_KEY);
 
-        if (now - new Date(timestamp) < expiryMs) {
-          setGoals(data);
-          setLoading(false);
-          return;
-        }
-      }
-    }
-
-    const { data, error } = await supabase.from("goals").select("*");
-
-    if (error) {
-      console.error("Error fetching goals:", error);
+    if (goals) {
+      setGoals(goals);
     } else {
-      setGoals(data);
-      await set(userId + "_" + CACHE_KEY, { data, timestamp: new Date() });
+      await refreshData();
     }
 
     setLoading(false);
-  }, []);
-
-  const clearCache = async () => {
-    const userId = getSupabaseUserIdFromLocalStorage();
-    await del(userId + "_" + CACHE_KEY);
-  };
+  }, [refreshData]);
 
   useEffect(() => {
     fetchGoals();
@@ -113,43 +110,33 @@ const Goals = () => {
       current_amount: parseFloat(formData.current_amount) || 0,
     };
 
-    const error = editGoal
-      ? (
-          await supabase
-            .from("goals")
-            .update(payload)
-            .eq("id", editGoal.id)
-            .eq("user_id", userId)
-        ).error
-      : (await supabase.from("goals").insert([payload])).error;
+    try {
+      if (editGoal) {
+        await updateGoalInDb({ ...payload, id: editGoal.id });
+      } else {
+        await addGoalInDb(payload);
+      }
 
-    if (error) console.error("Error saving goal:", error);
-    else {
-      await clearCache();
-      fetchGoals(true);
       handleDialogClose();
+      await fetchGoals();
+    } catch (e) {
+      console.error("Error saving goal:", e);
     }
   };
 
   const handleDelete = async (id) => {
-    const userId = getSupabaseUserIdFromLocalStorage();
-    if (!userId) return;
-
-    const { error } = await supabase
-      .from("goals")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-    if (error) console.error("Error deleting goal:", error);
-    else {
-      await clearCache();
-      fetchGoals(true);
+    try {
+      await deleteGoalInDb(id);
+      await fetchGoals();
+    } catch (e) {
+      console.error("Error deleting goal:", e);
     }
   };
 
   const sortedGoals = sortGoals(goals);
 
   const sortOptions = [
+    { value: "updated_at", label: "Sort by Updated" },
     { value: "created_at", label: "Sort by Created" },
     { value: "name", label: "Sort by Name" },
     { value: "goal_amount", label: "Sort by Goal Amount" },
@@ -160,7 +147,7 @@ const Goals = () => {
     <AppLayout
       title="Goals"
       loading={!goals || loading}
-      onRefresh={() => fetchGoals(true)}
+      onRefresh={refreshData}
     >
       <div className="goals-header">
         <div className="left-controls">

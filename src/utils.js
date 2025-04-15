@@ -3,6 +3,7 @@
 import React from "react";
 import { format } from "date-fns";
 import {
+  fetchGoalsData,
   fetchUserOverviewData,
   loadTransactionsFromSupabase,
 } from "./supabaseData";
@@ -179,4 +180,20 @@ export const renderIcon = (iconName, size = 36) => {
 
 export const formatTimestamp = (timestamp) => {
   return timestamp ? format(new Date(timestamp), "dd MMM yy hh:mm a") : "";
+};
+
+export const refreshGoalsCache = async (force = false) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  const CACHE_KEY = `${userId}_last_goals_fetch`;
+  const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  const lastFetch = localStorage.getItem(CACHE_KEY);
+  const now = Date.now();
+
+  const isExpired = !lastFetch || now - Number(lastFetch) > EXPIRY_MS;
+
+  if (force || isExpired) {
+    const data = await fetchGoalsData();
+    return data;
+  }
 };
