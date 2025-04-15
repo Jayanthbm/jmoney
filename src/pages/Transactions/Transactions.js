@@ -18,6 +18,7 @@ import {
   formatDateToDayMonthYear,
   getRelativeTime,
   getSupabaseUserIdFromLocalStorage,
+  refreshOverviewCache,
 } from "../../utils";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
 import "./Transactions.css";
@@ -172,9 +173,10 @@ const Transactions = () => {
       setModalFadeOut(false);
     }, 200);
   };
-  const handleTransactionUpdated = async (id, updatedData) => {
+  const handleTransactionUpdated = async () => {
     const sorted = await getAndSortTransactions();
     setAllTransactions(sorted);
+    await refreshOverviewCache()
   };
 
   return (
