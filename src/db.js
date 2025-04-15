@@ -30,3 +30,13 @@ export const clearTransactions = async () => {
   const allKeys = await keys(txStore);
   await Promise.all(allKeys.map((key) => del(key, txStore)));
 };
+
+export const updateTransactionInDb = async (transaction) => {
+  const txStore = getUserStore();
+  await set(transaction.id, transaction, txStore);
+};
+
+export const deleteTransactionInDb = async (id) => {
+  const txStore = getUserStore();
+  await del(id, txStore);
+};
