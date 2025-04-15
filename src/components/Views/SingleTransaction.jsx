@@ -59,7 +59,7 @@ const SingleTransaction = ({
     };
 
     // Optimistic UI update
-    onTransactionUpdated?.(id, updatedData); // Send the updated data back
+    onTransactionUpdated?.();
     onClose?.();
 
     await updateTransaction(id, updatedData, {
