@@ -98,7 +98,7 @@ const Overview = () => {
           role="button"
           tabIndex={0}
           onClick={() => setViewMode("overview")}
-          onKeyDown={(e) => e.key === "Enter" && setViewMode("reportList")}
+          onKeyDown={(e) => e.key === "Enter" && setViewMode("overview")}
         >
           <IoIosArrowBack />
           <span className="back-button">Overview</span>
