@@ -59,10 +59,31 @@ const DailyLimitView = ({ dailyLimitData }) => {
               {/* Circular Progress */}
               <div className="daily-limit-section progress-section">
                 <CircularProgressBar
-                  progress={dailyLimitData?.remaining_percentage || 0}
-                  text={`${dailyLimitData?.remaining_percentage || 0}%`}
-                  pathColor="#3ecf8e"
-                  textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
+                  progress={
+                    dailyLimitData?.remaining_percentage > 0
+                      ? dailyLimitData.remaining_percentage
+                      : 100 || 0
+                  }
+                  text={
+                    dailyLimitData?.remaining_percentage > 0
+                      ? `${dailyLimitData.remaining_percentage}%`
+                      : "⚠︎"
+                  }
+                  pathColor={
+                    dailyLimitData?.remaining_percentage > 0
+                      ? "#3ecf8e"
+                      : "#ef4444"
+                  }
+                  fontSize={
+                    dailyLimitData?.remaining_percentage < 0 ? "1.5rem" : "1rem"
+                  }
+                  textColor={
+                    dailyLimitData?.remaining_percentage < 0
+                      ? "#ef4444"
+                      : theme === "dark"
+                      ? "#f1f1f1"
+                      : "#374151"
+                  }
                 />
               </div>
             </div>

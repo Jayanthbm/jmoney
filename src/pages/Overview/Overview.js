@@ -139,7 +139,13 @@ const Overview = () => {
                 {/* Remaining */}
                 <div className="daily-limit-section">
                   <div className="daily-limit-label">REMAINING</div>
-                  <div className="daily-limit-value green-text">
+                  <div
+                    className={`daily-limit-value ${
+                      data?.dailyLimit?.remaining < 0
+                        ? "red-text"
+                        : "green-text"
+                    }`}
+                  >
                     {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
                   </div>
                 </div>
@@ -158,10 +164,33 @@ const Overview = () => {
                 {/* Circular Progress */}
                 <div className="daily-limit-section progress-section">
                   <CircularProgressBar
-                    progress={data?.dailyLimit?.remaining_percentage || 0}
-                    text={`${data?.dailyLimit?.remaining_percentage || 0}%`}
-                    pathColor="#3ecf8e"
-                    textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
+                    progress={
+                      data?.dailyLimit?.remaining_percentage > 0
+                        ? data.dailyLimit.remaining_percentage
+                        : 100 || 0
+                    }
+                    text={
+                      data?.dailyLimit?.remaining_percentage > 0
+                        ? `${data.dailyLimit.remaining_percentage}%`
+                        : "⚠︎"
+                    }
+                    pathColor={
+                      data?.dailyLimit?.remaining_percentage > 0
+                        ? "#3ecf8e"
+                        : "#ef4444"
+                    }
+                    fontSize={
+                      data?.dailyLimit?.remaining_percentage < 0
+                        ? "1.2rem"
+                        : "1rem"
+                    }
+                    textColor={
+                      data?.dailyLimit?.remaining_percentage < 0
+                        ? "#ef4444"
+                        : theme === "dark"
+                        ? "#f1f1f1"
+                        : "#374151"
+                    }
                   />
                 </div>
               </div>
