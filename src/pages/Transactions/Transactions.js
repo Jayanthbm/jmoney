@@ -23,6 +23,7 @@ import {
 import { loadTransactionsFromSupabase } from "../../supabaseData";
 import "./Transactions.css";
 import SingleTransaction from "../../components/Views/SingleTransaction";
+import MyModal from "../../components/Layouts/MyModal";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
@@ -173,10 +174,11 @@ const Transactions = () => {
       setModalFadeOut(false);
     }, 200);
   };
+
   const handleTransactionUpdated = async () => {
     const sorted = await getAndSortTransactions();
     setAllTransactions(sorted);
-    await refreshOverviewCache()
+    await refreshOverviewCache();
   };
 
   return (
@@ -270,28 +272,21 @@ const Transactions = () => {
           </div>
         )
       )}
-      {showModal && selectedTransaction && (
-        <div
-          className={`custom-modal-overlay ${modalFadeOut ? "fade-out" : ""}`}
-        >
-          <div className="custom-modal-content">
-            <button
-              className="custom-modal-close"
-              onClick={() => setShowModal(false)}
-            >
-              <MdClose />
-            </button>
-            <SingleTransaction
-              incomeCategories={incomeCategories}
-              expenseCategories={expenseCategories}
-              payees={payees}
-              transaction={selectedTransaction}
-              onClose={closeModal}
-              onTransactionUpdated={handleTransactionUpdated}
-            />
-          </div>
-        </div>
-      )}
+      <MyModal
+        showModal={showModal && selectedTransaction}
+        modalFadeOut={modalFadeOut}
+        onClose={() => setShowModal(false)}
+      >
+        <SingleTransaction
+          incomeCategories={incomeCategories}
+          expenseCategories={expenseCategories}
+          payees={payees}
+          transaction={selectedTransaction}
+          onClose={closeModal}
+          onTransactionUpdated={handleTransactionUpdated}
+        />
+      </MyModal>
+     
     </AppLayout>
   );
 };
