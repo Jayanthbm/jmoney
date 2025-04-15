@@ -275,6 +275,33 @@
   z-index: 1001;
 }
 
-.custom-modal-close:hover {
-  color: var(--expense-color);
+
+.custom-modal-overlay {
+  animation: fadeIn 0.2s ease-in;
+}
+
+.custom-modal-content {
+  animation: scaleIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
