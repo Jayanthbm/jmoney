@@ -1,7 +1,11 @@
 // src/supabaseData.js
 
 import { set } from "idb-keyval";
-import { storeTransactions } from "./db";
+import {
+  storeTransactions,
+  updateTransactionInDb,
+  deleteTransactionInDb,
+} from "./db";
 import { supabase } from "./supabaseClient";
 import { getSupabaseUserIdFromLocalStorage } from "./utils";
 
@@ -74,4 +78,65 @@ export const fetchUserOverviewData = async (uid) => {
   }
 
   return result;
+};
+
+export const updateTransaction = async (id, payload, options = {}) => {
+  const {
+    incomeCategories = [],
+    expenseCategories = [],
+    payees = [],
+  } = options;
+
+  const allCategories = [...incomeCategories, ...expenseCategories];
+  const category = allCategories.find((cat) => cat.id === payload.category_id);
+  const payee = payees.find((p) => p.id === payload.payee_id);
+
+  const updatedData = {
+    id,
+    amount: payload.amount,
+    description: payload.description,
+    transaction_timestamp: payload.transaction_timestamp,
+    category_id: payload.category_id,
+    category_name: category?.name || "",
+    category_icon: category?.icon || "",
+    payee_id: payload.payee_id || null,
+    payee_name: payee?.name || null,
+    payee_logo: payee?.logo || null,
+    type: category?.type || "Expense",
+    date: payload.transaction_timestamp.split("T")[0],
+  };
+
+  // 1. Update in IndexedDB immediately
+  await updateTransactionInDb(updatedData);
+
+  // 2. Sync with Supabase (async, fire-and-forget pattern)
+  supabase
+    .from("transactions")
+    .update(payload)
+    .eq("id", id)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase update failed:", error);
+        // Optional: Retry logic or error handling here
+      }
+    });
+
+  return updatedData;
+};
+
+export const deleteTransaction = async (id) => {
+  // 1. Delete from IndexedDB
+  await deleteTransactionInDb(id);
+
+  // 2. Sync delete with Supabase in background
+  supabase
+    .from("transactions")
+    .delete()
+    .eq("id", id)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase delete failed:", error);
+        // Optional: Retry logic or error handling here
+      }
+    });
 };
