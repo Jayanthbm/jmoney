@@ -36,6 +36,7 @@
   --btn-success-hover: #33b67c;
   --btn-text-color: #ffffff;
   --primary-color-hover: #2c3a44;
+  --modal-overlay-bg: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="dark"] {
@@ -70,6 +71,7 @@
   --btn-success-hover: #388e3c;
   --btn-text-color: #ffffff;
   --primary-color-hover: #d0d0d0;
+  --modal-overlay-bg: rgba(255, 255, 255, 0.1);
 }
 
 * {

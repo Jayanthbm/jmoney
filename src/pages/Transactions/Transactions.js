@@ -6,7 +6,6 @@ import { MdSync, MdClose } from "react-icons/md";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
-import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import TransactionCard from "../../components/Cards/TransactionCard";
@@ -158,8 +157,9 @@ const Transactions = () => {
     },
   ];
 
-  const [viewMode, setViewMode] = useState("list");
+  const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+
   return (
     <AppLayout
       title="Transactions"
@@ -174,111 +174,100 @@ const Transactions = () => {
           </small>
         )}
       </div>
-      {viewMode === "list" && (
-        <>
-          <div className="search-bar-wrapper">
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search by description"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-bar"
-                spellCheck={false}
-              />
-              {search && (
-                <span
-                  className="search-clear-icon"
-                  onClick={() => setSearch("")}
-                >
-                  <MdClose />
-                </span>
-              )}
-            </div>
-          </div>
-          <div className="filters-wrapper">
-            <Select
-              isMulti
-              options={categoryOptions}
-              value={selectedCategories}
-              onChange={(selected) => setSelectedCategories(selected)}
-              placeholder="Filter by Categories"
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
-
-            <Select
-              isMulti
-              options={payeeOptions}
-              value={selectedPayees}
-              onChange={(selected) => setSelectedPayees(selected)}
-              placeholder="Filter by Payees"
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
-          </div>
-
-          {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
-            <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
-              <p>No transactions found.</p>
-              <Button
-                icon={<MdClose />}
-                text="Clear Filters"
-                variant="danger"
-                onClick={clearFilters}
-              />
-            </div>
-          ) : (
-            !loading &&
-            hasGrouped && (
-              <div
-                className={`transaction-page-wrapper ${
-                  fadeOut ? "fade-out" : ""
-                }`}
-              >
-                {Object.entries(grouped).map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items.map((tx) => (
-                        <TransactionCard
-                          key={tx.id}
-                          transaction={tx}
-                          onCardClick={() => {
-                            setSelectedTransaction(tx);
-                            setViewMode("single");
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          )}
-        </>
-      )}
-      {viewMode === "single" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => setViewMode("list")}
-            onKeyDown={(e) => e.key === "Enter" && setViewMode("list")}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Transactions</span>
-          </div>
-          <SingleTransaction
-            incomeCategories={incomeCategories}
-            expenseCategories={expenseCategories}
-            payees={payees}
-            transaction={selectedTransaction}
+      <div className="search-bar-wrapper">
+        <div className="search-input-wrapper">
+          <input
+            type="text"
+            placeholder="Search by description"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-bar"
+            spellCheck={false}
           />
-        </>
+          {search && (
+            <span className="search-clear-icon" onClick={() => setSearch("")}>
+              <MdClose />
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="filters-wrapper">
+        <Select
+          isMulti
+          options={categoryOptions}
+          value={selectedCategories}
+          onChange={(selected) => setSelectedCategories(selected)}
+          placeholder="Filter by Categories"
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        <Select
+          isMulti
+          options={payeeOptions}
+          value={selectedPayees}
+          onChange={(selected) => setSelectedPayees(selected)}
+          placeholder="Filter by Payees"
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+      </div>
+
+      {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
+        <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
+          <p>No transactions found.</p>
+          <Button
+            icon={<MdClose />}
+            text="Clear Filters"
+            variant="danger"
+            onClick={clearFilters}
+          />
+        </div>
+      ) : (
+        !loading &&
+        hasGrouped && (
+          <div
+            className={`transaction-page-wrapper ${fadeOut ? "fade-out" : ""}`}
+          >
+            {Object.entries(grouped).map(([date, items]) => (
+              <div key={date} className="transaction-group">
+                <h2 className="transaction-date-header">
+                  {formatDateToDayMonthYear(date)}
+                </h2>
+                <div className="transaction-card-list">
+                  {items.map((tx) => (
+                    <TransactionCard
+                      key={tx.id}
+                      transaction={tx}
+                      onCardClick={() => {
+                        setSelectedTransaction(tx);
+                        setShowModal(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+      {showModal && selectedTransaction && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal-content">
+            <button
+              className="custom-modal-close"
+              onClick={() => setShowModal(false)}
+            >
+              <MdClose />
+            </button>
+            <SingleTransaction
+              incomeCategories={incomeCategories}
+              expenseCategories={expenseCategories}
+              payees={payees}
+              transaction={selectedTransaction}
+            />
+          </div>
+        </div>
       )}
     </AppLayout>
   );
