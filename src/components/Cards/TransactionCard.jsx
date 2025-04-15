@@ -1,17 +1,10 @@
 // src/components/Cards/TransactionCard.jsx
 
 import React from "react";
-import { format } from "date-fns";
-import * as MdIcons from "react-icons/md";
-import { formatIndianNumber } from "../../utils";
+import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
 import "./TransactionCard.css";
 
-const renderIcon = (iconName, size = 36) => {
-  const Icon = MdIcons[iconName];
-  return Icon ? <Icon size={size} /> : null;
-};
-
-const TransactionCard = ({ transaction }) => {
+const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
   const {
     amount,
     category_name,
@@ -24,12 +17,8 @@ const TransactionCard = ({ transaction }) => {
     percentage = null,
   } = transaction;
 
-  const formattedTime = transaction_timestamp
-    ? format(new Date(transaction_timestamp), "dd MMM yy hh:mm a")
-    : "";
-
   return (
-    <div className="transaction-card">
+    <div className="transaction-card" onClick={onCardClick}>
       <div className="transaction-left">
         <div
           className={`transaction-icon ${
@@ -43,7 +32,9 @@ const TransactionCard = ({ transaction }) => {
           {description && <div className="description">{description}</div>}
 
           {transaction_timestamp && (
-            <div className="timestamp">{formattedTime}</div>
+            <div className="timestamp">
+              {formatTimestamp(transaction_timestamp)}
+            </div>
           )}
           {payee_name && (
             <div className="payee-info">

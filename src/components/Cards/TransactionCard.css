@@ -9,6 +9,7 @@
   justify-content: space-between;
   align-items: flex-start;
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .transaction-card:hover {
