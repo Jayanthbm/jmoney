@@ -10,7 +10,7 @@
 
 /* Header */
 .header {
-  background: var(--accent-color);
+  background: var(--header-background);
   color: #fff;
   display: flex;
   justify-content: space-between;

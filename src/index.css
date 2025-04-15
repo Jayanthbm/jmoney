@@ -9,6 +9,7 @@
   --card-bg: #f9f9f9;
   --border-color: #ddd;
   --accent-color: #2684ff;
+  --header-background: #2684ff;
   --input-bg: #fff;
   --input-border: #ccc;
   --input-text: #111;
@@ -46,6 +47,7 @@
   --card-bg: #2c2c2c;
   --border-color: #444;
   --accent-color: #82b1ff;
+  --header-background: #121212;
   --input-bg: #2b2b2b;
   --input-border: #555;
   --input-text: #f1f1f1;
