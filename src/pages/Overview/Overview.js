@@ -181,8 +181,8 @@ const Overview = () => {
                     }
                     fontSize={
                       data?.dailyLimit?.remaining_percentage < 0
-                        ? "1.2rem"
-                        : "1rem"
+                        ? "1.1rem"
+                        : "0.8rem"
                     }
                     textColor={
                       data?.dailyLimit?.remaining_percentage < 0
@@ -191,6 +191,7 @@ const Overview = () => {
                         ? "#f1f1f1"
                         : "#374151"
                     }
+                    size={70}
                   />
                 </div>
               </div>
