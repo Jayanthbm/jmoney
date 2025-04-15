@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { get } from "idb-keyval";
 import { MdSync, MdClose } from "react-icons/md";
+import { IoIosAddCircle } from "react-icons/io";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
@@ -24,6 +25,7 @@ import { loadTransactionsFromSupabase } from "../../supabaseData";
 import "./Transactions.css";
 import SingleTransaction from "../../components/Views/SingleTransaction";
 import MyModal from "../../components/Layouts/MyModal";
+import AddTransaction from "../../components/Views/AddTransaction";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
@@ -124,7 +126,6 @@ const Transactions = () => {
   useEffect(() => {
     const debounce = setTimeout(() => {
       groupTransactions();
-      setHasGrouped(true);
     }, 250);
     return () => clearTimeout(debounce);
   }, [
@@ -206,7 +207,19 @@ const Transactions = () => {
             spellCheck={false}
           />
           {search && (
-            <span className="search-clear-icon" onClick={() => setSearch("")}>
+            <span
+              className="search-clear-icon"
+              onClick={() => setSearch("")}
+              role="button"
+              tabIndex={0}
+              aria-label="Clear search"
+              title="Clear search"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setSearch("");
+                }
+              }}
+            >
               <MdClose />
             </span>
           )}
@@ -231,6 +244,18 @@ const Transactions = () => {
           placeholder="Filter by Payees"
           className="react-select-container"
           classNamePrefix="react-select"
+        />
+      </div>
+
+      <div className="add-transaction-button-wrapper">
+        <Button
+          icon={<IoIosAddCircle />}
+          text="Add Transaction"
+          variant="primary"
+          onClick={() => {
+            setSelectedTransaction(null); // null indicates a new transaction
+            setShowModal(true);
+          }}
         />
       </div>
 
@@ -273,20 +298,29 @@ const Transactions = () => {
         )
       )}
       <MyModal
-        showModal={showModal && selectedTransaction}
+        showModal={showModal}
         modalFadeOut={modalFadeOut}
         onClose={() => setShowModal(false)}
       >
-        <SingleTransaction
-          incomeCategories={incomeCategories}
-          expenseCategories={expenseCategories}
-          payees={payees}
-          transaction={selectedTransaction}
-          onClose={closeModal}
-          onTransactionUpdated={handleTransactionUpdated}
-        />
+        {selectedTransaction === null ? (
+          <AddTransaction
+            incomeCategories={incomeCategories}
+            expenseCategories={expenseCategories}
+            payees={payees}
+            onClose={() => setShowModal(false)}
+            onTransactionAdded={handleTransactionUpdated}
+          />
+        ) : (
+          <SingleTransaction
+            incomeCategories={incomeCategories}
+            expenseCategories={expenseCategories}
+            payees={payees}
+            transaction={selectedTransaction}
+            onClose={closeModal}
+            onTransactionUpdated={handleTransactionUpdated}
+          />
+        )}
       </MyModal>
-     
     </AppLayout>
   );
 };

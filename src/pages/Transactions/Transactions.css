@@ -98,3 +98,9 @@
 .no-data-card.fade-out {
   opacity: 0;
 }
+
+.add-transaction-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.2rem;
+}
