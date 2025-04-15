@@ -1,3 +1,5 @@
+// src/components/Layouts/MyModal.jsx
+
 import React from "react";
 import { MdClose } from "react-icons/md";
 
