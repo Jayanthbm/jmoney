@@ -17,7 +17,7 @@ const DailyLimitView = ({ dailyLimitData }) => {
     const fetchTodayExpenses = async () => {
       const allTx = await getAllTransactions();
       const todayTx = allTx.filter(
-        (tx) => tx.type === "expense" && isToday(new Date(tx.date))
+        (tx) => tx.type === "Expense" && isToday(new Date(tx.date))
       );
       setTodayExpenses(todayTx);
     };
@@ -74,9 +74,14 @@ const DailyLimitView = ({ dailyLimitData }) => {
           {todayExpenses.length === 0 ? (
             <div className="no-data-card">No expenses today</div>
           ) : (
-            todayExpenses.map((tx) => (
-              <TransactionCard key={tx.id} transaction={tx} />
-            ))
+            <>
+              <div className="date-summary-bar">
+                <div className="summary-date">Today</div>
+              </div>
+              {todayExpenses.map((tx) => (
+                <TransactionCard key={tx.id} transaction={tx} />
+              ))}
+            </>
           )}
         </div>
       </div>

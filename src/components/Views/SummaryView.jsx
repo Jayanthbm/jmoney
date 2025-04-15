@@ -128,9 +128,11 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
               }))}
               colors={getTopCategoryColors(categorySummary.length)}
             />
-            {categorySummary?.map((category, index) => {
-              return <TransactionCard key={index} transaction={category} />;
-            })}
+            <div className="transaction-card-list">
+              {categorySummary?.map((category, index) => {
+                return <TransactionCard key={index} transaction={category} />;
+              })}
+            </div>
           </>
         )}
       </>
