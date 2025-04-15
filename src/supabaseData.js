@@ -5,7 +5,7 @@ import {
   storeTransactions,
   updateTransactionInDb,
   deleteTransactionInDb,
-} from "./db";
+} from "./db/transactionDb";
 import { supabase } from "./supabaseClient";
 import { getSupabaseUserIdFromLocalStorage } from "./utils";
 import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";

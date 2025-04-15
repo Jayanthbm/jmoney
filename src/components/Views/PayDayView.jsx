@@ -6,8 +6,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import TransactionCard from "../Cards/TransactionCard";
 import Button from "../Button/Button";
-import { getAllTransactions } from "../../db";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const PayDayView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());

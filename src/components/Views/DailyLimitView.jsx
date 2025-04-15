@@ -6,8 +6,8 @@ import OverviewCard from "../Cards/OverviewCard";
 import CircularProgressBar from "../Charts/CircularProgressBar";
 import TransactionCard from "../Cards/TransactionCard";
 import useTheme from "../../hooks/useTheme";
-import { getAllTransactions } from "../../db";
 import { formatIndianNumber } from "../../utils";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const DailyLimitView = ({ dailyLimitData }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);

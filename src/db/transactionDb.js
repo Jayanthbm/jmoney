@@ -1,7 +1,7 @@
-// src/db.js
+// src/db/transactionDb.js
 
 import { createStore, set, get, del, keys } from "idb-keyval";
-import { getSupabaseUserIdFromLocalStorage } from "./utils";
+import { getSupabaseUserIdFromLocalStorage } from "../utils";
 
 // Create a function to get a user-specific store
 const getUserStore = () => {

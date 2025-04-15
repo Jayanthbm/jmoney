@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import DonutChart from "../Charts/DonutChart";
 import TransactionCard from "../Cards/TransactionCard";
-import { getAllTransactions } from "../../db";
 import {
   formatIndianNumber,
   getMonthOptions,
@@ -12,6 +11,7 @@ import {
   getYearOptions,
 } from "../../utils";
 import { IoIosArrowBack } from "react-icons/io";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
   const [type, setType] = useState("Expense");

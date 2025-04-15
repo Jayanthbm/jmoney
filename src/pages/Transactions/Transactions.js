@@ -10,11 +10,7 @@ import Select from "react-select";
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import TransactionCard from "../../components/Cards/TransactionCard";
-import {
-  storeTransactions,
-  getAllTransactions,
-  clearTransactions,
-} from "../../db";
+
 import {
   formatDateToDayMonthYear,
   getRelativeTime,
@@ -26,6 +22,7 @@ import "./Transactions.css";
 import SingleTransaction from "../../components/Views/SingleTransaction";
 import MyModal from "../../components/Layouts/MyModal";
 import AddTransaction from "../../components/Views/AddTransaction";
+import { clearTransactions, getAllTransactions, storeTransactions } from "../../db/transactionDb";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
