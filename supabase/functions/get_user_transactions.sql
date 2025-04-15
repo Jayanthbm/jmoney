@@ -21,7 +21,9 @@ returns table (
   category_icon text,
   payee_name text,
   payee_logo text,
-  type text
+  type text,
+  category_id uuid,
+  payee_id uuid
 )
 language sql
 as $$
@@ -35,7 +37,9 @@ as $$
     c.icon as category_icon,
     p.name as payee_name,
     p.logo as payee_logo,
-    t.type
+    t.type,
+    t.category_id,
+    t.payee_id
   from transactions t
   left join categories c on c.id = t.category_id
   left join payees p on p.id = t.payee_id
