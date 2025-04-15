@@ -103,7 +103,3 @@
   font-size: 13px;
   color: var(--text-muted-color);
 }
-
-.clickable {
-  cursor: pointer;
-}

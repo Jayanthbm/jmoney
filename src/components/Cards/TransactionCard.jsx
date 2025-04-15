@@ -11,11 +11,7 @@ const renderIcon = (iconName, size = 36) => {
   return Icon ? <Icon size={size} /> : null;
 };
 
-const TransactionCard = ({
-  transaction,
-  onCategoryClick = () => {},
-  onPayeeClick = () => {},
-}) => {
+const TransactionCard = ({ transaction }) => {
   const {
     amount,
     category_name,
@@ -43,24 +39,14 @@ const TransactionCard = ({
           {renderIcon(category_icon)}
         </div>
         <div className="transaction-details">
-          <div
-            className="category-name clickable"
-            onClick={() => onCategoryClick(transaction)}
-          >
-            {category_name}
-          </div>
-
+          <div className="category-name">{category_name}</div>
           {description && <div className="description">{description}</div>}
 
           {transaction_timestamp && (
             <div className="timestamp">{formattedTime}</div>
           )}
-
           {payee_name && (
-            <div
-              className="payee-info clickable"
-              onClick={() => onPayeeClick(transaction)}
-            >
+            <div className="payee-info">
               {payee_logo && (
                 <img
                   src={payee_logo}
