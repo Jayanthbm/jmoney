@@ -1,6 +1,6 @@
 // src/supabaseData.js
 
-import { set } from "idb-keyval";
+import { set, del } from "idb-keyval";
 import {
   storeTransactions,
   updateTransactionInDb,
@@ -8,6 +8,7 @@ import {
 } from "./db";
 import { supabase } from "./supabaseClient";
 import { getSupabaseUserIdFromLocalStorage } from "./utils";
+import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
 
 export const loadTransactionsFromSupabase = async () => {
   const CHUNK_SIZE = 1000;
@@ -194,4 +195,91 @@ export const addTransaction = async (payload, options = {}) => {
     });
 
   return newTransaction;
+};
+
+export const fetchGoalsData = async () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  const CACHE_KEY = `${userId}_goals`;
+  const { data, error } = await supabase.from("goals").select("*");
+  if (error) console.error("Error fetching goals:", error);
+  else {
+    localStorage.setItem(`${userId}_last_goals_fetch`, Date.now());
+    await del(CACHE_KEY);
+    await set(CACHE_KEY, data);
+    return data;
+  }
+};
+
+export const addGoalInDb = async (payload) => {
+  const id = crypto.randomUUID();
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  const goal = {
+    id,
+    user_id: userId,
+    name: payload.name,
+    logo: payload.logo,
+    goal_amount: parseFloat(payload.goal_amount),
+    current_amount: parseFloat(payload.current_amount) || 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  // 1. Add to IndexedDB
+  await addGoal(goal);
+
+  // 2. Sync with Supabase
+  supabase
+    .from("goals")
+    .insert([goal])
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase insert failed:", error);
+      }
+    });
+
+  return goal;
+};
+
+export const updateGoalInDb = async (goal) => {
+  const updated = {
+    ...goal,
+    updated_at: new Date().toISOString(),
+  };
+
+  // 1. Update in IndexedDB
+  await updateGoal(updated);
+
+  // 2. Sync with Supabase
+  supabase
+    .from("goals")
+    .update(updated)
+    .eq("id", goal.id)
+    .eq("user_id", goal.user_id)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase update failed:", error);
+      }
+    });
+
+  return updated;
+};
+
+export const deleteGoalInDb = async (id) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  // 1. Delete from IndexedDB
+  await deleteGoal(id);
+
+  // 2. Sync with Supabase
+  supabase
+    .from("goals")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase delete failed:", error);
+      }
+    });
 };
