@@ -82,7 +82,7 @@ const TransactionCard = ({
         >
           {formatIndianNumber(Number(amount))}
         </div>
-        {percentage && (
+        {percentage !== null && (
           <div className="transaction-percentage">{percentage}%</div>
         )}
       </div>
