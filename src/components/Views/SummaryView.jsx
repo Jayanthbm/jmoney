@@ -199,7 +199,7 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
             <IoIosArrowBack />
             <span className="back-button">Summary</span>
           </div>
-          {console.log(categorySummary[selectedIndex])}
+
           {/* Donut Chart */}
           <DonutChart
             data={getDonutChartFormatForCategory(
