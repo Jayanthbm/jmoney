@@ -1,10 +1,12 @@
 // src/utils.js
 
+import React from "react";
 import { format } from "date-fns";
 import {
   fetchUserOverviewData,
   loadTransactionsFromSupabase,
 } from "./supabaseData";
+import * as MdIcons from "react-icons/md";
 
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
@@ -168,4 +170,13 @@ export const refreshTransactionsCache = async (force = false) => {
   }
 
   return false;
+};
+
+export const renderIcon = (iconName, size = 36) => {
+  const Icon = MdIcons[iconName];
+  return Icon ? <Icon size={size} /> : null;
+};
+
+export const formatTimestamp = (timestamp) => {
+  return timestamp ? format(new Date(timestamp), "dd MMM yy hh:mm a") : "";
 };
