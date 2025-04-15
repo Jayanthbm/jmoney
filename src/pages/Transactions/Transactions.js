@@ -81,21 +81,25 @@ const Transactions = () => {
     setSyncing(false);
   }, []);
 
+  const getAndSortTransactions = useCallback(async () => {
+    const cached = await getAllTransactions();
+    const sorted = [...cached].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
+    return sorted;
+  }, []);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
       const userId = getSupabaseUserIdFromLocalStorage();
-      const [cached, expenseCategories, incomeCategories, cachedPayees] =
+      const [expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
-          getAllTransactions(),
           get(`${userId}_settings-expense-categories`),
           get(`${userId}_settings-income-categories`),
           get(`${userId}_settings-payees`),
         ]);
-
-      const sorted = [...cached].sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-      );
+      const sorted = await getAndSortTransactions();
 
       setExpenseCategories(expenseCategories || []);
       setIncomeCategories(incomeCategories || []);
@@ -113,7 +117,7 @@ const Transactions = () => {
     };
 
     init();
-  }, []);
+  }, [getAndSortTransactions]);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -159,6 +163,19 @@ const Transactions = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [modalFadeOut, setModalFadeOut] = useState(false);
+
+  const closeModal = () => {
+    setModalFadeOut(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setModalFadeOut(false);
+    }, 200);
+  };
+  const handleTransactionUpdated = async (id, updatedData) => {
+    const sorted = await getAndSortTransactions();
+    setAllTransactions(sorted);
+  };
 
   return (
     <AppLayout
@@ -252,7 +269,9 @@ const Transactions = () => {
         )
       )}
       {showModal && selectedTransaction && (
-        <div className="custom-modal-overlay">
+        <div
+          className={`custom-modal-overlay ${modalFadeOut ? "fade-out" : ""}`}
+        >
           <div className="custom-modal-content">
             <button
               className="custom-modal-close"
@@ -265,6 +284,8 @@ const Transactions = () => {
               expenseCategories={expenseCategories}
               payees={payees}
               transaction={selectedTransaction}
+              onClose={closeModal}
+              onTransactionUpdated={handleTransactionUpdated}
             />
           </div>
         </div>
