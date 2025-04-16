@@ -1,0 +1,18 @@
+/* src/components/Views/SubscriptionBillsView.css */
+
+.subscription-bills-icon-count-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.subscription-bills-overview-icon {
+  font-size: 3rem;
+  color: var(--text-secondary);
+}
+
+.subscription-bills-amount {
+  font-size: 3.5rem;
+}
