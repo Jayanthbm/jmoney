@@ -21,14 +21,6 @@
   margin-bottom: 0.25rem;
 }
 
-.income-text {
-  color: var(--income-color) !important;
-}
-
-.expense-text {
-  color: var(--expense-color) !important;
-}
-
 .yearly-summary-expense-summary {
   margin-top: 1.5rem;
   display: flex;

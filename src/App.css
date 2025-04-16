@@ -361,3 +361,11 @@
   margin-left: 16px;
   padding: 0;
 }
+
+.income-text {
+  color: var(--income-color) !important;
+}
+
+.expense-text {
+  color: var(--expense-color) !important;
+}
