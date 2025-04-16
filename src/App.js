@@ -13,8 +13,8 @@ import Loading from "./components/Layouts/Loading";
 import MainLayout from "./components/Layouts/MainLayout";
 import Button from "./components/Button/Button";
 import { supabase } from "./supabaseClient";
-import "./App.css";
 import { FiDownload } from "react-icons/fi";
+import "./App.css";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -22,6 +22,7 @@ function App() {
 
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [showIosInstallGuide, setShowIosInstallGuide] = useState(false);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -45,22 +46,39 @@ function App() {
     };
   }, []);
 
-  // Handle PWA prompt
+  // Detect if app is already installed
+  const isPwaInstalled = () =>
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+  // Detect iOS
+  const isIos = () =>
+    /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallPrompt(true);
-    };
+    if (isPwaInstalled()) {
+      // Don't show any install prompt if already installed
+      return;
+    }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    if (isIos()) {
+      setShowIosInstallGuide(true); // iOS custom message
+    } else {
+      const handleBeforeInstallPrompt = (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+        setShowInstallPrompt(true); // Android-style install banner
+      };
 
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-    };
+      window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+      return () => {
+        window.removeEventListener(
+          "beforeinstallprompt",
+          handleBeforeInstallPrompt
+        );
+      };
+    }
   }, []);
 
   const handleInstallClick = async () => {
@@ -86,9 +104,17 @@ function App() {
             <Button
               variant="info"
               onClick={handleInstallClick}
-              text={"Install"}
+              text="Install"
               icon={<FiDownload />}
             />
+          </div>
+        )}
+        {showIosInstallGuide && (
+          <div className="pwa-install-banner">
+            <span>
+              To install this app, tap <strong>Share</strong> and choose{" "}
+              <strong>"Add to Home Screen"</strong> in Safari.
+            </span>
           </div>
         )}
         <MainLayout>
