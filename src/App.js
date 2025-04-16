@@ -11,8 +11,10 @@ import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
 import Loading from "./components/Layouts/Loading";
 import MainLayout from "./components/Layouts/MainLayout";
+import Button from "./components/Button/Button";
 import { supabase } from "./supabaseClient";
 import "./App.css";
+import { FiDownload } from "react-icons/fi";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -81,7 +83,12 @@ function App() {
         {showInstallPrompt && (
           <div className="pwa-install-banner">
             <span>Install this app for a better experience.</span>
-            <button onClick={handleInstallClick}>Install</button>
+            <Button
+              variant="info"
+              onClick={handleInstallClick}
+              text={"Install"}
+              icon={<FiDownload />}
+            />
           </div>
         )}
         <MainLayout>
