@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import DonutChart from "../Charts/DonutChart";
+import { groupBy } from "lodash";
 import TransactionCard from "../Cards/TransactionCard";
 import {
+  formatDateToDayMonthYear,
   formatIndianNumber,
   getMonthOptions,
   getTopCategoryColors,
@@ -27,6 +29,10 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
   const [heading, setHeading] = useState(title);
+
+  const [transactions, setTransactions] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -171,9 +177,14 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
                         key={index}
                         transaction={category}
                         onCardClick={() => {
-                          setSelectedIndex(index);
                           setViewMode("transactions");
                           setHeading("Transactions");
+                          setSelectedIndex(index);
+                          setTransactions(
+                            groupBy(category.transactions, "date")
+                          );
+                          setSelectedCategory(category.category_name);
+                          setSelectedCategoryAmount(category.amount);
                         }}
                       />
                     );
@@ -193,6 +204,7 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
             onClick={() => {
               setViewMode("summary");
               setHeading(title);
+              setTransactions({});
               setSelectedIndex(null);
             }}
           >
@@ -212,16 +224,23 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
             )}
           />
           <div className="date-summary-bar">
-            <div className="summary-date">
-              {categorySummary[selectedIndex].category_name}
-            </div>
+            <div className="summary-date">{selectedCategory}</div>
             <div className="summary-amount">
-              {formatIndianNumber(categorySummary[selectedIndex].amount)}
+              {formatIndianNumber(selectedCategoryAmount)}
             </div>
           </div>
-          <div className="transaction-card-list">
-            {categorySummary[selectedIndex]?.transactions?.map((tx, index) => (
-              <TransactionCard key={index} transaction={tx} />
+          <div className="transaction-page-wrapper">
+            {Object.entries(transactions).map(([date, items]) => (
+              <div key={date} className="transaction-group">
+                <h2 className="transaction-date-header">
+                  {formatDateToDayMonthYear(date)}
+                </h2>
+                <div className="transaction-card-list">
+                  {items.map((tx) => (
+                    <TransactionCard key={tx.id} transaction={tx} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </>
