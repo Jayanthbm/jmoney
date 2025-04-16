@@ -18,12 +18,15 @@ function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
   useEffect(() => {
     const loadSession = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
-      setLoading(false); // Stop loading
+      setLoading(false);
     };
 
     loadSession();
@@ -31,7 +34,7 @@ function App() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
-        setLoading(false); // Stop loading when auth state changes
+        setLoading(false);
       }
     );
 
@@ -40,11 +43,47 @@ function App() {
     };
   }, []);
 
+  // Handle PWA prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallPrompt(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        console.log("PWA installed");
+      }
+      setDeferredPrompt(null);
+      setShowInstallPrompt(false);
+    }
+  };
+
   if (loading) return <Loading />;
   if (!session) return <Login />;
   return (
     <>
       <Router>
+        {showInstallPrompt && (
+          <div className="pwa-install-banner">
+            <span>Install this app for a better experience.</span>
+            <button onClick={handleInstallClick}>Install</button>
+          </div>
+        )}
         <MainLayout>
           <Routes>
             <Route path="/" element={<Overview />} />
