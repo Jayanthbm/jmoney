@@ -12,7 +12,9 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useMediaQuery } from "react-responsive";
+import { groupBy } from "lodash";
 import {
+  formatDateToDayMonthYear,
   formatIndianNumber,
   getMonthOptions,
   getYearOptions,
@@ -225,7 +227,7 @@ const IncomeExpenseView = () => {
                   onCardClick={() => {
                     setViewMode("transactions");
                     setHeading("Transactions");
-                    setTransactions(category.transactions);
+                    setTransactions(groupBy(category.transactions, "date"));
                     setSelectedCategory(category.category_name);
                     setSelectedCategoryAmount(category.amount);
                   }}
@@ -249,7 +251,7 @@ const IncomeExpenseView = () => {
                   onCardClick={() => {
                     setViewMode("transactions");
                     setHeading("Transactions");
-                    setTransactions(category.transactions);
+                    setTransactions(groupBy(category.transactions, "date"));
                     setSelectedCategory(category.category_name);
                     setSelectedCategoryAmount(category.amount);
                   }}
@@ -281,9 +283,18 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(selectedCategoryAmount)}
             </div>
           </div>
-          <div className="transaction-card-list">
-            {transactions?.map((tx, index) => (
-              <TransactionCard key={index} transaction={tx} />
+          <div className="transaction-page-wrapper">
+            {Object.entries(transactions).map(([date, items]) => (
+              <div key={date} className="transaction-group">
+                <h2 className="transaction-date-header">
+                  {formatDateToDayMonthYear(date)}
+                </h2>
+                <div className="transaction-card-list">
+                  {items.map((tx) => (
+                    <TransactionCard key={tx.id} transaction={tx} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </>
