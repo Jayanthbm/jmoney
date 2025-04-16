@@ -23,8 +23,10 @@ import Select from "react-select";
 import { getAllTransactions } from "../../db/transactionDb";
 import TransactionCard from "../Cards/TransactionCard";
 import { IoIosArrowBack } from "react-icons/io";
+import useTheme from "../../hooks/useTheme";
 
 const IncomeExpenseView = () => {
+  const theme = useTheme();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -202,6 +204,19 @@ const IncomeExpenseView = () => {
                   labelFormatter={(label) => {
                     const index = label - 1;
                     return getMonthOptions()[index]?.label || "";
+                  }}
+                  contentStyle={{
+                    backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
+                    borderColor: theme === "dark" ? "#333" : "#ccc",
+                    borderRadius: "6px",
+                    boxShadow: "0 0 10px rgba(0,0,0,0.15)",
+                  }}
+                  itemStyle={{
+                    color: theme === "dark" ? "#e0e0e0" : "#333",
+                  }}
+                  labelStyle={{
+                    color: theme === "dark" ? "#cccccc" : "#000000",
+                    fontWeight: "bold",
                   }}
                 />
                 <Legend />
