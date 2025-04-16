@@ -1,0 +1,88 @@
+/* src/components/Views/YearlySummaryView.css */
+
+.yearly-summary-view {
+  margin-top: 1rem;
+}
+
+.summary-line {
+  margin-bottom: 1.2rem;
+}
+
+.summary-label {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.yearly-summary-amount {
+  font-weight: bold;
+  font-size: 2rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.income-text {
+  color: var(--income-color) !important;
+}
+
+.expense-text {
+  color: var(--expense-color) !important;
+}
+
+.yearly-summary-expense-summary {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.summary-box {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  min-width: 150px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+
+.summary-box:hover {
+  transform: translateY(-2px);
+}
+
+.summary-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  margin-right: 0.4rem;
+}
+
+.summary-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.summary-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summary-box.overspent {
+  border-left: 4px solid var(--expense-color);
+}
+
+.summary-box.saved {
+  border-left: 4px solid var(--income-color);
+}
+
+.summary-box.spent {
+  border-left: 4px solid #facc15;
+  /* yellow tone */
+}
