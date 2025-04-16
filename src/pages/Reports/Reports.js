@@ -56,12 +56,6 @@ const reportsList = [
     view: "payees",
   },
   {
-    title: "Categories",
-    description: "Understand your spending across categories",
-    icon: <MdLabel size={28} />,
-    view: "categories",
-  },
-  {
     title: "Monthly Living Costs",
     description: "Track your monthly essential expenses",
     icon: <MdHome size={28} />,
