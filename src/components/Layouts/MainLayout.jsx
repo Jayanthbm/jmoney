@@ -59,11 +59,10 @@ const MainLayout = ({ children }) => {
         </div>
         <div className="header-right">
           {/* Settings Icon (visible only on mobile) */}
-          <div
-            className="icon-button mobile-only"
-            onClick={() => navigate("/settings")}
-          >
-            <MdSettings size={24} />
+          <div className="mobile-only">
+            <div className="icon-button" onClick={() => navigate("/settings")}>
+              <MdSettings size={20} />
+            </div>
           </div>
 
           <div className="icon-button" onClick={toggleTheme}>
