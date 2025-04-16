@@ -1,6 +1,6 @@
 // src/App.js
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Transactions from "./pages/Transactions/Transactions";
@@ -46,6 +46,7 @@ function App() {
     };
   }, []);
 
+  const iosTimeoutRef = useRef(null);
   // Detect if app is already installed
   const isPwaInstalled = () =>
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -63,6 +64,9 @@ function App() {
 
     if (isIos()) {
       setShowIosInstallGuide(true); // iOS custom message
+      iosTimeoutRef.current = setTimeout(() => {
+        setShowIosInstallGuide(false);
+      }, 10000);
     } else {
       const handleBeforeInstallPrompt = (e) => {
         e.preventDefault();
@@ -79,6 +83,13 @@ function App() {
         );
       };
     }
+
+    // Clear timeout if component unmounts
+    return () => {
+      if (iosTimeoutRef.current) {
+        clearTimeout(iosTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -110,11 +121,22 @@ function App() {
           </div>
         )}
         {showIosInstallGuide && (
-          <div className="pwa-install-banner">
+          <div className={`pwa-install-banner fade-in-out`}>
             <span>
               To install this app, tap <strong>Share</strong> and choose{" "}
               <strong>"Add to Home Screen"</strong> in Safari.
             </span>
+            <button
+              className="close-btn"
+              onClick={() => {
+                if (iosTimeoutRef.current) {
+                  clearTimeout(iosTimeoutRef.current);
+                }
+                setShowIosInstallGuide(false);
+              }}
+            >
+              &times;
+            </button>
           </div>
         )}
         <MainLayout>
