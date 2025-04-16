@@ -96,6 +96,7 @@
   background: var(--card-bg);
   border-top: 1px solid var(--border-color);
   padding: 0.75rem 0;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
   position: fixed;
   bottom: 0;
   width: 100%;

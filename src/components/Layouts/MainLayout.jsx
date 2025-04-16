@@ -15,6 +15,7 @@ import {
 } from "react-icons/md";
 import { supabase } from "../../supabaseClient";
 import "./MainLayout.css";
+import { updateThemeColorMetaTag } from "../../utils/themeUtils";
 
 const navItems = [
   { label: "Overview", path: "/", icon: <MdDashboard /> },
@@ -43,10 +44,19 @@ const MainLayout = ({ children }) => {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     // Optionally, navigate to login page here
   };
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+
+    // Update theme-color meta dynamically
+    updateThemeColorMetaTag(theme === "light" ? "#2684ff" : "#121212"); // example dark value
+  }, [theme]);
 
   return (
     <div className="main-layout">
