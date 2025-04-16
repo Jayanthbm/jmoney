@@ -7,7 +7,6 @@ import {
   MdCompareArrows,
   MdSubscriptions,
   MdPeople,
-  MdLabel,
   MdHome,
   MdSummarize,
 } from "react-icons/md";
