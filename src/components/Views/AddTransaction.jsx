@@ -1,6 +1,6 @@
 // src/components/Views/AddTransaction.jsx
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { format } from "date-fns";
 import { FaPlus, FaTimes } from "react-icons/fa";
@@ -24,6 +24,28 @@ const AddTransaction = ({
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedPayee, setSelectedPayee] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+
+  useEffect(() => {
+    function setDefaultCategory() {
+      if (type === "Expense") {
+        // Loop through expenseCategories and find the Catgeory with named 'General'
+        const generalCategory = expenseCategories.find(
+          (cat) => cat.name === "General"
+        );
+        setSelectedCategory(generalCategory?.id || null);
+      } else if (type === "Income") {
+        // Loop through incomeCategories and find the Catgeory with named 'General'
+        const generalCategory = incomeCategories.find(
+          (cat) => cat.name === "General"
+        );
+        setSelectedCategory(generalCategory?.id || null);
+      } else {
+        setSelectedCategory(null);
+      }
+    }
+
+    setDefaultCategory();
+  }, [type, incomeCategories, expenseCategories]);
 
   const categoryOptions = (
     type === "Expense" ? expenseCategories : incomeCategories

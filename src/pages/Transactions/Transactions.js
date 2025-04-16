@@ -22,7 +22,11 @@ import "./Transactions.css";
 import SingleTransaction from "../../components/Views/SingleTransaction";
 import MyModal from "../../components/Layouts/MyModal";
 import AddTransaction from "../../components/Views/AddTransaction";
-import { clearTransactions, getAllTransactions, storeTransactions } from "../../db/transactionDb";
+import {
+  clearTransactions,
+  getAllTransactions,
+  storeTransactions,
+} from "../../db/transactionDb";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
@@ -303,7 +307,13 @@ const Transactions = () => {
           <AddTransaction
             incomeCategories={incomeCategories}
             expenseCategories={expenseCategories}
-            payees={payees}
+            payees={[
+              {
+                id: null,
+                name: "None",
+              },
+              ...payees,
+            ]}
             onClose={() => setShowModal(false)}
             onTransactionAdded={handleTransactionUpdated}
           />
@@ -311,7 +321,13 @@ const Transactions = () => {
           <SingleTransaction
             incomeCategories={incomeCategories}
             expenseCategories={expenseCategories}
-            payees={payees}
+            payees={[
+              {
+                id: null,
+                name: "None",
+              },
+              ...payees,
+            ]}
             transaction={selectedTransaction}
             onClose={closeModal}
             onTransactionUpdated={handleTransactionUpdated}
