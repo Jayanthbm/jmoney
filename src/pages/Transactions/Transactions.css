@@ -99,8 +99,20 @@
   opacity: 0;
 }
 
-.add-transaction-button-wrapper {
+.transaction-controls {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.2rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.left-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.right-button {
+  /* You can adjust spacing or alignment here if needed */
 }

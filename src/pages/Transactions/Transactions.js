@@ -3,10 +3,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { get } from "idb-keyval";
 import { MdSync, MdClose } from "react-icons/md";
-import { IoIosAddCircle } from "react-icons/io";
+import { IoIosAddCircle, IoIosFunnel, IoIosSearch } from "react-icons/io";
 import { groupBy } from "lodash";
 import Fuse from "fuse.js";
 import Select from "react-select";
+import { motion, AnimatePresence } from "framer-motion";
+import { useMediaQuery } from "react-responsive";
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import TransactionCard from "../../components/Cards/TransactionCard";
@@ -29,6 +31,7 @@ import {
 } from "../../db/transactionDb";
 
 const Transactions = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [grouped, setGrouped] = useState({});
@@ -183,6 +186,8 @@ const Transactions = () => {
     await refreshOverviewCache();
   };
 
+  const [showSearch, setShowSearch] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   return (
     <AppLayout
       title="Transactions"
@@ -197,68 +202,110 @@ const Transactions = () => {
           </small>
         )}
       </div>
-      <div className="search-bar-wrapper">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Search by description"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-bar"
-            spellCheck={false}
+
+      <div className="transaction-controls">
+        <div className="left-buttons">
+          <Button
+            icon={<IoIosSearch />}
+            text={isMobile ? null : "Search Transactions"}
+            variant="primary"
+            onClick={() => {
+              setShowSearch(!showSearch);
+            }}
           />
-          {search && (
-            <span
-              className="search-clear-icon"
-              onClick={() => setSearch("")}
-              role="button"
-              tabIndex={0}
-              aria-label="Clear search"
-              title="Clear search"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  setSearch("");
-                }
-              }}
-            >
-              <MdClose />
-            </span>
-          )}
+          <Button
+            icon={<IoIosFunnel />}
+            text={isMobile ? null : "Filter Transactions"}
+            variant="primary"
+            onClick={() => {
+              setShowFilters(!showFilters);
+            }}
+          />
+        </div>
+        <div className="right-button">
+          <Button
+            icon={<IoIosAddCircle />}
+            text={isMobile ? null : "Add Transaction"}
+            variant="primary"
+            onClick={() => {
+              setSelectedTransaction(null);
+              setShowModal(true);
+            }}
+          />
         </div>
       </div>
-      <div className="filters-wrapper">
-        <Select
-          isMulti
-          options={categoryOptions}
-          value={selectedCategories}
-          onChange={(selected) => setSelectedCategories(selected)}
-          placeholder="Filter by Categories"
-          className="react-select-container"
-          classNamePrefix="react-select"
-        />
 
-        <Select
-          isMulti
-          options={payeeOptions}
-          value={selectedPayees}
-          onChange={(selected) => setSelectedPayees(selected)}
-          placeholder="Filter by Payees"
-          className="react-select-container"
-          classNamePrefix="react-select"
-        />
-      </div>
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            className="filters-wrapper"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Select
+              isMulti
+              options={categoryOptions}
+              value={selectedCategories}
+              onChange={(selected) => setSelectedCategories(selected)}
+              placeholder="Filter by Categories"
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
 
-      <div className="add-transaction-button-wrapper">
-        <Button
-          icon={<IoIosAddCircle />}
-          text="Add Transaction"
-          variant="primary"
-          onClick={() => {
-            setSelectedTransaction(null); // null indicates a new transaction
-            setShowModal(true);
-          }}
-        />
-      </div>
+            <Select
+              isMulti
+              options={payeeOptions}
+              value={selectedPayees}
+              onChange={(selected) => setSelectedPayees(selected)}
+              placeholder="Filter by Payees"
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSearch && (
+          <motion.div
+            className="search-bar-wrapper"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Search by description"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-bar"
+                spellCheck={false}
+              />
+              {search && (
+                <span
+                  className="search-clear-icon"
+                  onClick={() => setSearch("")}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Clear search"
+                  title="Clear search"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSearch("");
+                    }
+                  }}
+                >
+                  <MdClose />
+                </span>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
         <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
