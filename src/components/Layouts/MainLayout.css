@@ -15,9 +15,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1.5rem;
-  height: 60px;
+  padding: calc(env(safe-area-inset-top, 0px) + 0px) 1.5rem 0 1.5rem;
+  height: calc(60px + env(safe-area-inset-top, 0px));
+  padding-bottom: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
 }
 
 .header-left .logo {
@@ -100,6 +103,7 @@
   position: fixed;
   bottom: 0;
   width: 100%;
+  z-index: 1000;
 }
 
 /* Footer nav icon and label */
