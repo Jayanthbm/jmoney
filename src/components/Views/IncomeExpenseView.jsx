@@ -160,9 +160,10 @@ const IncomeExpenseView = () => {
   return (
     <div>
       <div className="sub-section-heading">{heading}</div>
-      {/* Month/Year Selectors */}
+
       {viewMode === "summary" && (
         <>
+          {/* Month/Year Selectors */}
           <div className="filters-wrapper">
             <Select
               className="react-select-container"
