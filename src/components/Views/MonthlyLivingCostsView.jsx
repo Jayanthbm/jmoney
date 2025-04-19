@@ -6,7 +6,6 @@ import { useMediaQuery } from "react-responsive";
 import Select from "react-select";
 import { groupBy } from "lodash";
 import { formatDateToDayMonthYear, formatIndianNumber, getMonthOptions, getSupabaseUserIdFromLocalStorage, getYearOptions } from "../../utils";
-import useTheme from "../../hooks/useTheme";
 import { getAllTransactions } from "../../db/transactionDb";
 import TransactionCard from "../Cards/TransactionCard";
 import { IoIosArrowBack } from "react-icons/io";
@@ -16,9 +15,7 @@ import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
 
 const MonthlyLivingCostsView = () => {
-  const theme = useTheme();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-
 
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
