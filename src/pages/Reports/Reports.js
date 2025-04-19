@@ -8,7 +8,6 @@ import {
   MdSubscriptions,
   MdPeople,
   MdHome,
-  MdSummarize,
 } from "react-icons/md";
 import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -19,7 +18,7 @@ import IncomeExpenseView from "../../components/Views/IncomeExpenseView";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
 import PayeesView from "../../components/Views/PayeesView";
 import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
-import TotalSummaryView from "../../components/Views/TotalSummaryView";
+
 import "./Reports.css";
 
 const reportsList = [
@@ -59,12 +58,6 @@ const reportsList = [
     icon: <MdHome size={28} />,
     view: "monthlyLivingCosts",
   },
-  {
-    title: "Summary",
-    description: "View total income, expense, and balance",
-    icon: <MdSummarize size={28} />,
-    view: "summary",
-  },
 ];
 
 const Reports = () => {
@@ -89,8 +82,6 @@ const Reports = () => {
         return <PayeesView />;
       case "monthlyLivingCosts":
         return <MonthlyLivingCostsView />;
-      case "summary":
-        return <TotalSummaryView />;
       default:
         return null;
     }
