@@ -5,6 +5,43 @@
   margin-bottom: 4rem;
 }
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-title-wrapper {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.header-title-wrapper.clickable {
+  cursor: pointer;
+}
+
+.header-back-button {
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  transition: color 0.2s ease;
+}
+
+.header-back-button:hover {
+  color: var(--accent-color);
+}
+
+.header-title {
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
 .refresh-button {
   background-color: var(--card-bg);
   color: var(--text-color);

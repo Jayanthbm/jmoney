@@ -27,6 +27,7 @@ import "./Overview.css";
 const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("Overview");
 
   const theme = useTheme();
   const refreshData = useCallback(async () => {
@@ -84,26 +85,22 @@ const Overview = () => {
   const CATEGORY_COLORS = ["#3b82f6", "#10b981", "#9ca3af"];
 
   const [viewMode, setViewMode] = useState("overview");
+
+
   return (
     <AppLayout
-      title="Overview"
+      title={title}
       loading={!data || loading}
       onRefresh={() => {
         refreshData();
       }}
+      onBack={
+        viewMode !== 'overview' ? () => {
+          setViewMode('overview');
+          setTitle('Overview');
+        } : null
+      }
     >
-      {viewMode !== "overview" && (
-        <div
-          className="back-button-container"
-          role="button"
-          tabIndex={0}
-          onClick={() => setViewMode("overview")}
-          onKeyDown={(e) => e.key === "Enter" && setViewMode("overview")}
-        >
-          <IoIosArrowBack />
-          <span className="back-button">Overview</span>
-        </div>
-      )}
       {viewMode === "overview" && (
         <div className="overview-container">
           {/* Remainng for Period */}
@@ -127,7 +124,10 @@ const Overview = () => {
           {/* Daily Limit */}
           <div
             className="overview-card-wrapper"
-            onClick={() => setViewMode("dailyLimit")}
+            onClick={() => {
+              setViewMode("dailyLimit");
+              setTitle('Daily Limit');
+            }}
           >
             <OverviewCard
               title="Daily Limit"
@@ -201,7 +201,10 @@ const Overview = () => {
           {/* Pay Day */}
           <div
             className="overview-card-wrapper"
-            onClick={() => setViewMode("payDay")}
+            onClick={() => {
+              setViewMode("payDay");
+              setTitle('Calendar View');
+            }}
           >
             <OverviewCard title="Pay Day" subtitle="Days until next salary">
               <div className="payday-container">
@@ -242,7 +245,10 @@ const Overview = () => {
           {/* Top Categories */}
           <div
             className="overview-card-wrapper"
-            onClick={() => setViewMode("topCategories")}
+            onClick={() => {
+              setViewMode("topCategories");
+              setTitle('Top Categories');
+            }}
           >
             <OverviewCard
               title="Top Categories"
@@ -294,7 +300,10 @@ const Overview = () => {
             expense={data?.current_month?.expense}
             income={data?.current_month?.income}
             percentage={data?.current_month?.spent_percentage}
-            onClick={() => setViewMode("thisMonth")}
+            onClick={() => {
+              setViewMode("thisMonth");
+              setTitle('Summary For Month');
+            }}
           />
 
           {/* Current Year */}
@@ -304,7 +313,10 @@ const Overview = () => {
             expense={data?.current_year?.expense}
             income={data?.current_year?.income}
             percentage={data?.current_year?.spent_percentage}
-            onClick={() => setViewMode("currentYear")}
+            onClick={() => {
+              setViewMode("currentYear");
+              setTitle('Summary For Year');
+            }}
           />
 
           {/* Net Worth */}
@@ -323,8 +335,8 @@ const Overview = () => {
         <DailyLimitView dailyLimitData={data?.dailyLimit} />
       )}
       {viewMode === "payDay" && <PayDayView />}
-      {viewMode === "topCategories" && <SummaryView title="Top Categories" />}
-      {viewMode === "thisMonth" && <SummaryView title="Summary For Month" />}
+      {viewMode === "topCategories" && <SummaryView />}
+      {viewMode === "thisMonth" && <SummaryView />}
       {viewMode === "currentYear" && (
         <SummaryView title="Summary For Year" showMonthSelect={false} />
       )}

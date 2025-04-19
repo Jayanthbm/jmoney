@@ -27,7 +27,6 @@ const DailyLimitView = ({ dailyLimitData }) => {
 
   return (
     <div>
-      <div className="sub-section-heading">Daily Limit</div>
       <div className="daily-limit-view">
         {/* Daily Limit Card */}
         <div className="overview-card-wrapper">

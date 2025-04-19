@@ -60,8 +60,7 @@ const PayDayView = () => {
 
   return (
     <div>
-      <div className="sub-section-heading calendar-header">
-        Calendar View
+      <div className="align-right">
         {!isSameDay(selectedDate, today) && (
           <Button onClick={goToToday} text="Today" />
         )}

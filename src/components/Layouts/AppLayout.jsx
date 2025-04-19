@@ -4,7 +4,7 @@ import React from "react";
 import PageHeader from "./PageHeader";
 import Loading from "./Loading";
 
-const AppLayout = ({ title, children, onRefresh, loading }) => {
+const AppLayout = ({ title, children, onRefresh, loading, onBack }) => {
   return (
     <div className="container">
       <PageHeader
@@ -12,6 +12,7 @@ const AppLayout = ({ title, children, onRefresh, loading }) => {
         showRefreshButton={onRefresh !== undefined}
         onRefresh={onRefresh}
         disabled={loading}
+        onBack={onBack}
       />
       {loading ? <Loading /> : <>{children}</>}
     </div>
