@@ -18,7 +18,6 @@ import YearlySummaryView from "../../components/Views/YearlySummaryView";
 import IncomeExpenseView from "../../components/Views/IncomeExpenseView";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
 import PayeesView from "../../components/Views/PayeesView";
-import CategoriesView from "../../components/Views/CategoriesView";
 import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
 import TotalSummaryView from "../../components/Views/TotalSummaryView";
 import "./Reports.css";
@@ -88,8 +87,6 @@ const Reports = () => {
         return <SubscriptionBillsView />;
       case "payees":
         return <PayeesView />;
-      case "categories":
-        return <CategoriesView />;
       case "monthlyLivingCosts":
         return <MonthlyLivingCostsView />;
       case "summary":
