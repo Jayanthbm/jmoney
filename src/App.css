@@ -369,3 +369,8 @@
 .expense-text {
   color: var(--expense-color) !important;
 }
+.align-right {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
