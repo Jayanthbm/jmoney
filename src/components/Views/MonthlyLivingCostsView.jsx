@@ -32,7 +32,7 @@ const MonthlyLivingCostsView = () => {
   const [summary, setSummary] = useState([]);
   const [totalSummary, setTotalSummary] = useState(0);
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState("Monthly Living Costs");
+  const [heading, setHeading] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
@@ -125,7 +125,9 @@ const MonthlyLivingCostsView = () => {
 
   return (
     <div>
-      <div className="sub-section-heading">{heading}</div>
+      {heading && (
+        <div className="sub-section-heading">{heading}</div>
+      )}
       {viewMode === "configure" && (
         <>
           <div style={{
@@ -214,8 +216,15 @@ const MonthlyLivingCostsView = () => {
             tabIndex={0}
             onClick={() => {
               setViewMode("summary");
-              setHeading("Monthly Living Costs");
+              setHeading(null);
               setTransactions([]);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setViewMode("summary");
+                setHeading(null);
+                setTransactions([]);
+              }
             }}
           >
             <IoIosArrowBack />

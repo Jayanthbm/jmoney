@@ -323,7 +323,7 @@ const Overview = () => {
         <DailyLimitView dailyLimitData={data?.dailyLimit} />
       )}
       {viewMode === "payDay" && <PayDayView />}
-      {viewMode === "topCategories" && <SummaryView />}
+      {viewMode === "topCategories" && <SummaryView title="Top Categories" />}
       {viewMode === "thisMonth" && <SummaryView title="Summary For Month" />}
       {viewMode === "currentYear" && (
         <SummaryView title="Summary For Year" showMonthSelect={false} />

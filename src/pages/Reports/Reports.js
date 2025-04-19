@@ -63,6 +63,7 @@ const reportsList = [
 const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("reportList");
+  const [title, setTitle] = useState('Reports')
 
   useEffect(() => {
     setLoading(false);
@@ -71,7 +72,7 @@ const Reports = () => {
   const renderView = () => {
     switch (viewMode) {
       case "transactionsByCategory":
-        return <SummaryView title="Transactions By Category" />;
+        return <SummaryView />;
       case "yearlySummary":
         return <YearlySummaryView />;
       case "incomeVsExpense":
@@ -88,13 +89,16 @@ const Reports = () => {
   };
 
   return (
-    <AppLayout title="Reports" loading={loading}>
+    <AppLayout title={title} loading={loading}>
       {viewMode !== "reportList" && (
         <div
           className="back-button-container"
           role="button"
           tabIndex={0}
-          onClick={() => setViewMode("reportList")}
+          onClick={() => {
+            setViewMode("reportList")
+            setTitle('Reports')
+          }}
           onKeyDown={(e) => e.key === "Enter" && setViewMode("reportList")}
         >
           <IoIosArrowBack />
@@ -109,7 +113,10 @@ const Reports = () => {
               key={report.title}
               className="report-card-wrapper"
               style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => setViewMode(report.view)}
+              onClick={() => {
+                setViewMode(report.view)
+                setTitle(report.title)
+              }}
             >
               <ReportCard
                 icon={report.icon}

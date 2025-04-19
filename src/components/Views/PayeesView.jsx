@@ -12,7 +12,7 @@ import Loading from "../Layouts/Loading";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);
-  const [heading, setHeading] = useState("Payees");
+  const [heading, setHeading] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
   const [groupedPayees, setGroupedPayees] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -63,7 +63,9 @@ const PayeesView = () => {
 
   return (
     <div>
-      <div className="sub-section-heading">{heading}</div>
+      {heading && (
+        <div className="sub-section-heading">{heading}</div>
+      )}
       {loading ? (
         <Loading />
       ) : (
@@ -107,13 +109,13 @@ const PayeesView = () => {
                 tabIndex={0}
                 onClick={() => {
                   setViewMode("summary");
-                  setHeading("Payees");
+                  setHeading(null);
                   setTransactions([]);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     setViewMode("summary");
-                    setHeading("Payees");
+                    setHeading(null);
                     setTransactions([]);
                   }
                 }}

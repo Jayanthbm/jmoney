@@ -48,8 +48,6 @@ const YearlySummaryView = () => {
 
   return (
     <div className="yearly-summary-view">
-      <div className="sub-section-heading">Yearly Summary</div>
-
       <Select
         className="react-select-container"
         classNamePrefix="react-select"

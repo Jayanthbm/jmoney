@@ -45,7 +45,7 @@ const IncomeExpenseView = () => {
   const [totalIncome, setTotalIncome] = useState(0);
 
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState("Income vs Expense");
+  const [heading, setHeading] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
@@ -159,7 +159,9 @@ const IncomeExpenseView = () => {
   }, [month, year]);
   return (
     <div>
-      <div className="sub-section-heading">{heading}</div>
+      {heading && (
+        <div className="sub-section-heading">{heading}</div>
+      )}
 
       {viewMode === "summary" && (
         <>
@@ -277,6 +279,7 @@ const IncomeExpenseView = () => {
           </div>
         </>
       )}
+
       {viewMode === "transactions" && (
         <>
           <div
@@ -285,8 +288,15 @@ const IncomeExpenseView = () => {
             tabIndex={0}
             onClick={() => {
               setViewMode("summary");
-              setHeading("Income Vs Expense");
+              setHeading(null);
               setTransactions([]);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setViewMode("summary");
+                setHeading(null);
+                setTransactions([]);
+              }
             }}
           >
             <IoIosArrowBack />

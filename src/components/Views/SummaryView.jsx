@@ -15,7 +15,7 @@ import {
 import { IoIosArrowBack } from "react-icons/io";
 import { getAllTransactions } from "../../db/transactionDb";
 
-const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
+const SummaryView = ({ title, showMonthSelect = true }) => {
   const [type, setType] = useState("Expense");
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -116,7 +116,9 @@ const SummaryView = ({ title = "Top Categories", showMonthSelect = true }) => {
   };
   return (
     <div>
-      <div className="sub-section-heading">{heading}</div>
+      {heading && (
+        <div className="sub-section-heading">{heading}</div>
+      )}
       {viewMode === "summary" && (
         <>
           {/* Toggle Buttons */}
