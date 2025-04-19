@@ -18,8 +18,10 @@ import {
   deleteGoalInDb,
   updateGoalInDb,
 } from "../../supabaseData";
+import { useMediaQuery } from "react-responsive";
 
 const Goals = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -163,7 +165,7 @@ const Goals = () => {
         <div className="right-controls">
           <Button
             icon={<FaCirclePlus />}
-            text="Add"
+            text={isMobile ? null : "Add Goal"}
             variant="primary"
             onClick={() => handleDialogOpen()}
           />
