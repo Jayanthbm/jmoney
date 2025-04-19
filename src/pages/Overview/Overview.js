@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { get } from "idb-keyval";
-import { IoIosArrowBack } from "react-icons/io";
 import AppLayout from "../../components/Layouts/AppLayout";
 import OverviewCard from "../../components/Cards/OverviewCard";
 import MyCountUp from "../../components/Charts/MyCountUp";
