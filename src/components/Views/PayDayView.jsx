@@ -2,14 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { isSameDay } from "date-fns";
+import { MdToday } from "react-icons/md";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import TransactionCard from "../Cards/TransactionCard";
 import Button from "../Button/Button";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import { useMediaQuery } from "react-responsive";
 
 const PayDayView = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
   const [filteredTx, setFilteredTx] = useState([]);
@@ -62,7 +65,7 @@ const PayDayView = () => {
     <div>
       <div className="align-right">
         {!isSameDay(selectedDate, today) && (
-          <Button onClick={goToToday} text="Today" />
+          <Button onClick={goToToday} text={isMobile ? null : "Today"} icon={<MdToday />} />
         )}
       </div>
 

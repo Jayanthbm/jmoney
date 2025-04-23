@@ -213,29 +213,28 @@
 }
 
 [data-theme="dark"] .react-calendar {
-  background-color: #1e1e1e;
-  color: #ffffff;
-  border: 1px solid #333;
+  background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
 [data-theme="dark"] .react-calendar__tile {
-  background-color: transparent;
-  color: #ffffff;
+  background-color: transparent !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .react-calendar__tile--active {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #3b82f6 !important;
+    color: white !important;
 }
 
 [data-theme="dark"] .react-calendar__tile--now {
-  background-color: #2563eb;
-  color: white;
+  background-color: #9e9e40 !important;
+    color: white !important;
 }
-
 [data-theme="dark"] .react-calendar__navigation button {
-  background-color: transparent;
-  color: #ffffff;
+  background-color: transparent !important;
+    color: #ffffff !important;
 }
 
 .back-button-container {
