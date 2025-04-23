@@ -337,7 +337,7 @@ const Overview = () => {
       {viewMode === "topCategories" && <SummaryView />}
       {viewMode === "thisMonth" && <SummaryView />}
       {viewMode === "currentYear" && (
-        <SummaryView title="Summary For Year" showMonthSelect={false} />
+        <SummaryView showMonthSelect={false} />
       )}
     </AppLayout>
   );

@@ -2,9 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import DonutChart from "../Charts/DonutChart";
+import { useMediaQuery } from "react-responsive";
 import { groupBy } from "lodash";
+import { FaChartBar, FaEyeSlash } from 'react-icons/fa';
+import { IoIosArrowBack } from "react-icons/io";
+import DonutChart from "../Charts/DonutChart";
 import TransactionCard from "../Cards/TransactionCard";
+import Button from "../Button/Button";
 import {
   formatDateToDayMonthYear,
   formatIndianNumber,
@@ -12,10 +16,10 @@ import {
   getTopCategoryColors,
   getYearOptions,
 } from "../../utils";
-import { IoIosArrowBack } from "react-icons/io";
 import { getAllTransactions } from "../../db/transactionDb";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [type, setType] = useState("Expense");
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -33,6 +37,16 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
+  const [showSummaryChart, setShowSummaryChart] = useState(true);
+  const [showTransactionChart, setShowTransactionChart] = useState(true);
+
+  useEffect(() => {
+    if (isMobile) {
+      setShowSummaryChart(false);
+      setShowTransactionChart(false);
+    }
+  }, [isMobile]);
+
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -107,7 +121,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
         amount: data.amount,
         value: Math.round(
           (data.amount / transactions.reduce((sum, tx) => sum + tx.amount, 0)) *
-            100
+          100
         ),
       }))
       .sort((a, b) => b.percentage - a.percentage);
@@ -164,14 +178,28 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
               <div className="no-data-card">No data found</div>
             ) : (
               <>
-                {/* Donut Chart */}
-                <DonutChart
-                  data={categorySummary?.map((cat) => ({
-                    value: cat?.percentage,
-                    name: cat?.category_name,
-                  }))}
-                  colors={getTopCategoryColors(categorySummary.length)}
-                />
+                  <div className="align-right">
+                    <Button text={
+                      isMobile ? null : showSummaryChart ? "Hide Chart" : "Show Chart"
+                    } onClick={() => {
+                      setShowSummaryChart(!showSummaryChart)
+                    }}
+                      icon={showSummaryChart ? <FaEyeSlash /> : <FaChartBar />}
+                    />
+                  </div>
+                  {showSummaryChart && (
+                    <>
+                      {/* Donut Chart */}
+                      <DonutChart
+                        data={categorySummary?.map((cat) => ({
+                          value: cat?.percentage,
+                          name: cat?.category_name,
+                        }))}
+                        colors={getTopCategoryColors(categorySummary.length)}
+                      />
+                    </>
+                  )}
+
                 <div className="transaction-card-list">
                   {categorySummary?.map((category, index) => {
                     return (
@@ -214,17 +242,33 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
             <span className="back-button">Summary</span>
           </div>
 
-          {/* Donut Chart */}
-          <DonutChart
-            data={getDonutChartFormatForCategory(
-              categorySummary[selectedIndex]?.transactions
+          <>
+            <div className="align-right">
+              <Button text={
+                isMobile ? null : showTransactionChart ? "Hide Chart" : "Show Chart"
+              } onClick={() => {
+                setShowTransactionChart(!showTransactionChart)
+              }}
+                icon={showTransactionChart ? <FaEyeSlash /> : <FaChartBar />}
+              />
+            </div>
+            {showTransactionChart && (
+              <>
+                {/* Donut Chart */}
+                <DonutChart
+                  data={getDonutChartFormatForCategory(
+                    categorySummary[selectedIndex]?.transactions
+                  )}
+                  colors={getTopCategoryColors(
+                    getDonutChartFormatForCategory(
+                      categorySummary[selectedIndex]?.transactions
+                    ).length
+                  )}
+                />
+              </>
             )}
-            colors={getTopCategoryColors(
-              getDonutChartFormatForCategory(
-                categorySummary[selectedIndex]?.transactions
-              ).length
-            )}
-          />
+          </>
+
           <div className="date-summary-bar">
             <div className="summary-date">{selectedCategory}</div>
             <div className="summary-amount">
