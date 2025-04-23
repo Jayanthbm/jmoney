@@ -1,6 +1,6 @@
 // src/components/Views/IncomeExpenseView.jsx
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -24,6 +24,8 @@ import { getAllTransactions } from "../../db/transactionDb";
 import TransactionCard from "../Cards/TransactionCard";
 import { IoIosArrowBack } from "react-icons/io";
 import useTheme from "../../hooks/useTheme";
+import Button from "../Button/Button";
+import { FaChartBar, FaEyeSlash } from "react-icons/fa";
 
 const IncomeExpenseView = () => {
   const theme = useTheme();
@@ -50,6 +52,13 @@ const IncomeExpenseView = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
   const [chartData, setChartData] = useState([]);
+  const [showChart, setShowChart] = useState(true);
+
+  useEffect(() => {
+    if (isMobile) {
+      setShowChart(false);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -157,6 +166,7 @@ const IncomeExpenseView = () => {
 
     fetchAndSummarize();
   }, [month, year]);
+
   return (
     <div>
       {heading && (
@@ -184,50 +194,62 @@ const IncomeExpenseView = () => {
             />
           </div>
 
-          <div className="chart-wrapper">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={chartData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-                onClick={(e) => {
-                  if (e?.activeLabel) {
-                    const selectedMonthIndex = e.activeLabel - 1;
-                    setMonth({
-                      value: selectedMonthIndex,
-                      label: getMonthOptions()[selectedMonthIndex].label,
-                    });
-                  }
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={isMobile ? "name" : "full_name"} />
-                <YAxis hide={isMobile} />
-                <Tooltip
-                  formatter={(value) => formatIndianNumber(value)}
-                  labelFormatter={(label) => {
-                    const index = label - 1;
-                    return getMonthOptions()[index]?.label || "";
-                  }}
-                  contentStyle={{
-                    backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
-                    borderColor: theme === "dark" ? "#333" : "#ccc",
-                    borderRadius: "6px",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.15)",
-                  }}
-                  itemStyle={{
-                    color: theme === "dark" ? "#e0e0e0" : "#333",
-                  }}
-                  labelStyle={{
-                    color: theme === "dark" ? "#cccccc" : "#000000",
-                    fontWeight: "bold",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="income" fill="#3ecf8e" name="Income" />
-                <Bar dataKey="expense" fill="#ef4444" name="Expense" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="align-right">
+            <Button text={
+              isMobile ? null : showChart ? "Hide Chart" : "Show Chart"
+            } onClick={() => {
+              setShowChart(!showChart)
+            }}
+              icon={showChart ? <FaEyeSlash /> : <FaChartBar />}
+            />
           </div>
+          {showChart && (
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                  onClick={(e) => {
+                    if (e?.activeLabel) {
+                      const selectedMonthIndex = e.activeLabel - 1;
+                      setMonth({
+                        value: selectedMonthIndex,
+                        label: getMonthOptions()[selectedMonthIndex].label,
+                      });
+                    }
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey={isMobile ? "name" : "full_name"} />
+                  <YAxis hide={isMobile} />
+                  <Tooltip
+                    formatter={(value) => formatIndianNumber(value)}
+                    labelFormatter={(label) => {
+                      const index = label - 1;
+                      return getMonthOptions()[index]?.label || "";
+                    }}
+                    contentStyle={{
+                      backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
+                      borderColor: theme === "dark" ? "#333" : "#ccc",
+                      borderRadius: "6px",
+                      boxShadow: "0 0 10px rgba(0,0,0,0.15)",
+                    }}
+                    itemStyle={{
+                      color: theme === "dark" ? "#e0e0e0" : "#333",
+                    }}
+                    labelStyle={{
+                      color: theme === "dark" ? "#cccccc" : "#000000",
+                      fontWeight: "bold",
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="income" fill="#3ecf8e" name="Income" />
+                  <Bar dataKey="expense" fill="#ef4444" name="Expense" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
 
           {/* Category Summary */}
           <div className="date-summary-bar">

@@ -89,22 +89,12 @@ const Reports = () => {
   };
 
   return (
-    <AppLayout title={title} loading={loading}>
-      {viewMode !== "reportList" && (
-        <div
-          className="back-button-container"
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            setViewMode("reportList")
-            setTitle('Reports')
-          }}
-          onKeyDown={(e) => e.key === "Enter" && setViewMode("reportList")}
-        >
-          <IoIosArrowBack />
-          <span className="back-button">Reports</span>
-        </div>
-      )}
+    <AppLayout title={title} loading={loading} onBack={
+      viewMode !== 'reportList' ? () => {
+        setViewMode('reportList');
+        setTitle('Reports');
+      } : null
+    }>
 
       {viewMode === "reportList" ? (
         <div className="report-container">

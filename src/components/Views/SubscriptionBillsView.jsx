@@ -31,7 +31,7 @@ const SubscriptionBillsView = () => {
   const [bills, setBills] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState("Subscriptions and Bills");
+  const [heading, setHeading] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
@@ -68,7 +68,10 @@ const SubscriptionBillsView = () => {
 
   return (
     <div>
-      <div className="sub-section-heading">{heading}</div>
+      {heading && (
+        <div className="sub-section-heading">{heading}</div>
+      )}
+
       {viewMode === "summary" && (
         <>
           <div className="filters-wrapper">
@@ -147,7 +150,7 @@ const SubscriptionBillsView = () => {
             tabIndex={0}
             onClick={() => {
               setViewMode("summary");
-              setHeading("Subscriptions and Bills");
+              setHeading(null);
             }}
           >
             <IoIosArrowBack />
