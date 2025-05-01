@@ -49,7 +49,7 @@ const AddTransaction = ({
 
   const categoryOptions = (
     type === "Expense" ? expenseCategories : incomeCategories
-  ).map((cat) => ({
+  )?.map((cat) => ({
     value: cat.id,
     label: cat.name,
   }));

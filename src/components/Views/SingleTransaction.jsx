@@ -37,12 +37,12 @@ const SingleTransaction = ({
 
   const categoryOptions = (
     type === "Expense" ? expenseCategories : incomeCategories
-  ).map((cat) => ({
+  )?.map((cat) => ({
     value: cat.id,
     label: cat.name,
   }));
 
-  const payeeOptions = payees.map((payee) => ({
+  const payeeOptions = payees?.map((payee) => ({
     value: payee.id,
     label: payee.name,
   }));

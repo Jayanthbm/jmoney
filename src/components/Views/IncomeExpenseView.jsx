@@ -90,7 +90,7 @@ const IncomeExpenseView = () => {
         expenseSummaryMap[tx.category_name].transactions.push(tx);
       });
       const expenseSummaryArray = Object.entries(expenseSummaryMap)
-        .map(([category, data]) => ({
+        ?.map(([category, data]) => ({
           category_name: category,
           category_icon: data.icon,
           amount: data.amount,
@@ -120,7 +120,7 @@ const IncomeExpenseView = () => {
         incomeSummaryMap[tx.category_name].transactions.push(tx);
       });
       const incomeSummaryArray = Object.entries(incomeSummaryMap)
-        .map(([category, data]) => ({
+        ?.map(([category, data]) => ({
           category_name: category,
           category_icon: data.icon,
           amount: data.amount,
@@ -332,13 +332,13 @@ const IncomeExpenseView = () => {
             </div>
           </div>
           <div className="transaction-page-wrapper">
-            {Object.entries(transactions).map(([date, items]) => (
+            {Object.entries(transactions)?.map(([date, items]) => (
               <div key={date} className="transaction-group">
                 <h2 className="transaction-date-header">
                   {formatDateToDayMonthYear(date)}
                 </h2>
                 <div className="transaction-card-list">
-                  {items.map((tx) => (
+                  {items?.map((tx) => (
                     <TransactionCard key={tx.id} transaction={tx} />
                   ))}
                 </div>

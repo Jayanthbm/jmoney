@@ -95,7 +95,7 @@ const MainLayout = ({ children }) => {
         {/* Sidebar for desktop */}
         <aside className="sidebar">
           <nav>
-            {navItems.map((item) => (
+            {navItems?.map((item) => (
               <div
                 key={item.path}
                 className={`nav-item ${selected === item.path ? "active" : ""}`}
@@ -116,7 +116,7 @@ const MainLayout = ({ children }) => {
       <footer className="mobile-footer">
         {navItems
           .filter((item) => item.path !== "/settings")
-          .map((item) => (
+          ?.map((item) => (
             <div
               key={item.path}
               className={`footer-nav-item ${

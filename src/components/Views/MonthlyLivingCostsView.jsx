@@ -53,7 +53,7 @@ const MonthlyLivingCostsView = () => {
         setChoosenCategories(cached_choosen_category_ids);
         const selected = cached_categories
           .filter((cat) => cached_choosen_category_ids.includes(cat.id))
-          .map((cat) => ({ value: cat.id, label: cat.name }));
+          ?.map((cat) => ({ value: cat.id, label: cat.name }));
         setSelectedOptions(selected);
       }
     };
@@ -91,7 +91,7 @@ const MonthlyLivingCostsView = () => {
           summaryMap[tx.category_name].transactions.push(tx);
         });
         const summaryArray = Object.entries(summaryMap)
-          .map(([category, data]) => ({
+          ?.map(([category, data]) => ({
             category_name: category,
             category_icon: data.icon,
             amount: data.amount,
@@ -111,14 +111,14 @@ const MonthlyLivingCostsView = () => {
   }, [month, year, choosenCategories])
 
   const handleSaveCategories = async () => {
-    const selectedIds = selectedOptions.map((opt) => opt.value);
+    const selectedIds = selectedOptions?.map((opt) => opt.value);
     await set(`${userId}_choosen_category_ids`, selectedIds);
     setChoosenCategories(selectedIds);
     setHeading("Monthly Living Costs");
     setViewMode("summary");
   };
 
-  const categoryOptions = expenseCategories.map((cat) => ({
+  const categoryOptions = expenseCategories?.map((cat) => ({
     value: cat.id,
     label: cat.name,
   }));
@@ -155,7 +155,7 @@ const MonthlyLivingCostsView = () => {
                 setViewMode("configure");
                 const selected = expenseCategories
                   .filter((cat) => choosenCategories.includes(cat.id))
-                  .map((cat) => ({ value: cat.id, label: cat.name }));
+                  ?.map((cat) => ({ value: cat.id, label: cat.name }));
                 setSelectedOptions(selected);
               }}
               text={isMobile ? null : "Edit Configuration"}
@@ -238,13 +238,13 @@ const MonthlyLivingCostsView = () => {
             </div>
           </div>
           <div className="transaction-page-wrapper">
-            {Object.entries(transactions).map(([date, items]) => (
+            {Object.entries(transactions)?.map(([date, items]) => (
               <div key={date} className="transaction-group">
                 <h2 className="transaction-date-header">
                   {formatDateToDayMonthYear(date)}
                 </h2>
                 <div className="transaction-card-list">
-                  {items.map((tx) => (
+                  {items?.map((tx) => (
                     <TransactionCard key={tx.id} transaction={tx} />
                   ))}
                 </div>

@@ -207,7 +207,7 @@ const Settings = () => {
             </div>
           </div>
           <div className="category-grid">
-            {visibleCategories.map((category) => (
+            {visibleCategories?.map((category) => (
               <div className="category-card" key={category.id}>
                 {renderIcon(category.icon)}
                 <span>{category.name}</span>
@@ -215,7 +215,7 @@ const Settings = () => {
             ))}
           </div>
 
-          {categoriesToShow.length > visibleLimit && (
+          {categoriesToShow?.length > visibleLimit && (
             <button
               className="show-more-btn"
               onClick={() => setShowAllCategories((prev) => !prev)}

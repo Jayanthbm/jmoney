@@ -15,7 +15,7 @@ const DonutChart = ({ data, colors }) => {
           paddingAngle={3}
           label={false}
         >
-          {data.map((entry, index) => (
+          {data?.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>

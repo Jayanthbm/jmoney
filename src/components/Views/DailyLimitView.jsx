@@ -91,14 +91,14 @@ const DailyLimitView = ({ dailyLimitData }) => {
 
         {/* Today's Transactions */}
         <div className="transaction-list-wrapper">
-          {todayExpenses.length === 0 ? (
+          {todayExpenses?.length === 0 ? (
             <div className="no-data-card">No expenses today</div>
           ) : (
             <>
               <div className="date-summary-bar">
                 <div className="summary-date">Today</div>
               </div>
-              {todayExpenses.map((tx) => (
+              {todayExpenses?.map((tx) => (
                 <TransactionCard key={tx.id} transaction={tx} />
               ))}
             </>

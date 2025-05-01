@@ -26,7 +26,7 @@ const PayeesView = () => {
       const filtered = allTx.filter((tx) => tx.payee_name);
       const grouped = groupBy(filtered, (tx) => tx.payee_name);
 
-      const summarizedPayees = Object.entries(grouped).map(
+      const summarizedPayees = Object.entries(grouped)?.map(
         ([payeeName, txs]) => {
           const amount = txs.reduce((sum, tx) => {
             return tx.type === "Income" ? sum + tx.amount : sum - tx.amount;
@@ -73,7 +73,7 @@ const PayeesView = () => {
           {viewMode === "summary" && (
             <>
               <div className="payee-summary-wrapper">
-                {groupedPayees.map((payee) => (
+                {groupedPayees?.map((payee) => (
                   <div
                     key={payee.name}
                     className="payee-summary-card"
@@ -130,13 +130,13 @@ const PayeesView = () => {
                 </div>
               </div>
               <div className="transaction-page-wrapper">
-                {Object.entries(transactions).map(([date, items]) => (
+                {Object.entries(transactions)?.map(([date, items]) => (
                   <div key={date} className="transaction-group">
                     <h2 className="transaction-date-header">
                       {formatDateToDayMonthYear(date)}
                     </h2>
                     <div className="transaction-card-list">
-                      {items.map((tx) => (
+                      {items?.map((tx) => (
                         <TransactionCard key={tx.id} transaction={tx} />
                       ))}
                     </div>

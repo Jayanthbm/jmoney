@@ -173,13 +173,13 @@ const SubscriptionBillsView = () => {
           </div>
           {selectedCard === "Subscriptions" && (
             <div className="transaction-page-wrapper">
-              {Object.entries(subscriptions).map(([date, items]) => (
+              {Object.entries(subscriptions)?.map(([date, items]) => (
                 <div key={date} className="transaction-group">
                   <h2 className="transaction-date-header">
                     {formatDateToDayMonthYear(date)}
                   </h2>
                   <div className="transaction-card-list">
-                    {items.map((tx) => (
+                    {items?.map((tx) => (
                       <TransactionCard key={tx.id} transaction={tx} />
                     ))}
                   </div>

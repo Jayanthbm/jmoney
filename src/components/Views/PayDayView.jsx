@@ -88,17 +88,17 @@ const PayDayView = () => {
         <div className="summary-date">
           {formatDateToDayMonthYear(selectedDate)}
         </div>
-        {filteredTx.length > 0 && (
+        {filteredTx?.length > 0 && (
           <div className="summary-amount">{formatIndianNumber(netTotal)}</div>
         )}
       </div>
 
       {/* Transactions */}
       <div className="transaction-list-wrapper">
-        {filteredTx.length === 0 ? (
+        {filteredTx?.length === 0 ? (
           <div className="no-data-card">No transactions on this date</div>
         ) : (
-          filteredTx.map((tx) => (
+          filteredTx?.map((tx) => (
             <TransactionCard key={tx.id} transaction={tx} />
           ))
         )}
