@@ -17,6 +17,7 @@ import {
   getYearOptions,
 } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import NoDataCard from "../Cards/NoDataCard";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -175,7 +176,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
           {/* Category Summary */}
           <>
             {categorySummary.length === 0 ? (
-              <div className="no-data-card">No data found</div>
+              <NoDataCard message="No transactions" height="150" width="200" />
             ) : (
               <>
                   <div className="align-right">
