@@ -22,6 +22,7 @@ import {
   refreshTransactionsCache,
 } from "../../utils";
 import "./Overview.css";
+import NoDataCard from "../../components/Cards/NoDataCard";
 
 const Overview = () => {
   const [data, setData] = useState(null);
@@ -245,18 +246,21 @@ const Overview = () => {
           <div
             className="overview-card-wrapper"
             onClick={() => {
-              setViewMode("topCategories");
-              setTitle('Top Categories');
+              if (data?.topCategories?.length > 0) {
+                setViewMode("topCategories");
+                setTitle('Top Categories');
+              }
+
             }}
           >
             <OverviewCard
               title="Top Categories"
               subtitle={data?.remainingForPeriod?.period}
             >
-              <div className="top-categories-donut">
-                {/* Section 1: Labels */}
-                <div className="category-labels">
-                  {data?.topCategories?.length > 0 && (
+              {data?.topCategories?.length > 0 ? (
+                <div className="top-categories-donut">
+                  {/* Section 1: Labels */}
+                  <div className="category-labels">
                     <>
                       {data?.topCategories?.map((cat, index) => (
                         <div key={index} className="category-label-item">
@@ -276,19 +280,22 @@ const Overview = () => {
                         </div>
                       ))}
                     </>
-                  )}
-                </div>
+                  </div>
 
-                {/* Section 2: Donut Chart */}
-                <div className="category-donut-chart">
-                  <CustomDonutChart
-                    data={data?.topCategories?.map((cat) => ({
-                      value: cat?.percentage,
-                    }))}
-                    colors={CATEGORY_COLORS}
-                  />
+                  {/* Section 2: Donut Chart */}
+                  <div className="category-donut-chart">
+                    <CustomDonutChart
+                      data={data?.topCategories?.map((cat) => ({
+                        value: cat?.percentage,
+                      }))}
+                      colors={CATEGORY_COLORS}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <NoDataCard message="No data available" height="100" width="150" />
+              )}
+
             </OverviewCard>
           </div>
 
