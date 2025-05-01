@@ -46,7 +46,7 @@ const PwaBanner = ({
         </>
       ) : (
           <>
-            {showInstallPrompt || showIosInstallGuide && (
+            {(showInstallPrompt || showIosInstallGuide) && (
               <div className="pwa-install-banner">
                 <Content />
               </div>
