@@ -11,10 +11,9 @@ import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
 import Loading from "./components/Layouts/Loading";
 import MainLayout from "./components/Layouts/MainLayout";
-import Button from "./components/Button/Button";
 import { supabase } from "./supabaseClient";
-import { FiDownload } from "react-icons/fi";
 import "./App.css";
+import PwaBanner from "./components/Views/PwaBanner";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -57,39 +56,24 @@ function App() {
     /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
 
   useEffect(() => {
-    if (isPwaInstalled()) {
-      // Don't show any install prompt if already installed
-      return;
-    }
+    const lastDismissed = localStorage.getItem("pwaDismissedAt");
+    const dismissedRecently = lastDismissed && Date.now() - Number(lastDismissed) < 24 * 60 * 60 * 1000;
 
-    if (isIos()) {
+    if (dismissedRecently || isPwaInstalled()) return;
+
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (isIos() || (isSafari && /mac/i.test(navigator.userAgent))) {
       setShowIosInstallGuide(true); // iOS custom message
-      iosTimeoutRef.current = setTimeout(() => {
-        setShowIosInstallGuide(false);
-      }, 10000);
     } else {
       const handleBeforeInstallPrompt = (e) => {
         e.preventDefault();
         setDeferredPrompt(e);
-        setShowInstallPrompt(true); // Android-style install banner
+        setShowInstallPrompt(true);
       };
-
       window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-      return () => {
-        window.removeEventListener(
-          "beforeinstallprompt",
-          handleBeforeInstallPrompt
-        );
-      };
+      return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     }
-
-    // Clear timeout if component unmounts
-    return () => {
-      if (iosTimeoutRef.current) {
-        clearTimeout(iosTimeoutRef.current);
-      }
-    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -104,41 +88,19 @@ function App() {
     }
   };
 
+  const handleCloseModal = () => {
+    localStorage.setItem("pwaDismissedAt", Date.now());
+    setShowIosInstallGuide(false);
+    setShowInstallPrompt(false);
+  };
+
   if (loading) return <Loading />;
   if (!session) return <Login />;
+
   return (
     <>
       <Router>
-        {showInstallPrompt && (
-          <div className="pwa-install-banner">
-            <span>Install this app for a better experience.</span>
-            <Button
-              variant="info"
-              onClick={handleInstallClick}
-              text="Install"
-              icon={<FiDownload />}
-            />
-          </div>
-        )}
-        {showIosInstallGuide && (
-          <div className={`pwa-install-banner fade-in-out`}>
-            <span>
-              To install this app, tap <strong>Share</strong> and choose{" "}
-              <strong>"Add to Home Screen"</strong> in Safari.
-            </span>
-            <button
-              className="close-btn"
-              onClick={() => {
-                if (iosTimeoutRef.current) {
-                  clearTimeout(iosTimeoutRef.current);
-                }
-                setShowIosInstallGuide(false);
-              }}
-            >
-              &times;
-            </button>
-          </div>
-        )}
+        <PwaBanner showInstallPrompt={showInstallPrompt} showIosInstallGuide={showIosInstallGuide} handleInstallClick={handleInstallClick} onClose={handleCloseModal} />
         <MainLayout>
           <Routes>
             <Route path="/" element={<Overview />} />
