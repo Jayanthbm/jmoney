@@ -1,6 +1,6 @@
 // src/App.js
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Transactions from "./pages/Transactions/Transactions";
@@ -45,7 +45,6 @@ function App() {
     };
   }, []);
 
-  const iosTimeoutRef = useRef(null);
   // Detect if app is already installed
   const isPwaInstalled = () =>
     window.matchMedia("(display-mode: standalone)").matches ||
