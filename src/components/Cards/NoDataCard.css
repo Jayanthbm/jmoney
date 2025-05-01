@@ -1,0 +1,16 @@
+/* src/components/Cards/NoDataCard.css */
+
+.no-data-card {
+  text-align: center;
+  padding: 0.4rem;
+  color: var(--text-color);
+}
+
+.no-data-image {
+  margin-bottom: 0.5rem;
+}
+
+.no-data-description {
+  font-size: 1rem;
+  font-weight: 500;
+}
