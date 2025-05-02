@@ -10,6 +10,7 @@ import Button from "../Button/Button";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import { useMediaQuery } from "react-responsive";
+import NoDataCard from "../Cards/NoDataCard";
 
 const PayDayView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -96,7 +97,7 @@ const PayDayView = () => {
       {/* Transactions */}
       <div className="transaction-list-wrapper">
         {filteredTx?.length === 0 ? (
-          <div className="no-data-card">No transactions on this date</div>
+          <NoDataCard message="No transactions on this date" height="100" width="150" />
         ) : (
           filteredTx?.map((tx) => (
             <TransactionCard key={tx.id} transaction={tx} />

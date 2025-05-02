@@ -84,20 +84,7 @@
   margin-bottom: 1rem;
 }
 
-.no-data-card {
-  text-align: center;
-  padding: 2rem;
-  background: var(--card-bg);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-}
 
-.no-data-card.fade-out {
-  opacity: 0;
-}
 
 .transaction-controls {
   display: flex;
@@ -111,8 +98,4 @@
 .left-buttons {
   display: flex;
   gap: 10px;
-}
-
-.right-button {
-  /* You can adjust spacing or alignment here if needed */
 }

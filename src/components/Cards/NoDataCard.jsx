@@ -3,7 +3,7 @@
 import React from "react";
 import "./NoDataCard.css"; // Optional external CSS file
 
-const NoDataCard = ({ message = "No data",height=150,width=150}) => {
+const NoDataCard = ({ message = "No data", height = 150, width = 150, children }) => {
   return (
     <div className="no-data-card">
       <div className="no-data-image">
@@ -54,7 +54,9 @@ const NoDataCard = ({ message = "No data",height=150,width=150}) => {
           </g>
         </svg>
       </div>
-      <div className="no-data-description">{message}</div>
+      <div className="no-data-description">{message}
+        {children}
+      </div>
     </div>
   );
 };

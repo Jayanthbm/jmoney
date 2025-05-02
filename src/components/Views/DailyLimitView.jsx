@@ -8,6 +8,7 @@ import TransactionCard from "../Cards/TransactionCard";
 import useTheme from "../../hooks/useTheme";
 import { formatIndianNumber } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import NoDataCard from "../Cards/NoDataCard";
 
 const DailyLimitView = ({ dailyLimitData }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);
@@ -92,7 +93,7 @@ const DailyLimitView = ({ dailyLimitData }) => {
         {/* Today's Transactions */}
         <div className="transaction-list-wrapper">
           {todayExpenses?.length === 0 ? (
-            <div className="no-data-card">No expenses today</div>
+            <NoDataCard message="No expenses today" height="150" width="150" />
           ) : (
             <>
               <div className="date-summary-bar">

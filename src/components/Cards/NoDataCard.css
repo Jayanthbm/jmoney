@@ -2,10 +2,14 @@
 
 .no-data-card {
   text-align: center;
-  padding: 0.4rem;
+  padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
   color: var(--text-color);
+  opacity: 1;
+    transition: opacity 0.3s ease-in-out;
 }
-
 .no-data-image {
   margin-bottom: 0.5rem;
 }

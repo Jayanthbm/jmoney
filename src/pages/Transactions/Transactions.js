@@ -29,6 +29,7 @@ import {
   getAllTransactions,
   storeTransactions,
 } from "../../db/transactionDb";
+import NoDataCard from "../../components/Cards/NoDataCard";
 
 const Transactions = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -308,15 +309,17 @@ const Transactions = () => {
       </AnimatePresence>
 
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
-        <div className={`no-data-card ${fadeOut ? "fade-out" : ""}`}>
-          <p>No transactions found.</p>
-          <Button
-            icon={<MdClose />}
-            text="Clear Filters"
-            variant="danger"
-            onClick={clearFilters}
-          />
-        </div>
+        <NoDataCard message="No transactions found." height="100" width="150" >
+          <div style={{ marginTop: "2px" }}>
+            <Button
+              icon={<MdClose />}
+              text="Clear Filters"
+              variant="danger"
+              onClick={clearFilters}
+            />
+          </div>
+        </NoDataCard>
+
       ) : (
         !loading &&
         hasGrouped && (
