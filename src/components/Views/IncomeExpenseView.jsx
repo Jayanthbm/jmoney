@@ -26,6 +26,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import useTheme from "../../hooks/useTheme";
 import Button from "../Button/Button";
 import { FaChartBar, FaEyeSlash } from "react-icons/fa";
+import NoDataCard from "../Cards/NoDataCard";
 
 const IncomeExpenseView = () => {
   const theme = useTheme();
@@ -258,23 +259,26 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(totalExpense)}
             </div>
           </div>
-          <div className="transaction-card-list">
-            {expenseSummary?.map((category, index) => {
-              return (
-                <TransactionCard
-                  key={index}
-                  transaction={category}
-                  onCardClick={() => {
-                    setViewMode("transactions");
-                    setHeading("Transactions");
-                    setTransactions(groupBy(category.transactions, "date"));
-                    setSelectedCategory(category.category_name);
-                    setSelectedCategoryAmount(category.amount);
-                  }}
-                />
-              );
-            })}
-          </div>
+          {expenseSummary?.length > 0 ? (
+            <div className="transaction-card-list">
+              {expenseSummary?.map((category, index) => {
+                return (
+                  <TransactionCard
+                    key={index}
+                    transaction={category}
+                    onCardClick={() => {
+                      setViewMode("transactions");
+                      setHeading("Transactions");
+                      setTransactions(groupBy(category.transactions, "date"));
+                      setSelectedCategory(category.category_name);
+                      setSelectedCategoryAmount(category.amount);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          ) : (<NoDataCard message="No expenses found" height="100" width="150" />)}
+
 
           <div className="date-summary-bar">
             <div className="summary-date">Income</div>
@@ -282,23 +286,25 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(totalIncome)}
             </div>
           </div>
-          <div className="transaction-card-list">
-            {incomeSummary?.map((category, index) => {
-              return (
-                <TransactionCard
-                  key={index}
-                  transaction={category}
-                  onCardClick={() => {
-                    setViewMode("transactions");
-                    setHeading("Transactions");
-                    setTransactions(groupBy(category.transactions, "date"));
-                    setSelectedCategory(category.category_name);
-                    setSelectedCategoryAmount(category.amount);
-                  }}
-                />
-              );
-            })}
-          </div>
+          {incomeSummary?.length > 0 ? (
+            <div className="transaction-card-list">
+              {incomeSummary?.map((category, index) => {
+                return (
+                  <TransactionCard
+                    key={index}
+                    transaction={category}
+                    onCardClick={() => {
+                      setViewMode("transactions");
+                      setHeading("Transactions");
+                      setTransactions(groupBy(category.transactions, "date"));
+                      setSelectedCategory(category.category_name);
+                      setSelectedCategoryAmount(category.amount);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          ) : (<NoDataCard message="No income found" height="100" width="150" />)}
         </>
       )}
 
@@ -331,6 +337,9 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(selectedCategoryAmount)}
             </div>
           </div>
+          {Object.entries(transactions)?.length === 0 && (
+            <NoDataCard message="No transactions found" height="100" width="150" />
+          )}
           <div className="transaction-page-wrapper">
             {Object.entries(transactions)?.map(([date, items]) => (
               <div key={date} className="transaction-group">

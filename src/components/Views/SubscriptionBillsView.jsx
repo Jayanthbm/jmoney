@@ -15,6 +15,7 @@ import {
 import "./SubscriptionBillsView.css";
 import { IoIosArrowBack } from "react-icons/io";
 import TransactionCard from "../Cards/TransactionCard";
+import NoDataCard from "../Cards/NoDataCard";
 const SubscriptionBillsView = () => {
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -172,36 +173,42 @@ const SubscriptionBillsView = () => {
             </button>
           </div>
           {selectedCard === "Subscriptions" && (
-            <div className="transaction-page-wrapper">
-              {Object.entries(subscriptions)?.map(([date, items]) => (
-                <div key={date} className="transaction-group">
-                  <h2 className="transaction-date-header">
-                    {formatDateToDayMonthYear(date)}
-                  </h2>
-                  <div className="transaction-card-list">
-                    {items?.map((tx) => (
-                      <TransactionCard key={tx.id} transaction={tx} />
-                    ))}
+            <>
+              {Object.entries(subscriptions)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
+              <div className="transaction-page-wrapper">
+                {Object.entries(subscriptions)?.map(([date, items]) => (
+                  <div key={date} className="transaction-group">
+                    <h2 className="transaction-date-header">
+                      {formatDateToDayMonthYear(date)}
+                    </h2>
+                    <div className="transaction-card-list">
+                      {items?.map((tx) => (
+                        <TransactionCard key={tx.id} transaction={tx} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
           {selectedCard === "Bills" && (
-            <div className="transaction-page-wrapper">
-              {Object.entries(bills).map(([date, items]) => (
-                <div key={date} className="transaction-group">
-                  <h2 className="transaction-date-header">
-                    {formatDateToDayMonthYear(date)}
-                  </h2>
-                  <div className="transaction-card-list">
-                    {items.map((tx) => (
-                      <TransactionCard key={tx.id} transaction={tx} />
-                    ))}
+            <>
+              {Object.entries(bills)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
+              <div className="transaction-page-wrapper">
+                {Object.entries(bills).map(([date, items]) => (
+                  <div key={date} className="transaction-group">
+                    <h2 className="transaction-date-header">
+                      {formatDateToDayMonthYear(date)}
+                    </h2>
+                    <div className="transaction-card-list">
+                      {items.map((tx) => (
+                        <TransactionCard key={tx.id} transaction={tx} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </>
       )}

@@ -13,6 +13,7 @@ import { get, set } from "idb-keyval";
 import Button from "../Button/Button";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
+import NoDataCard from "../Cards/NoDataCard";
 
 const MonthlyLivingCostsView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -188,6 +189,7 @@ const MonthlyLivingCostsView = () => {
               {formatIndianNumber(totalSummary)}
             </div>
           </div>
+          {summary?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
           <div className="transaction-card-list">
             {summary?.map((category, index) => {
               return (
