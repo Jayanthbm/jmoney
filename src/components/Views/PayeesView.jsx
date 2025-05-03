@@ -1,14 +1,15 @@
 // src/components/Views/PayeesView.jsx
 
-import React, { useEffect, useState } from "react";
-import { groupBy } from "lodash";
-import { getAllTransactions } from "../../db/transactionDb";
-import { IoIosArrowBack } from "react-icons/io";
-import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
-import TransactionCard from "../Cards/TransactionCard";
-
 import "./PayeesView.css";
+
+import React, { useEffect, useState } from "react";
+import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
+
+import { IoIosArrowBack } from "react-icons/io";
 import Loading from "../Layouts/Loading";
+import TransactionCard from "../Cards/TransactionCard";
+import { getAllTransactions } from "../../db/transactionDb";
+import { groupBy } from "lodash";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);

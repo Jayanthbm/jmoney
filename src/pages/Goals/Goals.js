@@ -1,23 +1,26 @@
 // src/pages/Goals/Goals.js
 
-import React, { useCallback, useEffect, useState } from "react";
-import { get } from "idb-keyval";
-import Select from "react-select";
-import { FaCirclePlus } from "react-icons/fa6";
-import { FaSave, FaWindowClose } from "react-icons/fa";
-import AppLayout from "../../components/Layouts/AppLayout";
-import GoalCard from "../../components/Cards/GoalCard";
-import Button from "../../components/Button/Button";
 import "./Goals.css";
-import {
-  getSupabaseUserIdFromLocalStorage,
-  refreshGoalsCache,
-} from "../../utils";
+
+import { FaSave, FaWindowClose } from "react-icons/fa";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   addGoalInDb,
   deleteGoalInDb,
   updateGoalInDb,
 } from "../../supabaseData";
+import {
+  getGoalsCacheKey,
+  getSupabaseUserIdFromLocalStorage,
+  refreshGoalsCache,
+} from "../../utils";
+
+import AppLayout from "../../components/Layouts/AppLayout";
+import Button from "../../components/Button/Button";
+import { FaCirclePlus } from "react-icons/fa6";
+import GoalCard from "../../components/Cards/GoalCard";
+import Select from "react-select";
+import { get } from "idb-keyval";
 import { useMediaQuery } from "react-responsive";
 
 const Goals = () => {
@@ -64,9 +67,8 @@ const Goals = () => {
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
-    const userId = getSupabaseUserIdFromLocalStorage();
-    const CACHE_KEY = `${userId}_goals`;
-    const goals = await get(CACHE_KEY);
+    const { GOALS_CACHE_KEY } = getGoalsCacheKey();
+    const goals = await get(GOALS_CACHE_KEY);
 
     if (goals) {
       setGoals(goals);

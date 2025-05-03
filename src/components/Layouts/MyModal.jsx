@@ -1,7 +1,7 @@
 // src/components/Layouts/MyModal.jsx
 
-import React from "react";
 import { MdClose } from "react-icons/md";
+import React from "react";
 
 const MyModal = ({ showModal, modalFadeOut = false, onClose, children }) => {
   return (

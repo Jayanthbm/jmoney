@@ -1,6 +1,7 @@
+import "./Button.css";
+
 // src/components/Button/Button.jsx
 import React from "react";
-import "./Button.css";
 
 const Button = ({
   icon,

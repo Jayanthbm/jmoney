@@ -1,13 +1,15 @@
 // src/components/Cards/GoalCard.jsx
 
-import React from "react";
-import { MdModeEditOutline, MdDelete } from "react-icons/md";
-import CircularProgressBar from "../Charts/CircularProgressBar";
-import Button from "../Button/Button";
-import useTheme from "../../hooks/useTheme";
-import { formatIndianNumber } from "../../utils";
-
 import "./GoalCard.css";
+
+import { MdDelete, MdModeEditOutline } from "react-icons/md";
+
+import Button from "../Button/Button";
+import CircularProgressBar from "../Charts/CircularProgressBar";
+import React from "react";
+import { formatIndianNumber } from "../../utils";
+import useTheme from "../../hooks/useTheme";
+
 const GoalCard = ({
   title,
   progress,

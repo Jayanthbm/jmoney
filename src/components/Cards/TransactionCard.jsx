@@ -1,8 +1,10 @@
 // src/components/Cards/TransactionCard.jsx
 
-import React from "react";
-import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
 import "./TransactionCard.css";
+
+import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
+
+import React from "react";
 
 const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
   const {

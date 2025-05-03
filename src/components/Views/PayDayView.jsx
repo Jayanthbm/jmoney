@@ -1,16 +1,18 @@
 // src/components/Views/PayDayView.jsx
 
-import React, { useEffect, useState } from "react";
-import { isSameDay } from "date-fns";
-import { MdToday } from "react-icons/md";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import TransactionCard from "../Cards/TransactionCard";
-import Button from "../Button/Button";
+
+import React, { useEffect, useState } from "react";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
-import { getAllTransactions } from "../../db/transactionDb";
-import { useMediaQuery } from "react-responsive";
+
+import Button from "../Button/Button";
+import Calendar from "react-calendar";
+import { MdToday } from "react-icons/md";
 import NoDataCard from "../Cards/NoDataCard";
+import TransactionCard from "../Cards/TransactionCard";
+import { getAllTransactions } from "../../db/transactionDb";
+import { isSameDay } from "date-fns";
+import { useMediaQuery } from "react-responsive";
 
 const PayDayView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });

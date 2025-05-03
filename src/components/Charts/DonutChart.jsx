@@ -1,6 +1,6 @@
 // src/components/Charts/DonutChart.jsx
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const DonutChart = ({ data, colors }) => {
   return (

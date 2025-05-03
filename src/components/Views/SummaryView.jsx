@@ -1,14 +1,7 @@
 // src/components/Views/SummaryView.jsx
 
+import { FaChartBar, FaEyeSlash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import { useMediaQuery } from "react-responsive";
-import { groupBy } from "lodash";
-import { FaChartBar, FaEyeSlash } from 'react-icons/fa';
-import { IoIosArrowBack } from "react-icons/io";
-import DonutChart from "../Charts/DonutChart";
-import TransactionCard from "../Cards/TransactionCard";
-import Button from "../Button/Button";
 import {
   formatDateToDayMonthYear,
   formatIndianNumber,
@@ -16,8 +9,16 @@ import {
   getTopCategoryColors,
   getYearOptions,
 } from "../../utils";
-import { getAllTransactions } from "../../db/transactionDb";
+
+import Button from "../Button/Button";
+import DonutChart from "../Charts/DonutChart";
+import { IoIosArrowBack } from "react-icons/io";
 import NoDataCard from "../Cards/NoDataCard";
+import Select from "react-select";
+import TransactionCard from "../Cards/TransactionCard";
+import { getAllTransactions } from "../../db/transactionDb";
+import { groupBy } from "lodash";
+import { useMediaQuery } from "react-responsive";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });

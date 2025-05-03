@@ -1,19 +1,18 @@
 // src/components/Views/MonthlyLivingCostsView.jsx
 
 import React, { useEffect, useState } from "react";
-
 import { useMediaQuery } from "react-responsive";
+import { get, set } from "idb-keyval";
 import Select from "react-select";
 import { groupBy } from "lodash";
-import { formatDateToDayMonthYear, formatIndianNumber, getMonthOptions, getSupabaseUserIdFromLocalStorage, getYearOptions } from "../../utils";
-import { getAllTransactions } from "../../db/transactionDb";
-import TransactionCard from "../Cards/TransactionCard";
-import { IoIosArrowBack } from "react-icons/io";
-import { get, set } from "idb-keyval";
-import Button from "../Button/Button";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
+import { IoIosArrowBack } from "react-icons/io";
+import TransactionCard from "../Cards/TransactionCard";
+import Button from "../Button/Button";
 import NoDataCard from "../Cards/NoDataCard";
+import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions } from "../../utils";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const MonthlyLivingCostsView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -37,16 +36,14 @@ const MonthlyLivingCostsView = () => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
-  const [userId, setUserId] = useState(null);
+  const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys()
 
   useEffect(() => {
     const init = async () => {
-      const userId = getSupabaseUserIdFromLocalStorage();
-      setUserId(userId);
-      const cached_categories = await get(`${userId}_settings-expense-categories`);
+      const cached_categories = await get(EXPENSE_CACHE_KEY);
       setExpenseCategories(cached_categories);
 
-      const cached_choosen_category_ids = await get(`${userId}_choosen_category_ids`);
+      const cached_choosen_category_ids = await get(CHOOSEN_CATEGORIES_CACHE_KEY);
       if (!cached_choosen_category_ids || cached_choosen_category_ids.length === 0) {
         setHeading("Configure Categories");
         setViewMode("configure");
@@ -113,7 +110,7 @@ const MonthlyLivingCostsView = () => {
 
   const handleSaveCategories = async () => {
     const selectedIds = selectedOptions?.map((opt) => opt.value);
-    await set(`${userId}_choosen_category_ids`, selectedIds);
+    await set(CHOOSEN_CATEGORIES_CACHE_KEY, selectedIds);
     setChoosenCategories(selectedIds);
     setHeading("Monthly Living Costs");
     setViewMode("summary");

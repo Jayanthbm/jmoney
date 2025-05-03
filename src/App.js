@@ -1,19 +1,23 @@
 // src/App.js
 
+import "./App.css";
+
+import { Route, HashRouter as Router, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./pages/Login/Login";
-import Transactions from "./pages/Transactions/Transactions";
-import Overview from "./pages/Overview/Overview";
+
 import Budgets from "./pages/Budgets/Budgets";
+import Categories from "./pages/Categories/Categories";
 import Goals from "./pages/Goals/Goals";
+import Loading from "./components/Layouts/Loading";
+import Login from "./pages/Login/Login";
+import MainLayout from "./components/Layouts/MainLayout";
+import Overview from "./pages/Overview/Overview";
+import Payees from "./pages/Payees/Payees";
+import PwaBanner from "./components/Views/PwaBanner";
 import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
-import Loading from "./components/Layouts/Loading";
-import MainLayout from "./components/Layouts/MainLayout";
+import Transactions from "./pages/Transactions/Transactions";
 import { supabase } from "./supabaseClient";
-import "./App.css";
-import PwaBanner from "./components/Views/PwaBanner";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -108,6 +112,8 @@ function App() {
             <Route path="/goals" element={<Goals />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/payees" element={<Payees />} />
           </Routes>
         </MainLayout>
       </Router>

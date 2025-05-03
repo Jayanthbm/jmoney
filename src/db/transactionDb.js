@@ -1,21 +1,21 @@
 // src/db/transactionDb.js
 
 import { createStore, set, get, del, keys } from "idb-keyval";
-import { getSupabaseUserIdFromLocalStorage } from "../utils";
+import { getTransactionCachekeys } from "../utils";
 
 // Create a function to get a user-specific store
 const getUserStore = () => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  return createStore(`transactions-db-${userId}`, "transactions-store");
+  const { TRANSACTION_DB_NAME } = getTransactionCachekeys()
+  return createStore(TRANSACTION_DB_NAME, "transactions-store");
 };
 
 export const storeTransactions = async (transactions) => {
+  const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys()
   const txStore = getUserStore();
   for (const tx of transactions) {
     await set(tx.id, tx, txStore);
   }
-  const userId = getSupabaseUserIdFromLocalStorage();
-  localStorage.setItem(`${userId}_last_transaction_fetch`, Date.now());
+  localStorage.setItem(LAST_TRANSACTION_FETCH, Date.now());
 };
 
 export const getAllTransactions = async () => {

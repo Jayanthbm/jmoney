@@ -1,11 +1,13 @@
 // src/components/Views/SingleTransaction.jsx
 
-import React, { useState } from "react";
-import Select from "react-select";
 import "./SingleTransaction.css";
+
 import { FaSave, FaTimes, FaTrash } from "react-icons/fa";
+import React, { useState } from "react";
 import { deleteTransaction, updateTransaction } from "../../supabaseData";
+
 import Button from "../Button/Button";
+import Select from "react-select";
 
 const SingleTransaction = ({
   incomeCategories,

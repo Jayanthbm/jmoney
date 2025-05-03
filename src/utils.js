@@ -1,13 +1,16 @@
 // src/utils.js
 
-import React from "react";
-import { format } from "date-fns";
+import * as MdIcons from "react-icons/md";
+
 import {
   fetchGoalsData,
   fetchUserOverviewData,
   loadTransactionsFromSupabase,
 } from "./supabaseData";
-import * as MdIcons from "react-icons/md";
+
+import { MY_KEYS } from "./constants";
+import React from "react";
+import { format } from "date-fns";
 
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
@@ -157,7 +160,7 @@ export function getSupabaseUserIdFromLocalStorage() {
 
 export const refreshTransactionsCache = async (force = false) => {
   const userId = getSupabaseUserIdFromLocalStorage();
-  const CACHE_KEY = `${userId}_last_transaction_fetch`;
+  const CACHE_KEY = `${userId}_${MY_KEYS.LAST_TRANSACTION_FETCH_CACHE_KEY}`;
   const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   const lastFetch = localStorage.getItem(CACHE_KEY);
@@ -184,7 +187,7 @@ export const formatTimestamp = (timestamp) => {
 
 export const refreshGoalsCache = async (force = false) => {
   const userId = getSupabaseUserIdFromLocalStorage();
-  const CACHE_KEY = `${userId}_last_goals_fetch`;
+  const CACHE_KEY = `${userId}_${MY_KEYS.LAST_GOAL_FETCH_CACHE_KEY}`;
   const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   const lastFetch = localStorage.getItem(CACHE_KEY);
@@ -197,3 +200,39 @@ export const refreshGoalsCache = async (force = false) => {
     return data;
   }
 };
+
+export const getGoalsCacheKey = () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  let result = {
+    GOALS_CACHE_KEY: `${userId}_${MY_KEYS.GOALS_CACHE_KEY}`,
+    GOALS_EXPIRY_KEY: `${userId}_${MY_KEYS.LAST_GOAL_FETCH_CACHE_KEY}`,
+  };
+  return result;
+};
+
+export const getCategoryCachekeys = (type) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  let result = {
+    INCOME_CACHE_KEY: `${userId}_${MY_KEYS.INCOME_CATEGORIES_CACHE_KEY}`,
+    EXPENSE_CACHE_KEY: `${userId}_${MY_KEYS.EXPENSE_CATEGORIES_CACHE_KEY}`,
+    CHOOSEN_CATEGORIES_CACHE_KEY: `${userId}_${MY_KEYS.CHOOSEN_CATEGORIES_CACHE_KEY}`,
+  };
+  return result;
+}
+
+export const getPayeeCacheKey = () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  let result = {
+    PAYEE_CACHE_KEY: `${userId}_${MY_KEYS.PAYEES_CACHE_KEY}`,
+  };
+  return result;
+};
+
+export const getTransactionCachekeys = () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  let result = {
+    LAST_TRANSACTION_FETCH: `${userId}_${MY_KEYS.LAST_TRANSACTION_FETCH_CACHE_KEY}`,
+    TRANSACTION_DB_NAME: `transactions-db-${userId}`
+  };
+  return result;
+}

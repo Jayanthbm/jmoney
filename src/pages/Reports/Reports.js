@@ -1,24 +1,25 @@
 // src/pages/Reports/Reports.js
 
-import React, { useEffect, useState } from "react";
+import "./Reports.css";
+
 import {
-  MdCategory,
   MdCalendarToday,
+  MdCategory,
   MdCompareArrows,
-  MdSubscriptions,
-  MdPeople,
   MdHome,
+  MdPeople,
+  MdSubscriptions,
 } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+
 import AppLayout from "../../components/Layouts/AppLayout";
+import IncomeExpenseView from "../../components/Views/IncomeExpenseView";
+import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
+import PayeesView from "../../components/Views/PayeesView";
 import ReportCard from "../../components/Cards/ReportCard";
+import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
-import IncomeExpenseView from "../../components/Views/IncomeExpenseView";
-import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
-import PayeesView from "../../components/Views/PayeesView";
-import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsView";
-
-import "./Reports.css";
 
 const reportsList = [
   {

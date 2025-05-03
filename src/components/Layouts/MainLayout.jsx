@@ -1,20 +1,22 @@
 // src/components/Layouts/MainLayout.jsx
 
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import "./MainLayout.css";
+
 import {
-  MdLogout,
-  MdSettings,
-  MdDashboard,
-  MdListAlt,
   MdAccountBalanceWallet,
-  MdFlag,
   MdBarChart,
   MdDarkMode,
+  MdDashboard,
+  MdFlag,
   MdLightMode,
+  MdListAlt,
+  MdLogout,
+  MdSettings,
 } from "react-icons/md";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { supabase } from "../../supabaseClient";
-import "./MainLayout.css";
 import { updateThemeColorMetaTag } from "../../utils/themeUtils";
 
 const navItems = [

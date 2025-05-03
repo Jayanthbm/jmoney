@@ -1,7 +1,8 @@
 // src/components/Cards/NoDataCard.jsx
 
-import React from "react";
 import "./NoDataCard.css"; // Optional external CSS file
+
+import React from "react";
 
 const NoDataCard = ({ message = "No data", height = 150, width = 150, children }) => {
   return (

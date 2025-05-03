@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { format } from "date-fns";
 import { FaPlus, FaTimes } from "react-icons/fa";
-import { addTransaction } from "../../supabaseData";
 import Button from "../Button/Button";
+import { addTransaction } from "../../supabaseData";
 import "./SingleTransaction.css";
 
 const AddTransaction = ({

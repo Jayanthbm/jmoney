@@ -15,8 +15,11 @@ import TransactionCard from "../../components/Cards/TransactionCard";
 
 import {
   formatDateToDayMonthYear,
+  getCategoryCachekeys,
+  getPayeeCacheKey,
   getRelativeTime,
   getSupabaseUserIdFromLocalStorage,
+  getTransactionCachekeys,
   refreshOverviewCache,
 } from "../../utils";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
@@ -98,15 +101,20 @@ const Transactions = () => {
     return sorted;
   }, []);
 
+  const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
+  const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
+  const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
       const userId = getSupabaseUserIdFromLocalStorage();
+
       const [expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
-          get(`${userId}_settings-expense-categories`),
-          get(`${userId}_settings-income-categories`),
-          get(`${userId}_settings-payees`),
+          get(INCOME_CACHE_KEY),
+          get(EXPENSE_CACHE_KEY),
+          get(PAYEE_CACHE_KEY),
         ]);
       const sorted = await getAndSortTransactions();
 
@@ -114,12 +122,12 @@ const Transactions = () => {
       setIncomeCategories(incomeCategories || []);
       setPayees(cachedPayees || []);
       setAllTransactions(sorted);
-      const last = localStorage.getItem(userId + "_last_transaction_fetch");
+      const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
       if (last) {
         setLastSynced(Number(last));
       } else {
         const now = Date.now();
-        localStorage.setItem(userId + "_last_transaction_fetch", now);
+        localStorage.setItem(LAST_TRANSACTION_FETCH, now);
         setLastSynced(now);
       }
       setLoading(false);

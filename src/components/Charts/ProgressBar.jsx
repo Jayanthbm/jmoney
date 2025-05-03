@@ -1,8 +1,10 @@
 // src/components/Charts/ProgressBar.jsx
 
-import React, { useRef, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import "./ProgressBar.css";
+
+import React, { useEffect, useRef } from "react";
+
+import { useInView } from "react-intersection-observer";
 
 const ProgressBar = ({ value = 0, color = "#3ecf8e", height = "10px" }) => {
   const fillRef = useRef(null);

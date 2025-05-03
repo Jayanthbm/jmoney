@@ -1,21 +1,20 @@
 // src/pages/Settings/Settings.js
 
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient";
-import { get, set } from "idb-keyval";
+import "./Settings.css";
+
 import * as MdIcons from "react-icons/md";
-import AppLayout from "../../components/Layouts/AppLayout";
+
+import { get, set } from "idb-keyval";
 import {
+  getCategoryCachekeys,
+  getPayeeCacheKey,
   getRelativeTime,
   getSupabaseUserIdFromLocalStorage,
 } from "../../utils";
-import "./Settings.css";
+import { useCallback, useEffect, useState } from "react";
 
-const CACHE_KEYS = {
-  income: "settings-income-categories",
-  expense: "settings-expense-categories",
-  payees: "settings-payees",
-};
+import AppLayout from "../../components/Layouts/AppLayout";
+import { supabase } from "../../supabaseClient";
 
 const LAST_REFRESHED_KEY = "settings-last-refreshed";
 
@@ -65,12 +64,14 @@ const Settings = () => {
     return fresh;
   };
 
+  const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
+  const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
   const fetchData = useCallback(async () => {
     setLoading(true);
     const userId = getSupabaseUserIdFromLocalStorage();
 
     const [expense, income, payeeList] = await Promise.all([
-      fetchIfMissing(userId + "_" + CACHE_KEYS.expense, async () => {
+      fetchIfMissing(EXPENSE_CACHE_KEY, async () => {
         const { data } = await supabase
           .from("categories")
           .select("*")
@@ -78,7 +79,7 @@ const Settings = () => {
           .order("name", { ascending: true });
         return data || [];
       }),
-      fetchIfMissing(userId + "_" + CACHE_KEYS.income, async () => {
+      fetchIfMissing(INCOME_CACHE_KEY, async () => {
         const { data } = await supabase
           .from("categories")
           .select("*")
@@ -86,7 +87,7 @@ const Settings = () => {
           .order("name", { ascending: true });
         return data || [];
       }),
-      fetchIfMissing(userId + "_" + CACHE_KEYS.payees, async () => {
+      fetchIfMissing(PAYEE_CACHE_KEY, async () => {
         const { data } = await supabase
           .from("payees")
           .select("*")
@@ -132,9 +133,9 @@ const Settings = () => {
     const income = incomeData.data || [];
     const payees = payeeData.data || [];
 
-    await set(userId + "_" + CACHE_KEYS.expense, expense);
-    await set(userId + "_" + CACHE_KEYS.income, income);
-    await set(userId + "_" + CACHE_KEYS.payees, payees);
+    await set(EXPENSE_CACHE_KEY, expense);
+    await set(INCOME_CACHE_KEY, income);
+    await set(PAYEE_CACHE_KEY, payees);
 
     setExpenseCategories(expense);
     setIncomeCategories(income);

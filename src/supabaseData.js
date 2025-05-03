@@ -1,14 +1,15 @@
 // src/supabaseData.js
 
-import { set, del } from "idb-keyval";
+import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
+import { del, set } from "idb-keyval";
 import {
+  deleteTransactionInDb,
   storeTransactions,
   updateTransactionInDb,
-  deleteTransactionInDb,
 } from "./db/transactionDb";
+import { getGoalsCacheKey, getSupabaseUserIdFromLocalStorage } from "./utils";
+
 import { supabase } from "./supabaseClient";
-import { getSupabaseUserIdFromLocalStorage } from "./utils";
-import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
 
 export const loadTransactionsFromSupabase = async () => {
   const CHUNK_SIZE = 1000;
@@ -198,14 +199,13 @@ export const addTransaction = async (payload, options = {}) => {
 };
 
 export const fetchGoalsData = async () => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  const CACHE_KEY = `${userId}_goals`;
+  const { GOALS_CACHE_KEY, GOALS_EXPIRY_KEY } = getGoalsCacheKey();
   const { data, error } = await supabase.from("goals").select("*");
   if (error) console.error("Error fetching goals:", error);
   else {
-    localStorage.setItem(`${userId}_last_goals_fetch`, Date.now());
-    await del(CACHE_KEY);
-    await set(CACHE_KEY, data);
+    localStorage.setItem(GOALS_EXPIRY_KEY, Date.now());
+    await del(GOALS_CACHE_KEY);
+    await set(GOALS_CACHE_KEY, data);
     return data;
   }
 };

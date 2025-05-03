@@ -1,13 +1,15 @@
 // src/components/Views/YearlySummaryView.jsx
 
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import OverviewCard from "../Cards/OverviewCard";
-import MyCountUp from "../Charts/MyCountUp";
-import ProgressBar from "../Charts/ProgressBar";
-import { getAllTransactions } from "../../db/transactionDb";
-import { formatIndianNumber, getYearOptions } from "../../utils";
 import "./YearlySummaryView.css";
+
+import React, { useEffect, useState } from "react";
+import { formatIndianNumber, getYearOptions } from "../../utils";
+
+import MyCountUp from "../Charts/MyCountUp";
+import OverviewCard from "../Cards/OverviewCard";
+import ProgressBar from "../Charts/ProgressBar";
+import Select from "react-select";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const YearlySummaryView = () => {
   const [year, setYear] = useState({
