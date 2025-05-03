@@ -154,6 +154,14 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
 
           {/* Month/Year Selectors */}
           <div className="filters-wrapper">
+            <Select
+              className="react-select-container"
+              classNamePrefix="react-select"
+              options={getYearOptions()}
+              value={year}
+              onChange={(opt) => setYear(opt)}
+            />
+
             {showMonthSelect && (
               <Select
                 className="react-select-container"
@@ -163,14 +171,6 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
                 onChange={(opt) => setMonth(opt)}
               />
             )}
-
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-            />
           </div>
 
           {/* Category Summary */}
