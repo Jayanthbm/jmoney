@@ -61,7 +61,6 @@ const Goals = () => {
 
   const refreshData = useCallback(async () => {
     const freshData = await refreshGoalsCache(true);
-    console.log("Goals from Supabase:", freshData);
     setGoals(freshData);
   }, []);
 
