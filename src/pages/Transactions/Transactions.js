@@ -16,7 +16,6 @@ import {
   getCategoryCachekeys,
   getPayeeCacheKey,
   getRelativeTime,
-  getSupabaseUserIdFromLocalStorage,
   getTransactionCachekeys,
   reCalculateBudget,
   refreshOverviewCache,
