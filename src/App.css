@@ -410,3 +410,21 @@
   justify-content: flex-end;
   margin-bottom: 1rem;
 }
+.amount-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.amount-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted-color);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.divider {
+  height: 60px;
+  width: 1px;
+  background-color: var(--border-color);
+}
