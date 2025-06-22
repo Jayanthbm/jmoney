@@ -285,6 +285,16 @@ export const deleteGoalInDb = async (id) => {
     });
 };
 
+export const fetchBudgetsData = async () => {
+  const BUDGETS_CACHE_KEY = "budgets_cache";
+  const { data, error } = await supabase.from("budgets").select("*");
+  if (error) console.error("Error fetching budgets:", error);
+  else {
+    await del(BUDGETS_CACHE_KEY);
+    await set(BUDGETS_CACHE_KEY, data);
+    return data;
+  }
+};
 export const addBudgetInDb = async (payload) => {
   const id = crypto.randomUUID();
   const userId = getSupabaseUserIdFromLocalStorage();

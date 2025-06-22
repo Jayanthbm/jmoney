@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   addBudgetInDb,
   deleteBudgetInDb,
+  fetchBudgetsData,
   updateBudgetInDb,
 } from "../../supabaseData";
 import {
@@ -42,8 +43,13 @@ const Budgets = () => {
 
   const loadBudgets = useCallback(async () => {
     setLoading(true);
-    const budgets = await get("budgets_cache");
-    if (budgets) setBudgets(budgets);
+    let budgets = await get("budgets_cache");
+    if (budgets) {
+      setBudgets(budgets);
+    } else {
+      budgets = await fetchBudgetsData();
+      setBudgets(budgets);
+    }
     setLoading(false);
   }, []);
 
@@ -157,8 +163,15 @@ const Budgets = () => {
   };
 
   const sortedBudgets = sortBudgets(budgets);
+
+  const refreshData = useCallback(async () => {
+    const freshData = await fetchBudgetsData();
+    console.log("Goals from Supabase:", freshData);
+    setBudgets(freshData);
+  }, []);
+
   return (
-    <AppLayout title="Budgets" loading={loading}>
+    <AppLayout title="Budgets" loading={loading} onRefresh={refreshData}>
       <div className="budgets-header">
         <div className="left-controls">
           <Select
