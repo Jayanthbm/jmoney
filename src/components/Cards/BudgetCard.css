@@ -1,6 +1,4 @@
-/* src/components/Cards/GoalCard.css */
-
-.goal-card {
+.budget-card {
   background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -10,31 +8,32 @@
   will-change: transform;
 }
 
-.goal-card:hover {
+.budget-card:hover {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   transform: translateY(-4px) scale(1.02);
 }
 
-.goal-card-header {
+.budget-card-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.goal-card-title {
+
+.budget-card-title {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
   color: var(--text-color);
 }
 
-.goal-progress {
+.budget-progress {
   width: 50px;
   height: 30px;
 }
 
-.goal-card-body {
+.budget-card-body {
   padding: 1px;
   display: flex;
   flex-direction: row;
@@ -42,26 +41,13 @@
   align-items: flex-end;
 }
 
-.goal-card-logo-container {
+.budget-amount-container {
   display: flex;
-  justify-content: center;
-}
-
-.goal-card-logo {
-  width: 70px;
-  height: 70px;
-  object-fit: contain;
-  margin: 2px auto;
-}
-
-.amount-container {
-  display: flex;
-  gap: 15px;
+  gap: 10px;
   align-items: flex-start;
 }
 
-
-.goal-card-actions {
+.budget-card-actions {
   display: flex;
   gap: 15px;
   justify-content: flex-end;

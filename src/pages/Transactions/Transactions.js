@@ -1,18 +1,16 @@
 // src/pages/Transactions/Transactions.js
 
-import React, { useEffect, useState, useCallback } from "react";
-import { get } from "idb-keyval";
-import { MdSync, MdClose } from "react-icons/md";
-import { IoIosAddCircle, IoIosFunnel, IoIosSearch } from "react-icons/io";
-import { groupBy } from "lodash";
-import Fuse from "fuse.js";
-import Select from "react-select";
-import { motion, AnimatePresence } from "framer-motion";
-import { useMediaQuery } from "react-responsive";
-import AppLayout from "../../components/Layouts/AppLayout";
-import Button from "../../components/Button/Button";
-import TransactionCard from "../../components/Cards/TransactionCard";
+import "./Transactions.css";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { IoIosAddCircle, IoIosFunnel, IoIosSearch } from "react-icons/io";
+import { MdClose, MdSync } from "react-icons/md";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  clearTransactions,
+  getAllTransactions,
+  storeTransactions,
+} from "../../db/transactionDb";
 import {
   formatDateToDayMonthYear,
   getCategoryCachekeys,
@@ -20,19 +18,23 @@ import {
   getRelativeTime,
   getSupabaseUserIdFromLocalStorage,
   getTransactionCachekeys,
+  reCalculateBudget,
   refreshOverviewCache,
 } from "../../utils";
-import { loadTransactionsFromSupabase } from "../../supabaseData";
-import "./Transactions.css";
-import SingleTransaction from "../../components/Views/SingleTransaction";
-import MyModal from "../../components/Layouts/MyModal";
+
 import AddTransaction from "../../components/Views/AddTransaction";
-import {
-  clearTransactions,
-  getAllTransactions,
-  storeTransactions,
-} from "../../db/transactionDb";
+import AppLayout from "../../components/Layouts/AppLayout";
+import Button from "../../components/Button/Button";
+import Fuse from "fuse.js";
+import MyModal from "../../components/Layouts/MyModal";
 import NoDataCard from "../../components/Cards/NoDataCard";
+import Select from "react-select";
+import SingleTransaction from "../../components/Views/SingleTransaction";
+import TransactionCard from "../../components/Cards/TransactionCard";
+import { get } from "idb-keyval";
+import { groupBy } from "lodash";
+import { loadTransactionsFromSupabase } from "../../supabaseData";
+import { useMediaQuery } from "react-responsive";
 
 const Transactions = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -108,7 +110,6 @@ const Transactions = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const userId = getSupabaseUserIdFromLocalStorage();
 
       const [expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
@@ -193,6 +194,7 @@ const Transactions = () => {
     const sorted = await getAndSortTransactions();
     setAllTransactions(sorted);
     await refreshOverviewCache();
+    await reCalculateBudget();
   };
 
   const [showSearch, setShowSearch] = useState(false);
@@ -317,7 +319,7 @@ const Transactions = () => {
       </AnimatePresence>
 
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
-        <NoDataCard message="No transactions found." height="100" width="150" >
+        <NoDataCard message="No transactions found." height="100" width="150">
           <div style={{ marginTop: "2px" }}>
             <Button
               icon={<MdClose />}
@@ -327,7 +329,6 @@ const Transactions = () => {
             />
           </div>
         </NoDataCard>
-
       ) : (
         !loading &&
         hasGrouped && (

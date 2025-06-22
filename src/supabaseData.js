@@ -1,5 +1,6 @@
 // src/supabaseData.js
 
+import { addBudget, deleteBudget, updateBudget } from "./db/budgetDb";
 import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
 import { del, set } from "idb-keyval";
 import {
@@ -274,6 +275,78 @@ export const deleteGoalInDb = async (id) => {
   // 2. Sync with Supabase
   supabase
     .from("goals")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase delete failed:", error);
+      }
+    });
+};
+
+export const addBudgetInDb = async (payload) => {
+  const id = crypto.randomUUID();
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  const budget = {
+    id,
+    user_id: userId,
+    name: payload.name,
+    amount: payload.amount,
+    interval: payload.interval,
+    start_date: payload.start_date,
+    categories: payload.categories,
+    logo: payload.logo,
+    created_at: new Date().toISOString(),
+  };
+
+  // 1. Add to IndexedDB
+  await addBudget(budget);
+
+  // 2. Sync to Supabase
+  supabase
+    .from("budgets")
+    .insert([budget])
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase insert failed:", error);
+      }
+    });
+
+  return budget;
+};
+
+export const updateBudgetInDb = async (budget) => {
+  await updateBudget({
+    ...budget,
+    updated_at: new Date().toISOString(),
+  });
+
+  supabase
+    .from("budgets")
+    .update(budget)
+    .eq("id", budget.id)
+    .eq("user_id", budget.user_id)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase update failed:", error);
+      }
+    });
+
+  return {
+    ...budget,
+    updated_at: new Date().toISOString(),
+  };
+};
+
+export const deleteBudgetInDb = async (id) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  await deleteBudget(id);
+
+  supabase
+    .from("budgets")
     .delete()
     .eq("id", id)
     .eq("user_id", userId)

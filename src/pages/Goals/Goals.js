@@ -147,6 +147,7 @@ const Goals = () => {
     { value: "current_amount", label: "Sort by Current Amount" },
     { value: "progress", label: "Sort by Progress" },
   ];
+
   return (
     <AppLayout
       title="Goals"
