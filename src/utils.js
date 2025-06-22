@@ -3,6 +3,7 @@
 import * as MdIcons from "react-icons/md";
 
 import {
+  fetchBudgetsData,
   fetchGoalsData,
   fetchUserOverviewData,
   loadTransactionsFromSupabase,
@@ -242,15 +243,13 @@ export const getTransactionCachekeys = () => {
 
 export const reCalculateBudget = async () => {
   const allTx = await getAllTransactions();
-  const budgets = await get("budgets_cache");
+  let budgets = await get("budgets_cache");
+  if (!budgets || !Array.isArray(budgets)) {
+    budgets = await fetchBudgetsData();
+  }
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth(); // 0-indexed (0 = Jan)
-
-  if (!budgets || !Array.isArray(budgets)) {
-    console.warn("No budgets found.");
-    return;
-  }
 
   const filteredTx = allTx.filter((tx) => {
     const txDate = new Date(tx.transaction_timestamp);
@@ -284,8 +283,7 @@ export const reCalculateBudget = async () => {
     };
 
     delete updatedBudget.updated_at;
-
     await updateBudgetInDb(updatedBudget);
-    return true;
   }
+  return budgets;
 };

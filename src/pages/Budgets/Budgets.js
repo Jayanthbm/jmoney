@@ -47,7 +47,7 @@ const Budgets = () => {
     if (budgets) {
       setBudgets(budgets);
     } else {
-      budgets = await fetchBudgetsData();
+      budgets = await reCalculateBudget();
       setBudgets(budgets);
     }
     setLoading(false);
@@ -165,11 +165,9 @@ const Budgets = () => {
   const sortedBudgets = sortBudgets(budgets);
 
   const refreshData = useCallback(async () => {
-    const freshData = await fetchBudgetsData();
-    console.log("Goals from Supabase:", freshData);
+    const freshData = await reCalculateBudget();
     setBudgets(freshData);
   }, []);
-
   return (
     <AppLayout title="Budgets" loading={loading} onRefresh={refreshData}>
       <div className="budgets-header">
