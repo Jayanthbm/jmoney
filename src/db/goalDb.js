@@ -1,6 +1,7 @@
 // src/db/goalDb.js
 
 import { get, set } from "idb-keyval";
+
 import { getGoalsCacheKey } from "../utils";
 
 export const addGoal = async (goal) => {
@@ -11,7 +12,7 @@ export const addGoal = async (goal) => {
 };
 
 export const updateGoal = async (updatedGoal) => {
-  const { GOALS_CACHE_KEY, GOALS_EXPIRY_KEY } = getGoalsCacheKey();
+  const { GOALS_CACHE_KEY } = getGoalsCacheKey();
   const existing = (await get(GOALS_CACHE_KEY)) || [];
   const updated = existing.map((g) =>
     g.id === updatedGoal.id ? updatedGoal : g
@@ -20,7 +21,7 @@ export const updateGoal = async (updatedGoal) => {
 };
 
 export const deleteGoal = async (id) => {
-  const { GOALS_CACHE_KEY, GOALS_EXPIRY_KEY } = getGoalsCacheKey();
+  const { GOALS_CACHE_KEY } = getGoalsCacheKey();
   const existing = (await get(GOALS_CACHE_KEY)) || [];
   const updated = existing.filter((g) => g.id !== id);
   await set(GOALS_CACHE_KEY, updated);

@@ -6,13 +6,11 @@ import { Route, HashRouter as Router, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Budgets from "./pages/Budgets/Budgets";
-import Categories from "./pages/Categories/Categories";
 import Goals from "./pages/Goals/Goals";
 import Loading from "./components/Layouts/Loading";
 import Login from "./pages/Login/Login";
 import MainLayout from "./components/Layouts/MainLayout";
 import Overview from "./pages/Overview/Overview";
-import Payees from "./pages/Payees/Payees";
 import PwaBanner from "./components/Views/PwaBanner";
 import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
@@ -60,7 +58,8 @@ function App() {
 
   useEffect(() => {
     const lastDismissed = localStorage.getItem("pwaDismissedAt");
-    const dismissedRecently = lastDismissed && Date.now() - Number(lastDismissed) < 24 * 60 * 60 * 1000;
+    const dismissedRecently =
+      lastDismissed && Date.now() - Number(lastDismissed) < 24 * 60 * 60 * 1000;
 
     if (dismissedRecently || isPwaInstalled()) return;
 
@@ -75,7 +74,11 @@ function App() {
         setShowInstallPrompt(true);
       };
       window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      return () =>
+        window.removeEventListener(
+          "beforeinstallprompt",
+          handleBeforeInstallPrompt
+        );
     }
   }, []);
 
@@ -103,7 +106,12 @@ function App() {
   return (
     <>
       <Router>
-        <PwaBanner showInstallPrompt={showInstallPrompt} showIosInstallGuide={showIosInstallGuide} handleInstallClick={handleInstallClick} onClose={handleCloseModal} />
+        <PwaBanner
+          showInstallPrompt={showInstallPrompt}
+          showIosInstallGuide={showIosInstallGuide}
+          handleInstallClick={handleInstallClick}
+          onClose={handleCloseModal}
+        />
         <MainLayout>
           <Routes>
             <Route path="/" element={<Overview />} />
@@ -112,8 +120,6 @@ function App() {
             <Route path="/goals" element={<Goals />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/payees" element={<Payees />} />
           </Routes>
         </MainLayout>
       </Router>
