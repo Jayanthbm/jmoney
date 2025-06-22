@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   addBudgetInDb,
   deleteBudgetInDb,
-  fetchBudgetsData,
   updateBudgetInDb,
 } from "../../supabaseData";
 import {
