@@ -14,6 +14,8 @@ import NoDataCard from "../Cards/NoDataCard";
 import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 
+const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
+
 const MonthlyLivingCostsView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -36,7 +38,7 @@ const MonthlyLivingCostsView = () => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
-  const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys()
+
 
   useEffect(() => {
     const init = async () => {

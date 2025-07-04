@@ -18,6 +18,9 @@ import { supabase } from "../../supabaseClient";
 
 const LAST_REFRESHED_KEY = "settings-last-refreshed";
 
+const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
+const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
+
 const Settings = () => {
   const [categoryType, setCategoryType] = useState("Expense");
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -64,8 +67,8 @@ const Settings = () => {
     return fresh;
   };
 
-  const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
-  const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
+
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     const userId = getSupabaseUserIdFromLocalStorage();

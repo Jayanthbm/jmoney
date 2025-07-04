@@ -35,6 +35,10 @@ import { groupBy } from "lodash";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
 import { useMediaQuery } from "react-responsive";
 
+const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
+const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
+const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
+
 const Transactions = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
@@ -102,9 +106,8 @@ const Transactions = () => {
     return sorted;
   }, []);
 
-  const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
-  const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
-  const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
+
+
 
   useEffect(() => {
     const init = async () => {
