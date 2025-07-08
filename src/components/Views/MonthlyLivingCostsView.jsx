@@ -13,12 +13,14 @@ import Button from "../Button/Button";
 import NoDataCard from "../Cards/NoDataCard";
 import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import InlineLoader from "../Layouts/InlineLoader";
 
 const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
 
 const MonthlyLivingCostsView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-
+  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -56,12 +58,14 @@ const MonthlyLivingCostsView = () => {
           ?.map((cat) => ({ value: cat.id, label: cat.name }));
         setSelectedOptions(selected);
       }
+      setInitializing(false);
     };
     init();
   }, []);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
@@ -95,20 +99,23 @@ const MonthlyLivingCostsView = () => {
             category_name: category,
             category_icon: data.icon,
             amount: data.amount,
-            percentage: Math.round((data.amount / total) * 100),
+            percentage: total > 0 ? Math.round((data.amount / total) * 100) : 0,
             type: "Expense",
             transactions: data.transactions,
           }))
           .sort((a, b) => b.percentage - a.percentage);
         setSummary(summaryArray);
-
+      } else {
+        setSummary([]);
+        setTotalSummary(0);
       }
-    }
-    if (choosenCategories?.length > 0) {
-      fetchAndSummarize();
-    }
 
-  }, [month, year, choosenCategories])
+      setLoading(false);
+    };
+    if (initializing) return;
+    fetchAndSummarize();
+  }, [month, year, choosenCategories, initializing]);
+
 
   const handleSaveCategories = async () => {
     const selectedIds = selectedOptions?.map((opt) => opt.value);
@@ -188,35 +195,39 @@ const MonthlyLivingCostsView = () => {
               {formatIndianNumber(totalSummary)}
             </div>
           </div>
-          {summary?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-          <div className="transaction-card-list">
-            {summary?.map((category, index) => {
-              return (
-                <TransactionCard
-                  key={index}
-                  transaction={category}
-                  onCardClick={() => {
-                    setViewMode("transactions");
-                    setHeading("Transactions");
-                    let tt = groupBy(category.transactions, "date");
-                    Object.keys(tt).forEach((date) => {
-                      tt[date] = tt[date].sort(
-                        (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+          {initializing || loading ? (
+            <InlineLoader />
+          ) : summary.length === 0 ? (
+            <NoDataCard message="No transactions found" height="100" width="150" />
+          ) : (
+            <div className="transaction-card-list">
+              {summary?.map((category, index) => {
+                return (
+                  <TransactionCard
+                    key={index}
+                    transaction={category}
+                    onCardClick={() => {
+                      setViewMode("transactions");
+                      setHeading("Transactions");
+                      let tt = groupBy(category.transactions, "date");
+                      Object.keys(tt).forEach((date) => {
+                        tt[date] = tt[date].sort(
+                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+                        );
+                      });
+                      setTransactions(
+                        tt
                       );
-                    });
-                    setTransactions(
-                      tt
-                    );
-                    setSelectedCategory(category.category_name);
-                    setSelectedCategoryAmount(category.amount);
-                  }}
-                />
-              );
-            })}
-          </div>
+                      setSelectedCategory(category.category_name);
+                      setSelectedCategoryAmount(category.amount);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
         </>
       )}
-
       {viewMode === "transactions" && (
         <>
           <div
