@@ -20,7 +20,8 @@ const BudgetCard = ({
   onDelete,
   spent= 0,
   percentage_spent= 10,
-  percentage_remaining= 90
+  percentage_remaining= 90,
+  onClick
 }) => {
   const theme = useTheme();
 
@@ -48,7 +49,7 @@ const BudgetCard = ({
 };
 
   return (
-    <div className="budget-card">
+    <div className="budget-card" onClick={onClick}>
       <div className="budget-card-header">
         <div className="budget-card-title">{title} - {getInterval(interval)} </div>
         <div className="budget-progress">

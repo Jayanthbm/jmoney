@@ -3,18 +3,15 @@
 import * as MdIcons from "react-icons/md";
 
 import {
-  fetchBudgetsData,
   fetchGoalsData,
   fetchUserOverviewData,
   loadTransactionsFromSupabase,
-  updateBudgetInDb,
 } from "./supabaseData";
 
 import { MY_KEYS } from "./constants";
 import React from "react";
 import { format } from "date-fns";
-import { get } from "idb-keyval";
-import { getAllTransactions } from "./db/transactionDb";
+
 
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
@@ -239,51 +236,4 @@ export const getTransactionCachekeys = () => {
     TRANSACTION_DB_NAME: `transactions-db-${userId}`,
   };
   return result;
-};
-
-export const reCalculateBudget = async () => {
-  const allTx = await getAllTransactions();
-  let budgets = await get("budgets_cache");
-  if (!budgets || !Array.isArray(budgets)) {
-    budgets = await fetchBudgetsData();
-  }
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth(); // 0-indexed (0 = Jan)
-
-  const filteredTx = allTx.filter((tx) => {
-    const txDate = new Date(tx.transaction_timestamp);
-    return (
-      txDate.getFullYear() === currentYear &&
-      txDate.getMonth() === currentMonth &&
-      tx.type === "Expense" // Only count expenses
-    );
-  });
-
-  for (const budget of budgets) {
-    const { categories, amount } = budget;
-
-    const matchingTx = filteredTx.filter((tx) =>
-      categories.includes(tx.category_id)
-    );
-
-    const totalSpent = matchingTx.reduce(
-      (sum, tx) => sum + (tx.amount || 0),
-      0
-    );
-
-    const percentageSpent = ((totalSpent / amount) * 100).toFixed(2);
-    const percentageRemaining = (100 - percentageSpent).toFixed(2);
-
-    const updatedBudget = {
-      ...budget,
-      spent: totalSpent,
-      percentage_spent: Number(percentageSpent),
-      percentage_remaining: Number(percentageRemaining),
-    };
-
-    delete updatedBudget.updated_at;
-    await updateBudgetInDb(updatedBudget);
-  }
-  return budgets;
 };

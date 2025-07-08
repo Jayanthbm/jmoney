@@ -6,6 +6,7 @@
   margin: 12px 0;
   transition: box-shadow 0.25s ease, transform 0.25s ease;
   will-change: transform;
+  cursor: pointer;
 }
 
 .budget-card:hover {

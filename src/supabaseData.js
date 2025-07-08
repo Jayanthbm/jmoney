@@ -295,6 +295,7 @@ export const fetchBudgetsData = async () => {
     return data;
   }
 };
+
 export const addBudgetInDb = async (payload) => {
   const id = crypto.randomUUID();
   const userId = getSupabaseUserIdFromLocalStorage();

@@ -17,7 +17,6 @@ import {
   getPayeeCacheKey,
   getRelativeTime,
   getTransactionCachekeys,
-  reCalculateBudget,
   refreshOverviewCache,
 } from "../../utils";
 
@@ -196,7 +195,6 @@ const Transactions = () => {
     const sorted = await getAndSortTransactions();
     setAllTransactions(sorted);
     await refreshOverviewCache();
-    await reCalculateBudget();
   };
 
   const [showSearch, setShowSearch] = useState(false);
