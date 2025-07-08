@@ -1,24 +1,28 @@
 // src/components/Views/PayeesView.jsx
-
 import "./PayeesView.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
-
 import { IoIosArrowBack } from "react-icons/io";
 import Loading from "../Layouts/Loading";
 import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
+import { MdClose } from "react-icons/md";
+import Fuse from "fuse.js";
+import { debounce } from "lodash";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);
   const [heading, setHeading] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
+  const [payees, setPayees] = useState([]);
   const [groupedPayees, setGroupedPayees] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedPayee, setSelectedPayee] = useState(null);
   const [selectedPayeeTotal, setSelectedPayeeTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [fuse, setFuse] = useState(null);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -41,14 +45,19 @@ const PayeesView = () => {
         }
       );
 
-      // 🔠 Sort alphabetically by payee name
       summarizedPayees.sort((a, b) => a.name.localeCompare(b.name));
 
+      setPayees(summarizedPayees);
       setGroupedPayees(summarizedPayees);
+      // Create Fuse instance for fuzzy search
+      setFuse(new Fuse(summarizedPayees, {
+        keys: ['name'],
+        threshold: 0.3
+      }));
       setLoading(false);
     };
     fetchAndSummarize();
-  }, [setLoading]);
+  }, []);
 
   const handlePayeeClick = (payee) => {
     const sorted = payee.transactions.sort(
@@ -67,6 +76,24 @@ const PayeesView = () => {
     setHeading(`${payee.name} Transactions`);
   };
 
+  // Debounced fuzzy search
+  const debouncedFuzzyFilter = useCallback(
+    debounce((query, fuseInstance, originalPayees) => {
+      if (!query) {
+        setGroupedPayees(originalPayees);
+      } else if (fuseInstance) {
+        const results = fuseInstance.search(query);
+        setGroupedPayees(results.map(result => result.item));
+      }
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    debouncedFuzzyFilter(search, fuse, payees);
+    return () => debouncedFuzzyFilter.cancel();
+  }, [search, fuse, payees, debouncedFuzzyFilter]);
+
   return (
     <div>
       {heading && (
@@ -78,6 +105,29 @@ const PayeesView = () => {
         <>
           {viewMode === "summary" && (
             <>
+              <div className="search-input-wrapper">
+                <input
+                  type="text"
+                  placeholder="Search Payees"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="search-bar"
+                  spellCheck={false}
+                />
+                {search && (
+                  <span
+                    className="search-clear-icon"
+                    onClick={() => setSearch("")}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Clear search"
+                    title="Clear search"
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+                  >
+                    <MdClose />
+                  </span>
+                )}
+              </div>
               <div className="payee-summary-wrapper">
                 {groupedPayees?.map((payee) => (
                   <div
