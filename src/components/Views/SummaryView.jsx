@@ -19,9 +19,11 @@ import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
 import { useMediaQuery } from "react-responsive";
+import InlineLoader from "../Layouts/InlineLoader";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [loading, setLoading] = useState(true);
   const [type, setType] = useState("Expense");
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -52,6 +54,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
 
       let filtered;
@@ -98,6 +101,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
         .sort((a, b) => b.percentage - a.percentage);
 
       setCategorySummary(summaryArray);
+      setLoading(false);
     };
 
     fetchAndSummarize();
@@ -176,31 +180,33 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
 
           {/* Category Summary */}
           <>
-            {categorySummary.length === 0 ? (
+            {loading ? (
+              <InlineLoader text="Loading Categories" />
+            ) : categorySummary?.length === 0 ? (
               <NoDataCard message="No transactions" height="150" width="200" />
             ) : (
               <>
-                  <div className="align-right">
-                    <Button text={
-                      isMobile ? null : showSummaryChart ? "Hide Chart" : "Show Chart"
-                    } onClick={() => {
-                      setShowSummaryChart(!showSummaryChart)
-                    }}
-                      icon={showSummaryChart ? <FaEyeSlash /> : <FaChartBar />}
+                <div className="align-right">
+                  <Button text={
+                    isMobile ? null : showSummaryChart ? "Hide Chart" : "Show Chart"
+                  } onClick={() => {
+                    setShowSummaryChart(!showSummaryChart)
+                  }}
+                    icon={showSummaryChart ? <FaEyeSlash /> : <FaChartBar />}
+                  />
+                </div>
+                {showSummaryChart && (
+                  <>
+                    {/* Donut Chart */}
+                    <DonutChart
+                      data={categorySummary?.map((cat) => ({
+                        value: cat?.percentage,
+                        name: cat?.category_name,
+                      }))}
+                      colors={getTopCategoryColors(categorySummary.length)}
                     />
-                  </div>
-                  {showSummaryChart && (
-                    <>
-                      {/* Donut Chart */}
-                      <DonutChart
-                        data={categorySummary?.map((cat) => ({
-                          value: cat?.percentage,
-                          name: cat?.category_name,
-                        }))}
-                        colors={getTopCategoryColors(categorySummary.length)}
-                      />
-                    </>
-                  )}
+                  </>
+                )}
 
                 <div className="transaction-card-list">
                   {categorySummary?.map((category, index) => {
