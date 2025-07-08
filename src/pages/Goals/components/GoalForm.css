@@ -1,0 +1,28 @@
+/* src/pages/Goals/components/GoalForm.css */
+
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-form-input {
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-radius: 6px;
+}
+
+.goal-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
