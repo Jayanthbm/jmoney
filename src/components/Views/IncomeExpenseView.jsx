@@ -1,6 +1,6 @@
 // src/components/Views/IncomeExpenseView.jsx
 
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -27,9 +27,11 @@ import {
   getMonthOptions,
   getYearOptions,
 } from "../../utils";
+import InlineLoader from "../Layouts/InlineLoader";
 
 const IncomeExpenseView = () => {
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -63,6 +65,7 @@ const IncomeExpenseView = () => {
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
@@ -163,6 +166,7 @@ const IncomeExpenseView = () => {
       });
 
       setChartData(monthlyChartData);
+      setLoading(false);
     };
 
     fetchAndSummarize();
@@ -259,7 +263,11 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(totalExpense)}
             </div>
           </div>
-          {expenseSummary?.length > 0 ? (
+          {loading ? (
+            <InlineLoader text="Loading Expense ategories" />
+          ) : expenseSummary?.length === 0 ? (
+            <NoDataCard message="No expenses found" height="100" width="150" />
+          ) : (
             <div className="transaction-card-list">
               {expenseSummary?.map((category, index) => {
                 return (
@@ -285,7 +293,7 @@ const IncomeExpenseView = () => {
                 );
               })}
             </div>
-          ) : (<NoDataCard message="No expenses found" height="100" width="150" />)}
+          )}
 
 
           <div className="date-summary-bar">
@@ -294,7 +302,12 @@ const IncomeExpenseView = () => {
               {formatIndianNumber(totalIncome)}
             </div>
           </div>
-          {incomeSummary?.length > 0 ? (
+
+          {loading ? (
+            <InlineLoader text="Loading Income categories" />
+          ) : incomeSummary.length === 0 ? (
+            <NoDataCard message="No income found" height="100" width="150" />
+          ) : (
             <div className="transaction-card-list">
               {incomeSummary?.map((category, index) => {
                 return (
@@ -320,7 +333,7 @@ const IncomeExpenseView = () => {
                 );
               })}
             </div>
-          ) : (<NoDataCard message="No income found" height="100" width="150" />)}
+          )}
         </>
       )}
 
