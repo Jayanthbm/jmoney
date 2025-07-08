@@ -2,17 +2,15 @@
 
 import "./Transactions.css";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { IoIosAddCircle, IoIosFunnel, IoIosSearch } from "react-icons/io";
+import { motion } from "framer-motion";
 import { MdClose, MdSync } from "react-icons/md";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   clearTransactions,
   getAllTransactions,
   storeTransactions,
 } from "../../db/transactionDb";
 import {
-  formatDateToDayMonthYear,
   getCategoryCachekeys,
   getPayeeCacheKey,
   getRelativeTime,
@@ -26,20 +24,20 @@ import Button from "../../components/Button/Button";
 import Fuse from "fuse.js";
 import MyModal from "../../components/Layouts/MyModal";
 import NoDataCard from "../../components/Cards/NoDataCard";
-import Select from "react-select";
 import SingleTransaction from "../../components/Views/SingleTransaction";
-import TransactionCard from "../../components/Cards/TransactionCard";
 import { get } from "idb-keyval";
 import { groupBy } from "lodash";
 import { loadTransactionsFromSupabase } from "../../supabaseData";
-import { useMediaQuery } from "react-responsive";
+import TransactionControls from "./TransactionControls";
+import TransactionFilters from "./TransactionFilters";
+import GroupedTransactions from "./GroupedTransactions";
 
 const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
 const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
 const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
 
 const Transactions = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [grouped, setGrouped] = useState({});
@@ -81,6 +79,11 @@ const Transactions = () => {
       }
 
       const groupedData = groupBy(filtered, "date");
+      Object.keys(groupedData).forEach((date) => {
+        groupedData[date] = groupedData[date].sort(
+          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+        );
+      });
       setGrouped(groupedData);
       setHasGrouped(true);
       setFadeOut(false); // turn transition off after update
@@ -105,21 +108,17 @@ const Transactions = () => {
     return sorted;
   }, []);
 
-
-
-
   useEffect(() => {
     const init = async () => {
       setLoading(true);
 
       const [expenseCategories, incomeCategories, cachedPayees] =
         await Promise.all([
-          get(INCOME_CACHE_KEY),
           get(EXPENSE_CACHE_KEY),
+          get(INCOME_CACHE_KEY),
           get(PAYEE_CACHE_KEY),
         ]);
       const sorted = await getAndSortTransactions();
-
       setExpenseCategories(expenseCategories || []);
       setIncomeCategories(incomeCategories || []);
       setPayees(cachedPayees || []);
@@ -157,12 +156,11 @@ const Transactions = () => {
     setSelectedPayees([]);
   };
 
-  const payeeOptions = payees.map((p) => ({
-    value: p.id,
-    label: p.name,
-  }));
+  const payeeOptions = useMemo(() => payees.map((p) => ({
+    value: p.id, label: p.name
+  })), [payees]);
 
-  const categoryOptions = [
+  const categoryOptions = useMemo(() => [
     {
       label: "Expense Categories",
       options: (expenseCategories || []).map((cat) => ({
@@ -177,7 +175,7 @@ const Transactions = () => {
         label: cat.name,
       })),
     },
-  ];
+  ], [expenseCategories, incomeCategories]);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -214,109 +212,60 @@ const Transactions = () => {
         )}
       </div>
 
-      <div className="transaction-controls">
-        <div className="left-buttons">
-          <Button
-            icon={<IoIosSearch />}
-            text={isMobile ? null : "Search Transactions"}
-            variant="primary"
-            onClick={() => {
-              setShowSearch(!showSearch);
-            }}
-          />
-          <Button
-            icon={<IoIosFunnel />}
-            text={isMobile ? null : "Filter Transactions"}
-            variant="primary"
-            onClick={() => {
-              setShowFilters(!showFilters);
-            }}
-          />
-        </div>
-        <div className="right-button">
-          <Button
-            icon={<IoIosAddCircle />}
-            text={isMobile ? null : "Add Transaction"}
-            variant="primary"
-            onClick={() => {
-              setSelectedTransaction(null);
-              setShowModal(true);
-            }}
-          />
-        </div>
-      </div>
+      <TransactionControls
+        onSearchToggle={() => setShowSearch(!showSearch)}
+        showSearch={showSearch}
+        onFilterToggle={() => setShowFilters(!showFilters)}
+        showFilters={showFilters}
+        onAddTransaction={() => {
+          setSelectedTransaction(null);
+          setShowModal(true);
+        }}
+      />
 
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            className="filters-wrapper"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Select
-              isMulti
-              options={categoryOptions}
-              value={selectedCategories}
-              onChange={(selected) => setSelectedCategories(selected)}
-              placeholder="Filter by Categories"
-              className="react-select-container"
-              classNamePrefix="react-select"
+      <TransactionFilters
+        showFilters={showFilters}
+        categoryOptions={categoryOptions}
+        selectedCategories={selectedCategories}
+        onCategoryChange={setSelectedCategories}
+        payeeOptions={payeeOptions}
+        selectedPayees={selectedPayees}
+        onPayeeChange={setSelectedPayees}
+      />
+
+      {showSearch && (
+        <motion.div
+          className="search-bar-wrapper"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search by description"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-bar"
+              spellCheck={false}
             />
-
-            <Select
-              isMulti
-              options={payeeOptions}
-              value={selectedPayees}
-              onChange={(selected) => setSelectedPayees(selected)}
-              placeholder="Filter by Payees"
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            className="search-bar-wrapper"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search by description"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-bar"
-                spellCheck={false}
-              />
-              {search && (
-                <span
-                  className="search-clear-icon"
-                  onClick={() => setSearch("")}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Clear search"
-                  title="Clear search"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setSearch("");
-                    }
-                  }}
-                >
-                  <MdClose />
-                </span>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {search && (
+              <span
+                className="search-clear-icon"
+                onClick={() => setSearch("")}
+                role="button"
+                tabIndex={0}
+                aria-label="Clear search"
+                title="Clear search"
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+              >
+                <MdClose />
+              </span>
+            )}
+          </div>
+        </motion.div>
+      )}
 
       {!loading && hasGrouped && Object.keys(grouped).length === 0 ? (
         <NoDataCard message="No transactions found." height="100" width="150">
@@ -332,29 +281,14 @@ const Transactions = () => {
       ) : (
         !loading &&
         hasGrouped && (
-          <div
-            className={`transaction-page-wrapper ${fadeOut ? "fade-out" : ""}`}
-          >
-            {Object.entries(grouped).map(([date, items]) => (
-              <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">
-                  {formatDateToDayMonthYear(date)}
-                </h2>
-                <div className="transaction-card-list">
-                  {items.map((tx) => (
-                    <TransactionCard
-                      key={tx.id}
-                      transaction={tx}
-                      onCardClick={() => {
-                        setSelectedTransaction(tx);
-                        setShowModal(true);
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <GroupedTransactions
+            grouped={grouped}
+            fadeOut={fadeOut}
+            onTransactionClick={(tx) => {
+              setSelectedTransaction(tx);
+              setShowModal(true);
+            }}
+          />
         )
       )}
       <MyModal
