@@ -1,37 +1,30 @@
-import "./Button.css";
-
 // src/components/Button/Button.jsx
+import "./Button.css";
 import React from "react";
 
 const Button = ({
   icon,
   text,
-  variant = "primary", // 'primary', 'danger', 'info', 'warning', 'success', 'custom'
+  variant = "primary", // 'primary', 'danger', etc.
   onClick,
-  bgColor, // only used if variant is 'custom'
+  bgColor,
   className = "",
   disabled = false,
   type = "button",
   fullWidth,
+  ariaLabel,
 }) => {
   const isIconOnly = icon && !text;
 
   const getVariantClass = () => {
     switch (variant) {
-      case "primary":
-        return "btn-primary";
-      case "danger":
-        return "btn-danger";
-      case "info":
-        return "btn-info";
-      case "warning":
-        return "btn-warning";
-      case "success":
-        return "btn-success";
-      case "custom":
-        return "";
-      default:
-        return "btn-primary";
+      case "primary": return "btn-primary";
+      case "danger": return "btn-danger";
+      case "info": return "btn-info";
+      case "warning": return "btn-warning";
+      case "success": return "btn-success";
+      case "custom": return "";
+      default: return "btn-primary";
     }
   };
 
@@ -46,6 +39,7 @@ const Button = ({
       style={styles}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel || text}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {text && <span className="btn-text">{text}</span>}
