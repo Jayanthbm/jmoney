@@ -9,18 +9,22 @@ import NoDataCard from "../Cards/NoDataCard";
 import useTheme from "../../hooks/useTheme";
 import { formatIndianNumber } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import InlineLoader from "../Layouts/InlineLoader";
 
 const DailyLimitView = ({ dailyLimitData }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
   useEffect(() => {
     const fetchTodayExpenses = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const todayTx = allTx.filter(
         (tx) => tx.type === "Expense" && isToday(new Date(tx.date))
       );
       setTodayExpenses(todayTx);
+      setLoading(false);
     };
 
     fetchTodayExpenses();
@@ -81,8 +85,8 @@ const DailyLimitView = ({ dailyLimitData }) => {
                     dailyLimitData?.remaining_percentage < 0
                       ? "#ef4444"
                       : theme === "dark"
-                      ? "#f1f1f1"
-                      : "#374151"
+                        ? "#f1f1f1"
+                        : "#374151"
                   }
                 />
               </div>
@@ -92,7 +96,9 @@ const DailyLimitView = ({ dailyLimitData }) => {
 
         {/* Today's Transactions */}
         <div className="transaction-list-wrapper">
-          {todayExpenses?.length === 0 ? (
+          {loading ? (
+            <InlineLoader />
+          ) : todayExpenses?.length === 0 ? (
             <NoDataCard message="No expenses today" height="150" width="150" />
           ) : (
             <>
