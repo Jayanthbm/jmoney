@@ -269,7 +269,15 @@ const IncomeExpenseView = () => {
                     onCardClick={() => {
                       setViewMode("transactions");
                       setHeading("Transactions");
-                      setTransactions(groupBy(category.transactions, "date"));
+                      let tt = groupBy(category.transactions, "date");
+                      Object.keys(tt).forEach((date) => {
+                        tt[date] = tt[date].sort(
+                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+                        );
+                      });
+                      setTransactions(
+                        tt
+                      );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
                     }}
@@ -296,7 +304,15 @@ const IncomeExpenseView = () => {
                     onCardClick={() => {
                       setViewMode("transactions");
                       setHeading("Transactions");
-                      setTransactions(groupBy(category.transactions, "date"));
+                      let tt = groupBy(category.transactions, "date");
+                      Object.keys(tt).forEach((date) => {
+                        tt[date] = tt[date].sort(
+                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+                        );
+                      });
+                      setTransactions(
+                        tt
+                      );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
                     }}

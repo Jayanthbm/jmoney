@@ -212,8 +212,14 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
                           setViewMode("transactions");
                           setHeading("Transactions");
                           setSelectedIndex(index);
+                          let tt = groupBy(category.transactions, "date");
+                          Object.keys(tt).forEach((date) => {
+                            tt[date] = tt[date].sort(
+                              (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+                            );
+                          });
                           setTransactions(
-                            groupBy(category.transactions, "date")
+                            tt
                           );
                           setSelectedCategory(category.category_name);
                           setSelectedCategoryAmount(category.amount);

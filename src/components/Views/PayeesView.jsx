@@ -55,6 +55,11 @@ const PayeesView = () => {
       (a, b) => new Date(b.date) - new Date(a.date)
     );
     const groupedByDate = groupBy(sorted, "date");
+    Object.keys(groupedByDate).forEach((date) => {
+      groupedByDate[date] = groupedByDate[date].sort(
+        (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+      );
+    });
     setSelectedPayee(payee.name);
     setSelectedPayeeTotal(payee.amount);
     setTransactions(groupedByDate);

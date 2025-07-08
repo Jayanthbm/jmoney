@@ -142,11 +142,10 @@ const Overview = () => {
                 <div className="daily-limit-section">
                   <div className="daily-limit-label">REMAINING</div>
                   <div
-                    className={`daily-limit-value ${
-                      data?.dailyLimit?.remaining < 0
+                    className={`daily-limit-value ${data?.dailyLimit?.remaining < 0
                         ? "red-text"
                         : "green-text"
-                    }`}
+                      }`}
                   >
                     {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
                   </div>
@@ -190,8 +189,8 @@ const Overview = () => {
                       data?.dailyLimit?.remaining_percentage < 0
                         ? "#ef4444"
                         : theme === "dark"
-                        ? "#f1f1f1"
-                        : "#374151"
+                          ? "#f1f1f1"
+                          : "#374151"
                     }
                     size={70}
                   />
@@ -219,11 +218,10 @@ const Overview = () => {
                     }).map((_, i) => (
                       <div
                         key={i}
-                        className={`dot ${
-                          i + 1 < data?.payDay?.today
+                        className={`dot ${i + 1 < data?.payDay?.today
                             ? "dot-past"
                             : "dot-future"
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -252,7 +250,6 @@ const Overview = () => {
                 setViewMode("topCategories");
                 setTitle('Top Categories');
               }
-
             }}
           >
             <OverviewCard
