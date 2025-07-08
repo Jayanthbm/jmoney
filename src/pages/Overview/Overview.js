@@ -140,15 +140,20 @@ const Overview = () => {
               <div className="daily-limit-container">
                 {/* Remaining */}
                 <div className="daily-limit-section">
-                  <div className="daily-limit-label">REMAINING</div>
-                  <div
-                    className={`daily-limit-value ${data?.dailyLimit?.remaining < 0
-                        ? "red-text"
-                        : "green-text"
-                      }`}
-                  >
-                    {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
-                  </div>
+                  {data?.dailyLimit?.remaining_percentage > 0 ? (
+                    <>
+                      <div className="daily-limit-label">REMAINING</div>
+                      <div className="daily-limit-value green-text">
+                        {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
+                      </div></>
+                  ) : (
+                    <>
+                      <div className="daily-limit-label">OVERSPENT</div>
+                      <div className="daily-limit-value red-text">
+                        {formatIndianNumber(data?.dailyLimit?.spent - data?.dailyLimit?.daily_limit)}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Divider */}

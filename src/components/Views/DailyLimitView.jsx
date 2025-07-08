@@ -44,10 +44,20 @@ const DailyLimitView = ({ dailyLimitData }) => {
             <div className="daily-limit-container">
               {/* Remaining */}
               <div className="daily-limit-section">
-                <div className="daily-limit-label">REMAINING</div>
-                <div className="daily-limit-value green-text">
-                  {formatIndianNumber(dailyLimitData?.remaining || 0)}
-                </div>
+                {dailyLimitData?.remaining_percentage > 0 ? (
+                  <>
+                    <div className="daily-limit-label">REMAINING</div>
+                    <div className="daily-limit-value green-text">
+                      {formatIndianNumber(dailyLimitData?.remaining || 0)}
+                    </div></>
+                ) : (
+                  <>
+                    <div className="daily-limit-label">OVERSPENT</div>
+                    <div className="daily-limit-value red-text">
+                      {formatIndianNumber(dailyLimitData?.spent - dailyLimitData.daily_limit)}
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="divider" />
