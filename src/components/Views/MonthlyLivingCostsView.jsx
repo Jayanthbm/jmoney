@@ -6,13 +6,14 @@ import { get, set } from "idb-keyval";
 import Select from "react-select";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
 import TransactionCard from "../Cards/TransactionCard";
 import Button from "../Button/Button";
 import NoDataCard from "../Cards/NoDataCard";
-import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions, groupAndSortTransactions } from "../../utils";
+import { formatIndianNumber, getCategoryCachekeys, getMonthOptions, groupAndSortTransactions } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import InlineLoader from "../Layouts/InlineLoader";
+import TransactionsMode from "./TransactionsMode";
+import MonthYearSelector from "./ MonthYearSelector";
 
 const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
 
@@ -129,6 +130,12 @@ const MonthlyLivingCostsView = () => {
     label: cat.name,
   }));
 
+  const handleBack = () => {
+    setViewMode("summary");
+    setHeading(null);
+    setTransactions([]);
+  };
+
   return (
     <div>
       {heading && (
@@ -168,24 +175,15 @@ const MonthlyLivingCostsView = () => {
             />
 
           </div>
-          {/* Month/Year Selectors */}
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-            />
 
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-            />
-          </div>
+          {/* Month/Year Selectors */}
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => setYear(opt)}
+            monthValue={month}
+            onMonthChange={(opt) => setMonth(opt)}
+            disabled={loading}
+          />
 
           {/* Category Summary */}
           <div className="date-summary-bar">
@@ -221,49 +219,12 @@ const MonthlyLivingCostsView = () => {
         </>
       )}
       {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-              setHeading(null);
-              setTransactions([]);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setViewMode("summary");
-                setHeading(null);
-                setTransactions([]);
-              }
-            }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
-
-          <div className="date-summary-bar">
-            <div className="summary-date">{selectedCategory}</div>
-            <div className="summary-amount">
-              {formatIndianNumber(selectedCategoryAmount)}
-            </div>
-          </div>
-          <div className="transaction-page-wrapper">
-            {Object.entries(transactions)?.map(([date, items]) => (
-              <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">
-                  {formatDateToDayMonthYear(date)}
-                </h2>
-                <div className="transaction-card-list">
-                  {items?.map((tx) => (
-                    <TransactionCard key={tx.id} transaction={tx} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
+        <TransactionsMode
+          handleBack={handleBack}
+          name={selectedCategory}
+          amount={selectedCategoryAmount}
+          transactions={transactions}
+        />
       )}
     </div>
   );
