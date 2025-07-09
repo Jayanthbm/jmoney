@@ -5,6 +5,7 @@ import React from "react";
 const CircularProgressBar = ({
   progress = 0,
   text = "",
+  subtext="",
   pathColor = "#3b82f6",
   textColor = "#000",
   fontSize = "1rem",
@@ -45,7 +46,7 @@ const CircularProgressBar = ({
       {/* Centered Text */}
       <text
         x="50%"
-        y="50%"
+        y={subtext ? "40%" : "50%"}
         textAnchor="middle"
         dominantBaseline="central"
         fill={textColor}
@@ -54,6 +55,19 @@ const CircularProgressBar = ({
       >
         {text}
       </text>
+      {subtext && (
+        <text
+          x="50%"
+          y="60%"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill={textColor}
+          fontSize={fontSize}
+          fontWeight="bold"
+        >
+          {subtext}
+        </text>
+      )}
     </svg>
   );
 };

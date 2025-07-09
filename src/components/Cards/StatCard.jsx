@@ -43,6 +43,7 @@ const StatCard = ({
             <CircularProgressBar
               progress={Math.round(percentage)}
               text={`${Math.round(percentage)}%`}
+              subtext="spent"
               pathColor={COLORS.expense}
               textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
             />

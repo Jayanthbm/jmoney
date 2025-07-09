@@ -238,7 +238,8 @@ const Overview = () => {
                     progress={
                       100 - data?.payDay?.remaining_days_percentage || 0
                     }
-                    text={`${data?.payDay?.remaining_days || 0} \ndays`}
+                    text={`${data?.payDay?.remaining_days || 0}`}
+                    subtext="DAYS"
                     pathColor="#139af5"
                     textColor={theme === "dark" ? "#5d9bff" : "#2c6c99"}
                   />
