@@ -2,7 +2,7 @@
 import "./PayeesView.css";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
+import { formatDateToDayMonthYear, formatIndianNumber, groupAndSortTransactions } from "../../utils";
 import { IoIosArrowBack } from "react-icons/io";
 import Loading from "../Layouts/Loading";
 import TransactionCard from "../Cards/TransactionCard";
@@ -11,10 +11,10 @@ import { groupBy } from "lodash";
 import { MdClose } from "react-icons/md";
 import Fuse from "fuse.js";
 import { debounce } from "lodash";
+import NoDataCard from "../Cards/NoDataCard";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);
-  const [heading, setHeading] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
   const [payees, setPayees] = useState([]);
   const [groupedPayees, setGroupedPayees] = useState([]);
@@ -60,20 +60,10 @@ const PayeesView = () => {
   }, []);
 
   const handlePayeeClick = (payee) => {
-    const sorted = payee.transactions.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-    const groupedByDate = groupBy(sorted, "date");
-    Object.keys(groupedByDate).forEach((date) => {
-      groupedByDate[date] = groupedByDate[date].sort(
-        (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
-      );
-    });
     setSelectedPayee(payee.name);
     setSelectedPayeeTotal(payee.amount);
-    setTransactions(groupedByDate);
+    setTransactions(groupAndSortTransactions(payee.transactions));
     setViewMode("transactions");
-    setHeading(`${payee.name} Transactions`);
   };
 
   // Debounced fuzzy search
@@ -96,9 +86,6 @@ const PayeesView = () => {
 
   return (
     <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
       {loading ? (
         <Loading />
       ) : (
@@ -129,6 +116,9 @@ const PayeesView = () => {
                 )}
               </div>
               <div className="payee-summary-wrapper">
+                {groupedPayees?.length === 0 && (
+                  <NoDataCard message="No Payee found" height="150" width="200" />
+                )}
                 {groupedPayees?.map((payee) => (
                   <div
                     key={payee.name}
@@ -144,9 +134,8 @@ const PayeesView = () => {
                     <div className="payee-details">
                       <div className="payee-name">{payee.name}</div>
                       <div
-                        className={`payee-amount ${
-                          payee.amount >= 0 ? "green-text" : "red-text"
-                        }`}
+                        className={`payee-amount ${payee.amount >= 0 ? "green-text" : "red-text"
+                          }`}
                       >
                         {payee.amount < 0 ? "-" : ""}
                         {formatIndianNumber(Math.abs(payee.amount))}
@@ -165,13 +154,13 @@ const PayeesView = () => {
                 tabIndex={0}
                 onClick={() => {
                   setViewMode("summary");
-                  setHeading(null);
+
                   setTransactions([]);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     setViewMode("summary");
-                    setHeading(null);
+
                     setTransactions([]);
                   }
                 }}

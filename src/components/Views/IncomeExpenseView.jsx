@@ -12,7 +12,6 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useMediaQuery } from "react-responsive";
-import { groupBy } from "lodash";
 import Select from "react-select";
 import { FaChartBar, FaEyeSlash } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
@@ -26,6 +25,7 @@ import {
   formatIndianNumber,
   getMonthOptions,
   getYearOptions,
+  groupAndSortTransactions,
 } from "../../utils";
 import InlineLoader from "../Layouts/InlineLoader";
 
@@ -50,7 +50,7 @@ const IncomeExpenseView = () => {
   const [totalIncome, setTotalIncome] = useState(0);
 
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState(null);
+
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
@@ -174,9 +174,6 @@ const IncomeExpenseView = () => {
 
   return (
     <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
 
       {viewMode === "summary" && (
         <>
@@ -276,18 +273,8 @@ const IncomeExpenseView = () => {
                     transaction={category}
                     onCardClick={() => {
                       setViewMode("transactions");
-                      setHeading("Transactions");
-                      let sorted = category.transactions.sort(
-                        (a, b) => new Date(b.date) - new Date(a.date)
-                      );
-                      let tt = groupBy(sorted, "date");
-                      Object.keys(tt).forEach((date) => {
-                        tt[date] = tt[date].sort(
-                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
-                        );
-                      });
                       setTransactions(
-                        tt
+                        groupAndSortTransactions(category.transactions)
                       );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
@@ -319,18 +306,8 @@ const IncomeExpenseView = () => {
                     transaction={category}
                     onCardClick={() => {
                       setViewMode("transactions");
-                      setHeading("Transactions");
-                      let sorted = category.transactions.sort(
-                        (a, b) => new Date(b.date) - new Date(a.date)
-                      );
-                      let tt = groupBy(sorted, "date");
-                      Object.keys(tt).forEach((date) => {
-                        tt[date] = tt[date].sort(
-                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
-                        );
-                      });
                       setTransactions(
-                        tt
+                        groupAndSortTransactions(category.transactions)
                       );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
@@ -351,13 +328,13 @@ const IncomeExpenseView = () => {
             tabIndex={0}
             onClick={() => {
               setViewMode("summary");
-              setHeading(null);
+
               setTransactions([]);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 setViewMode("summary");
-                setHeading(null);
+
                 setTransactions([]);
               }
             }}

@@ -8,6 +8,7 @@ import {
   getMonthOptions,
   getTopCategoryColors,
   getYearOptions,
+  groupAndSortTransactions,
 } from "../../utils";
 
 import Button from "../Button/Button";
@@ -17,7 +18,6 @@ import NoDataCard from "../Cards/NoDataCard";
 import Select from "react-select";
 import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
-import { groupBy } from "lodash";
 import { useMediaQuery } from "react-responsive";
 import InlineLoader from "../Layouts/InlineLoader";
 
@@ -36,7 +36,6 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
   const [categorySummary, setCategorySummary] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState(title);
 
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -136,9 +135,6 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
   };
   return (
     <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
       {viewMode === "summary" && (
         <>
           {/* Toggle Buttons */}
@@ -216,19 +212,9 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
                         transaction={category}
                         onCardClick={() => {
                           setViewMode("transactions");
-                          setHeading("Transactions");
                           setSelectedIndex(index);
-                          let sorted = category.transactions.sort(
-                            (a, b) => new Date(b.date) - new Date(a.date)
-                          );
-                          let tt = groupBy(sorted, "date");
-                          Object.keys(tt).forEach((date) => {
-                            tt[date] = tt[date].sort(
-                              (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
-                            );
-                          });
                           setTransactions(
-                            tt
+                            groupAndSortTransactions(category.transactions)
                           );
                           setSelectedCategory(category.category_name);
                           setSelectedCategoryAmount(category.amount);
@@ -250,7 +236,6 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
             tabIndex={0}
             onClick={() => {
               setViewMode("summary");
-              setHeading(title);
               setTransactions({});
               setSelectedIndex(null);
             }}

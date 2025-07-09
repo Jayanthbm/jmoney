@@ -16,7 +16,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1px;
-  margin: 1px;
+  margin-top: 10px;
   justify-content: flex-start;
 }
 

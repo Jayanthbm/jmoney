@@ -11,7 +11,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import TransactionCard from "../Cards/TransactionCard";
 import Button from "../Button/Button";
 import NoDataCard from "../Cards/NoDataCard";
-import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions } from "../../utils";
+import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions, groupAndSortTransactions } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import InlineLoader from "../Layouts/InlineLoader";
 
@@ -208,18 +208,8 @@ const MonthlyLivingCostsView = () => {
                     transaction={category}
                     onCardClick={() => {
                       setViewMode("transactions");
-                      setHeading("Transactions");
-                      let sorted = category.transactions.sort(
-                        (a, b) => new Date(b.date) - new Date(a.date)
-                      );
-                      let tt = groupBy(sorted, "date");
-                      Object.keys(tt).forEach((date) => {
-                        tt[date] = tt[date].sort(
-                          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
-                        );
-                      });
                       setTransactions(
-                        tt
+                        groupAndSortTransactions(category.transactions)
                       );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
