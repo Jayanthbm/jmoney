@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { formatDateToDayMonthYear, formatIndianNumber, getMonthOptions, getYearOptions, groupAndSortTransactions } from "../../utils";
-import Select from "react-select";
+import { formatIndianNumber, getMonthOptions,groupAndSortTransactions } from "../../utils";
 import InlineLoader from "../Layouts/InlineLoader";
 import NoDataCard from "../Cards/NoDataCard";
 import { getAllTransactions } from "../../db/transactionDb";
-import { IoIosArrowBack } from "react-icons/io";
-import TransactionCard from "../Cards/TransactionCard";
+import MonthYearSelector from "./ MonthYearSelector";
+import TransactionsMode from "./TransactionsMode";
 
 const SummaryByPayee = () => {
   const [loading, setLoading] = useState(true);
-
   const [type, setType] = useState("Expense");
-
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -20,11 +17,8 @@ const SummaryByPayee = () => {
     value: new Date().getFullYear(),
     label: new Date().getFullYear().toString(),
   });
-
   const [payeeSummary, setPayeeSummary] = useState([]);
-
   const [viewMode, setViewMode] = useState("summary");
-
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
@@ -74,8 +68,12 @@ const SummaryByPayee = () => {
     fetchAndSummarize();
   }, [type, month, year])
 
+  const handleBack = () => {
+    setViewMode("summary");
+    setTransactions({});
+  };
   return (
-    <div>
+    <>
       {viewMode === "summary" && (
         <>
           {/* Toggle Buttons */}
@@ -95,23 +93,13 @@ const SummaryByPayee = () => {
           </div>
 
           {/* Month/Year Selectors */}
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-            />
-
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-            />
-          </div>
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => setYear(opt)}
+            monthValue={month}
+            onMonthChange={(opt) => setMonth(opt)}
+            disabled={loading}
+          />
 
           {/* Payee Summary */}
           <>
@@ -159,38 +147,16 @@ const SummaryByPayee = () => {
           </>
         </>
       )}
-      {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-              setTransactions({});
-            }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
 
-          <div className="transaction-page-wrapper">
-            {Object.entries(transactions).map(([date, items]) => (
-              <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">
-                  {formatDateToDayMonthYear(date)}
-                </h2>
-                <div className="transaction-card-list">
-                  {items.map((tx) => (
-                    <TransactionCard key={tx.id} transaction={tx} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
+      {viewMode === "transactions" && (
+        <TransactionsMode
+          name={"back to list"}
+          amount={0}
+          handleBack={handleBack}
+          transactions={transactions}
+        />
       )}
-    </div>
+    </>
   )
 }
 
