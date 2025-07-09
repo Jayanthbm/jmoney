@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { get, set } from "idb-keyval";
 import Select from "react-select";
-import { groupBy } from "lodash";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
 import { formatDateToDayMonthYear, formatIndianNumber, getMonthOptions, getYearOptions, groupAndSortTransactions } from "../../utils";
 import Select from "react-select";
 import InlineLoader from "../Layouts/InlineLoader";
 import NoDataCard from "../Cards/NoDataCard";
 import { getAllTransactions } from "../../db/transactionDb";
-import { groupBy } from "lodash";
 import { IoIosArrowBack } from "react-icons/io";
 import TransactionCard from "../Cards/TransactionCard";
 
 const SummaryByPayee = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
 
   const [type, setType] = useState("Expense");
@@ -25,7 +22,7 @@ const SummaryByPayee = () => {
   });
 
   const [payeeSummary, setPayeeSummary] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+
   const [viewMode, setViewMode] = useState("summary");
 
   const [transactions, setTransactions] = useState([]);
