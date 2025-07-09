@@ -8,6 +8,7 @@ import {
   MdCompareArrows,
   MdHome,
   MdPeople,
+  MdPerson,
   MdSubscriptions,
 } from "react-icons/md";
 import React, { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ import ReportCard from "../../components/Cards/ReportCard";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
+import SummaryByPayee from "../../components/Views/SummaryByPayee";
 
 const reportsList = [
   {
@@ -27,6 +29,12 @@ const reportsList = [
     description: "See the complete history about a category",
     icon: <MdCategory size={28} />,
     view: "transactionsByCategory",
+  },
+  {
+    title: "Transactions By Payee",
+    description: "See the complete history about a payee",
+    icon: <MdPerson size={28} />,
+    view: "transactionsByPayee",
   },
   {
     title: "Yearly Summary",
@@ -83,6 +91,8 @@ const Reports = () => {
         return <PayeesView />;
       case "monthlyLivingCosts":
         return <MonthlyLivingCostsView />;
+      case "transactionsByPayee":
+        return <SummaryByPayee />
       default:
         return null;
     }

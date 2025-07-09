@@ -11,6 +11,7 @@ import {
 import { MY_KEYS } from "./constants";
 import React from "react";
 import { format } from "date-fns";
+import { groupBy } from "lodash";
 
 
 export const formatIndianNumber = (num) => {
@@ -237,3 +238,16 @@ export const getTransactionCachekeys = () => {
   };
   return result;
 };
+
+export const groupAndSortTransactions =(transactions) =>{
+  let sorted = transactions.sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+  let grouped = groupBy(sorted, "date");
+  Object.keys(grouped).forEach((date) => {
+    grouped[date] = grouped[date].sort(
+      (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+    );
+  });
+  return grouped;
+}
