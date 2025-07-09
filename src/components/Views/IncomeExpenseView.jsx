@@ -12,22 +12,21 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useMediaQuery } from "react-responsive";
-import Select from "react-select";
 import { FaChartBar, FaEyeSlash } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
 import TransactionCard from "../Cards/TransactionCard";
 import NoDataCard from "../Cards/NoDataCard";
 import Button from "../Button/Button";
 import { getAllTransactions } from "../../db/transactionDb";
 import useTheme from "../../hooks/useTheme";
 import {
-  formatDateToDayMonthYear,
   formatIndianNumber,
   getMonthOptions,
-  getYearOptions,
   groupAndSortTransactions,
 } from "../../utils";
 import InlineLoader from "../Layouts/InlineLoader";
+import MonthYearSelector from "./ MonthYearSelector";
+import TransactionsMode from "./TransactionsMode";
+import { AnimatePresence, motion } from "framer-motion";
 
 const IncomeExpenseView = () => {
   const theme = useTheme();
@@ -56,6 +55,9 @@ const IncomeExpenseView = () => {
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
   const [chartData, setChartData] = useState([]);
   const [showChart, setShowChart] = useState(true);
+
+  const [showExpenseList, setShowExpenseList] = useState(true);
+  const [showIncomeList, setShowIncomeList] = useState(true);
 
   useEffect(() => {
     if (isMobile) {
@@ -172,39 +174,35 @@ const IncomeExpenseView = () => {
     fetchAndSummarize();
   }, [month, year]);
 
-  return (
-    <div>
+  const handleBack = () => {
+    setViewMode("summary");
+    setTransactions([]);
+  };
 
+  return (
+    <>
       {viewMode === "summary" && (
         <>
           {/* Month/Year Selectors */}
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-            />
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => setYear(opt)}
+            monthValue={month}
+            onMonthChange={(opt) => setMonth(opt)}
+            disabled={loading}
+          />
+          {!loading && (
+            <div className="align-right">
+              <Button text={
+                isMobile ? null : showChart ? "Hide Chart" : "Show Chart"
+              } onClick={() => {
+                setShowChart(!showChart)
+              }}
+                icon={showChart ? <FaEyeSlash /> : <FaChartBar />}
+              />
+            </div>
+          )}
 
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-            />
-          </div>
-
-          <div className="align-right">
-            <Button text={
-              isMobile ? null : showChart ? "Hide Chart" : "Show Chart"
-            } onClick={() => {
-              setShowChart(!showChart)
-            }}
-              icon={showChart ? <FaEyeSlash /> : <FaChartBar />}
-            />
-          </div>
           {showChart && (
             <div className="chart-wrapper">
               <ResponsiveContainer width="100%" height={300}>
@@ -252,123 +250,108 @@ const IncomeExpenseView = () => {
             </div>
           )}
 
-
-          {/* Category Summary */}
-          <div className="date-summary-bar">
-            <div className="summary-date">Expense</div>
-            <div className="summary-amount">
-              {formatIndianNumber(totalExpense)}
-            </div>
-          </div>
           {loading ? (
-            <InlineLoader text="Loading Expense ategories" />
+            <InlineLoader />
           ) : expenseSummary?.length === 0 ? (
             <NoDataCard message="No expenses found" height="100" width="150" />
           ) : (
-            <div className="transaction-card-list">
-              {expenseSummary?.map((category, index) => {
-                return (
-                  <TransactionCard
-                    key={index}
-                    transaction={category}
-                    onCardClick={() => {
-                      setViewMode("transactions");
-                      setTransactions(
-                        groupAndSortTransactions(category.transactions)
+            <>
+              {/* Category Summary */}
+              <div className="date-summary-bar">
+                <div className="summary-date" onClick={() => {
+                  setShowExpenseList(!showExpenseList)
+                }} style={{ cursor: 'pointer' }}>Expense</div>
+                <div className="summary-amount">
+                  {formatIndianNumber(totalExpense)}
+                </div>
+              </div>
+              <AnimatePresence>
+                {showExpenseList && (
+                  <motion.div
+                    className="transaction-card-list"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {expenseSummary?.map((category, index) => {
+                      return (
+                        <TransactionCard
+                          key={index}
+                          transaction={category}
+                          onCardClick={() => {
+                            setViewMode("transactions");
+                            setTransactions(
+                              groupAndSortTransactions(category.transactions)
+                            );
+                            setSelectedCategory(category.category_name);
+                            setSelectedCategoryAmount(category.amount);
+                          }}
+                        />
                       );
-                      setSelectedCategory(category.category_name);
-                      setSelectedCategoryAmount(category.amount);
-                    }}
-                  />
-                );
-              })}
-            </div>
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
           )}
 
-
-          <div className="date-summary-bar">
-            <div className="summary-date">Income</div>
-            <div className="summary-amount">
-              {formatIndianNumber(totalIncome)}
-            </div>
-          </div>
-
           {loading ? (
-            <InlineLoader text="Loading Income categories" />
+            <></>
           ) : incomeSummary.length === 0 ? (
             <NoDataCard message="No income found" height="100" width="150" />
           ) : (
-            <div className="transaction-card-list">
-              {incomeSummary?.map((category, index) => {
-                return (
-                  <TransactionCard
-                    key={index}
-                    transaction={category}
-                    onCardClick={() => {
-                      setViewMode("transactions");
-                      setTransactions(
-                        groupAndSortTransactions(category.transactions)
+            <>
+              <div className="date-summary-bar">
+                <div className="summary-date" onClick={() => {
+                  setShowIncomeList(!showIncomeList)
+                }} style={{ cursor: 'pointer' }}>Income</div>
+                <div className="summary-amount">
+                  {formatIndianNumber(totalIncome)}
+                </div>
+              </div>
+              <AnimatePresence>
+                 {showIncomeList && (
+                  <motion.div
+                    className="transaction-card-list"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {incomeSummary?.map((category, index) => {
+                      return (
+                        <TransactionCard
+                          key={index}
+                          transaction={category}
+                          onCardClick={() => {
+                            setViewMode("transactions");
+                            setTransactions(
+                              groupAndSortTransactions(category.transactions)
+                            );
+                            setSelectedCategory(category.category_name);
+                            setSelectedCategoryAmount(category.amount);
+                          }}
+                        />
                       );
-                      setSelectedCategory(category.category_name);
-                      setSelectedCategoryAmount(category.amount);
-                    }}
-                  />
-                );
-              })}
-            </div>
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
           )}
         </>
       )}
 
       {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-
-              setTransactions([]);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setViewMode("summary");
-
-                setTransactions([]);
-              }
-            }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
-
-          <div className="date-summary-bar">
-            <div className="summary-date">{selectedCategory}</div>
-            <div className="summary-amount">
-              {formatIndianNumber(selectedCategoryAmount)}
-            </div>
-          </div>
-          {Object.entries(transactions)?.length === 0 && (
-            <NoDataCard message="No transactions found" height="100" width="150" />
-          )}
-          <div className="transaction-page-wrapper">
-            {Object.entries(transactions)?.map(([date, items]) => (
-              <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">
-                  {formatDateToDayMonthYear(date)}
-                </h2>
-                <div className="transaction-card-list">
-                  {items?.map((tx) => (
-                    <TransactionCard key={tx.id} transaction={tx} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
+        <TransactionsMode
+          handleBack={handleBack}
+          name={selectedCategory}
+          amount={selectedCategoryAmount}
+          transactions={transactions}
+        />
       )}
-    </div>
+    </>
   );
 };
 
