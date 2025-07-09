@@ -5,20 +5,20 @@ import "./SubscriptionBillsView.css";
 import { MdReceiptLong, MdSubscriptions } from "react-icons/md";
 import React, { useEffect, useState } from "react";
 import {
-  formatDateToDayMonthYear,
   getMonthOptions,
-  getYearOptions,
 } from "../../utils";
 
-import { IoIosArrowBack } from "react-icons/io";
 import MyCountUp from "../Charts/MyCountUp";
-import NoDataCard from "../Cards/NoDataCard";
 import OverviewCard from "../Cards/OverviewCard";
-import Select from "react-select";
-import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
-import { groupBy } from "lodash";
+import { groupBy} from "lodash";
+import TransactionsMode from "./TransactionsMode";
+import InlineLoader from "../Layouts/InlineLoader";
+import MonthYearSelector from "./ MonthYearSelector";
+
 const SubscriptionBillsView = () => {
+  const [loading, setLoading] = useState(true);
+
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -34,11 +34,11 @@ const SubscriptionBillsView = () => {
   const [bills, setBills] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
@@ -65,156 +65,118 @@ const SubscriptionBillsView = () => {
 
       const billsTotal = billsFiltered.reduce((sum, tx) => sum + tx.amount, 0);
       setBillsTotal(billsTotal);
+      setLoading(false);
     };
     fetchAndSummarize();
   }, [year, month]);
 
+  const handleBack = () => {
+    setViewMode("summary");
+  };
+
   return (
-    <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
-
-      {viewMode === "summary" && (
+    <>
+      <MonthYearSelector
+        yearValue={year}
+        onYearChange={(opt) => setYear(opt)}
+        monthValue={month}
+        onMonthChange={(opt) => setMonth(opt)}
+        disabled={loading}
+      />
+      {loading ? (
+        <InlineLoader />
+      ) : (
         <>
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-              isSearchable={false}
-            />
-
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-              isSearchable={false}
-            />
-          </div>
-          <div
-            onClick={() => {
-              if (subscriptionsTotal > 0) {
-                setViewMode("transactions");
-                setHeading("Transactions");
-                setSelectedCard("Subscriptions");
-              } else {
-                return;
-              }
-            }}
-          >
-            <OverviewCard
-              title="Subscriptions"
-              subtitle={`Total spent on subscriptions in ${month.label}, ${year.label}`}
-            >
-              <div className="subscription-bills-icon-count-wrapper ">
-                <MdSubscriptions className="subscription-bills-overview-icon" />
-                <div className="subscription-bills-amount expense-text">
-                  <MyCountUp end={subscriptionsTotal} />
-                </div>
-              </div>
-            </OverviewCard>
-          </div>
-
-          <div
-            onClick={() => {
-              if (billsTotal > 0) {
-                setViewMode("transactions");
-                setHeading("Transactions");
-                setSelectedCard("Bills");
-              } else {
-                return;
-              }
-            }}
-          >
-            <OverviewCard
-              title="Bills"
-              subtitle={`Total spent on bills in ${month.label}, ${year.label}`}
-            >
-              <div className="subscription-bills-icon-count-wrapper ">
-                <MdReceiptLong className="subscription-bills-overview-icon" />
-                <div className="subscription-bills-amount expense-text">
-                  <MyCountUp end={billsTotal} />
-                </div>
-              </div>
-            </OverviewCard>
-          </div>
-        </>
-      )}
-      {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-              setHeading(null);
-            }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
-          {/* Toggle Buttons */}
-          <div className="toggle-button-group">
-            <button
-              onClick={() => setSelectedCard("Subscriptions")}
-              className={selectedCard === "Subscriptions" ? "active" : ""}
-            >
-              Subscriptions
-            </button>
-            <button
-              onClick={() => setSelectedCard("Bills")}
-              className={selectedCard === "Bills" ? "active" : ""}
-            >
-              Bills
-            </button>
-          </div>
-          {selectedCard === "Subscriptions" && (
+          {viewMode === "summary" && (
             <>
-              {Object.entries(subscriptions)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-              <div className="transaction-page-wrapper">
-                {Object.entries(subscriptions)?.map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items?.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
+
+              <div
+                onClick={() => {
+                  if (subscriptionsTotal > 0) {
+                    setViewMode("transactions");
+                    setSelectedCard("Subscriptions");
+                  } else {
+                    return;
+                  }
+                }}
+              >
+                <OverviewCard
+                  title="Subscriptions"
+                  subtitle={`Total spent on subscriptions in ${month.label}, ${year.label}`}
+                >
+                  <div className="subscription-bills-icon-count-wrapper ">
+                    <MdSubscriptions className="subscription-bills-overview-icon" />
+                    <div className="subscription-bills-amount expense-text">
+                      <MyCountUp end={subscriptionsTotal} />
                     </div>
                   </div>
-                ))}
+                </OverviewCard>
+              </div>
+
+              <div
+                onClick={() => {
+                  if (billsTotal > 0) {
+                    setViewMode("transactions");
+                    setSelectedCard("Bills");
+                  } else {
+                    return;
+                  }
+                }}
+              >
+                <OverviewCard
+                  title="Bills"
+                  subtitle={`Total spent on bills in ${month.label}, ${year.label}`}
+                >
+                  <div className="subscription-bills-icon-count-wrapper ">
+                    <MdReceiptLong className="subscription-bills-overview-icon" />
+                    <div className="subscription-bills-amount expense-text">
+                      <MyCountUp end={billsTotal} />
+                    </div>
+                  </div>
+                </OverviewCard>
               </div>
             </>
           )}
-          {selectedCard === "Bills" && (
+
+          {viewMode === "transactions" && (
             <>
-              {Object.entries(bills)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-              <div className="transaction-page-wrapper">
-                {Object.entries(bills).map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+              {/* Toggle Buttons */}
+              <div className="toggle-button-group">
+                <button
+                  onClick={() => setSelectedCard("Subscriptions")}
+                  className={selectedCard === "Subscriptions" ? "active" : ""}
+                >
+                  Subscriptions
+                </button>
+                <button
+                  onClick={() => setSelectedCard("Bills")}
+                  className={selectedCard === "Bills" ? "active" : ""}
+                >
+                  Bills
+                </button>
               </div>
+
+              {selectedCard === "Subscriptions" && (
+                <TransactionsMode
+                  name={"back to list"}
+                  amount={subscriptionsTotal}
+                  handleBack={handleBack}
+                  transactions={subscriptions}
+                />
+              )}
+              {selectedCard === "Bills" && (
+                <TransactionsMode
+                  name={"back to list"}
+                  amount={billsTotal}
+                  handleBack={handleBack}
+                  transactions={bills}
+                />
+              )}
             </>
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 
