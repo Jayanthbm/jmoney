@@ -1,17 +1,16 @@
 // src/components/Views/PayeesView.jsx
 import "./PayeesView.css";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { formatDateToDayMonthYear, formatIndianNumber, groupAndSortTransactions } from "../../utils";
-import { IoIosArrowBack } from "react-icons/io";
-import Loading from "../Layouts/Loading";
-import TransactionCard from "../Cards/TransactionCard";
+import React, { useEffect, useState } from "react";
+import { formatIndianNumber, groupAndSortTransactions } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
 import { MdClose } from "react-icons/md";
 import Fuse from "fuse.js";
 import { debounce } from "lodash";
 import NoDataCard from "../Cards/NoDataCard";
+import TransactionsMode from "./TransactionsMode";
+import InlineLoader from "../Layouts/InlineLoader";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);
@@ -49,15 +48,35 @@ const PayeesView = () => {
 
       setPayees(summarizedPayees);
       setGroupedPayees(summarizedPayees);
-      // Create Fuse instance for fuzzy search
-      setFuse(new Fuse(summarizedPayees, {
+
+      // Initialize Fuse for fuzzy search
+      const fuseInstance = new Fuse(summarizedPayees, {
         keys: ['name'],
         threshold: 0.3
-      }));
+      });
+      setFuse(fuseInstance);
+
       setLoading(false);
     };
     fetchAndSummarize();
   }, []);
+
+  useEffect(() => {
+    if (!fuse) return;
+
+    const handler = debounce((query) => {
+      if (!query) {
+        setGroupedPayees(payees);
+      } else {
+        const results = fuse.search(query);
+        setGroupedPayees(results.map(r => r.item));
+      }
+    }, 300);
+
+    handler(search);
+
+    return () => handler.cancel();
+  }, [search, fuse, payees]);
 
   const handlePayeeClick = (payee) => {
     setSelectedPayee(payee.name);
@@ -66,56 +85,44 @@ const PayeesView = () => {
     setViewMode("transactions");
   };
 
-  // Debounced fuzzy search
-  const debouncedFuzzyFilter = useCallback(
-    debounce((query, fuseInstance, originalPayees) => {
-      if (!query) {
-        setGroupedPayees(originalPayees);
-      } else if (fuseInstance) {
-        const results = fuseInstance.search(query);
-        setGroupedPayees(results.map(result => result.item));
-      }
-    }, 300),
-    []
-  );
-
-  useEffect(() => {
-    debouncedFuzzyFilter(search, fuse, payees);
-    return () => debouncedFuzzyFilter.cancel();
-  }, [search, fuse, payees, debouncedFuzzyFilter]);
+  const handleBack = () => {
+    setViewMode("summary");
+    setTransactions([]);
+  };
 
   return (
-    <div>
+    <>
+      <div className="search-input-wrapper">
+        <input
+          type="text"
+          placeholder="Search Payees"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-bar"
+          spellCheck={false}
+          aria-label="Search payees"
+          disabled={loading}
+        />
+        {search && (
+          <span
+            className="search-clear-icon"
+            onClick={() => setSearch("")}
+            role="button"
+            tabIndex={0}
+            aria-label="Clear search"
+            title="Clear search"
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+          >
+            <MdClose />
+          </span>
+        )}
+      </div>
       {loading ? (
-        <Loading />
+        <InlineLoader />
       ) : (
         <>
           {viewMode === "summary" && (
-            <>
-              <div className="search-input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Search Payees"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="search-bar"
-                  spellCheck={false}
-                />
-                {search && (
-                  <span
-                    className="search-clear-icon"
-                    onClick={() => setSearch("")}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Clear search"
-                    title="Clear search"
-                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
-                  >
-                    <MdClose />
-                  </span>
-                )}
-              </div>
-              <div className="payee-summary-wrapper">
+            <div className="payee-summary-wrapper">
                 {groupedPayees?.length === 0 && (
                   <NoDataCard message="No Payee found" height="150" width="200" />
                 )}
@@ -130,6 +137,7 @@ const PayeesView = () => {
                       if (e.key === "Enter" || e.key === " ")
                         handlePayeeClick(payee);
                     }}
+                    aria-label={`View transactions for ${payee.name}`}
                   >
                     <div className="payee-details">
                       <div className="payee-name">{payee.name}</div>
@@ -144,55 +152,18 @@ const PayeesView = () => {
                   </div>
                 ))}
               </div>
-            </>
           )}
           {viewMode === "transactions" && (
-            <>
-              <div
-                className="back-button-container"
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  setViewMode("summary");
-
-                  setTransactions([]);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    setViewMode("summary");
-
-                    setTransactions([]);
-                  }
-                }}
-              >
-                <IoIosArrowBack />
-                <span className="back-button">Summary</span>
-              </div>
-              <div className="date-summary-bar">
-                <div className="summary-date">{selectedPayee}</div>
-                <div className="summary-amount">
-                  {formatIndianNumber(selectedPayeeTotal)}
-                </div>
-              </div>
-              <div className="transaction-page-wrapper">
-                {Object.entries(transactions)?.map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items?.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <TransactionsMode
+              name={selectedPayee}
+              amount={selectedPayeeTotal}
+              handleBack={handleBack}
+              transactions={transactions}
+            />
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 
