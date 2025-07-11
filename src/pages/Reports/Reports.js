@@ -25,28 +25,10 @@ import YearlySummaryView from "../../components/Views/YearlySummaryView";
 
 const reportsList = [
   {
-    title: "Transactions By Category",
-    description: "See the complete history about a category",
-    icon: <MdCategory size={28} />,
-    view: "transactionsByCategory",
-  },
-  {
-    title: "Transactions By Payee",
-    description: "See the complete history about a payee",
-    icon: <MdPerson size={28} />,
-    view: "transactionsByPayee",
-  },
-  {
-    title: "Yearly Summary",
-    description: "Review your yearly financial performance",
-    icon: <MdCalendarToday size={28} />,
-    view: "yearlySummary",
-  },
-  {
-    title: "Income vs Expense",
-    description: "Compare how much you earned vs spent",
-    icon: <MdCompareArrows size={28} />,
-    view: "incomeVsExpense",
+    title: "Monthly Living Costs",
+    description: "Track your monthly essential expenses",
+    icon: <MdHome size={28} />,
+    view: "monthlyLivingCosts",
   },
   {
     title: "Subscription and Bills",
@@ -55,17 +37,42 @@ const reportsList = [
     view: "subscriptionAndBills",
   },
   {
+    title: "Transactions By Payee",
+    description: "See the complete history about a payee",
+    icon: <MdPerson size={28} />,
+    view: "transactionsByPayee",
+  },
+  {
+    title: "Transactions By Category",
+    description: "See the complete history about a category",
+    icon: <MdCategory size={28} />,
+    view: "transactionsByCategory",
+  },
+  {
+    title: "Monthly Summary",
+    description: "Review your monthly financial performance",
+    icon: <MdCalendarToday size={28} />,
+    view: "monthlySummary",
+  },
+  {
+    title: "Income vs Expense",
+    description: "Compare how much you earned vs spent",
+    icon: <MdCompareArrows size={28} />,
+    view: "incomeVsExpense",
+  },
+  {
+    title: "Yearly Summary",
+    description: "Review your yearly financial performance",
+    icon: <MdCalendarToday size={28} />,
+    view: "yearlySummary",
+  },
+  {
     title: "Payees",
     description: "Analyze transactions by payees",
     icon: <MdPeople size={28} />,
     view: "payees",
   },
-  {
-    title: "Monthly Living Costs",
-    description: "Track your monthly essential expenses",
-    icon: <MdHome size={28} />,
-    view: "monthlyLivingCosts",
-  },
+
 ];
 
 const Reports = () => {
@@ -93,6 +100,8 @@ const Reports = () => {
         return <MonthlyLivingCostsView />;
       case "transactionsByPayee":
         return <SummaryByPayee />
+      case "monthlySummary":
+        return <YearlySummaryView showMonth={true} />;
       default:
         return null;
     }
