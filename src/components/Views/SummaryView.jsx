@@ -199,7 +199,6 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
         <TransactionsMode
           name={selectedCategory}
           amount={selectedCategoryAmount}
-          handleBack={handleBack}
           transactions={transactions}
         />
       )}
