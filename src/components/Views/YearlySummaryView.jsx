@@ -3,7 +3,7 @@
 import "./YearlySummaryView.css";
 
 import React, { useEffect, useState } from "react";
-import { formatIndianNumber, getMonthOptions, getYearOptions } from "../../utils";
+import { formatIndianNumber, getMonthOptions } from "../../utils";
 
 import MonthYearSelector from "./MonthYearSelector";
 import MyCountUp from "../Charts/MyCountUp";
@@ -56,7 +56,7 @@ const YearlySummaryView = ({ showMonth = false }) => {
     };
 
     fetchAndSummarize();
-  }, [year, month]);
+  }, [year, month, showMonth]);
 
   const expensePercent =
     income > 0 ? Math.min((expense / income) * 100, 100) : 0;
