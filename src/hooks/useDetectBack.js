@@ -1,3 +1,4 @@
+// hooks/useDetectBack.js
 import { useEffect } from "react";
 
 export default function useDetectBack(shouldBlock, onBack) {
@@ -10,7 +11,7 @@ export default function useDetectBack(shouldBlock, onBack) {
     window.history.pushState({ dummy: true }, "", window.location.href);
 
     const handlePopState = (e) => {
-      if (blocked) return; // prevent multiple triggers
+      // if (blocked) return; // prevent multiple triggers
       blocked = true;
 
       onBack(); // switch to summary

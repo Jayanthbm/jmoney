@@ -5,7 +5,6 @@ import "./Overview.css";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   calculatePayDayInfo,
-  formatIndianNumber,
   getSupabaseUserIdFromLocalStorage,
   isCacheExpired,
   refreshTransactionsCache,
@@ -24,14 +23,12 @@ import SummaryView from "../../components/Views/SummaryView";
 import TopCategories from "./components/TopCategories";
 import { fetchUserOverviewData } from "../../supabaseData";
 import { get } from "idb-keyval";
-import useTheme from "../../hooks/useTheme";
+import useDetectBack from "../../hooks/useDetectBack";
 
 const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("Overview");
-
-  const theme = useTheme();
   const refreshData = useCallback(async () => {
     const userId = getSupabaseUserIdFromLocalStorage();
     if (userId) {
@@ -84,9 +81,16 @@ const Overview = () => {
     fetchTransactions();
   }, [fetchOverview, fetchTransactions]);
 
-  const CATEGORY_COLORS = ["#3b82f6", "#10b981", "#9ca3af"];
 
   const [viewMode, setViewMode] = useState("overview");
+
+  useDetectBack(viewMode !== "overview", () => {
+    let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
+    if (!isTransactions) {
+      setViewMode('overview');
+      setTitle('Overview');
+    }
+  });
 
 
   return (
@@ -100,6 +104,7 @@ const Overview = () => {
         viewMode !== 'overview' ? () => {
           setViewMode('overview');
           setTitle('Overview');
+          sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
         } : null
       }
     >

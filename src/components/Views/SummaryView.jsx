@@ -16,6 +16,7 @@ import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
+import useDetectBack from "../../hooks/useDetectBack";
 import { useMediaQuery } from "react-responsive";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
@@ -104,7 +105,10 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
   const handleBack = () => {
     setViewMode("summary");
     setTransactions({});
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
+
+  useDetectBack(viewMode !== "summary", handleBack)
 
   return (
     <>
@@ -179,6 +183,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
                           );
                           setSelectedCategory(category.category_name);
                           setSelectedCategoryAmount(category.amount);
+                          sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                         }}
                       />
                     );
@@ -189,6 +194,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
           </>
         </>
       )}
+
       {viewMode === "transactions" && (
         <TransactionsMode
           name={selectedCategory}
