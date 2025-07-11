@@ -127,8 +127,8 @@ const SummaryByPayee = () => {
                       <div className="payee-name">{payee.name}</div>
                       <div style={{
                         display: "flex",
-                        flexDirection:'column',
-                        alignItems:'flex-end'
+                        flexDirection: 'column',
+                        alignItems: 'flex-end'
 
                       }}>
                         <div
