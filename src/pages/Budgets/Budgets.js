@@ -4,17 +4,19 @@ import "./Budgets.css";
 import { useCallback, useState } from "react";
 
 import AppLayout from "../../components/Layouts/AppLayout";
-const Budgets = () => {
-  const [loading,setLoading] = useState(false)
-  const [viewMode,setViewMode] = useState('summary');
-  const refreshData = useCallback(async () => {
 
+const Budgets = () => {
+  const [loading, setLoading] = useState(false)
+  const [viewMode, setViewMode] = useState('summary');
+  const refreshData = useCallback(async () => {
+    setViewMode('summary');
+    setLoading(false);
   }, []);
 
   return (
     <AppLayout title="Budgets" loading={loading} onRefresh={refreshData}>
       {viewMode === "summary" && (
-       <></>
+        <></>
       )}
 
       {viewMode === "info" && (

@@ -19,9 +19,9 @@ import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsVie
 import PayeesView from "../../components/Views/PayeesView";
 import ReportCard from "../../components/Cards/ReportCard";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
+import SummaryByPayee from "../../components/Views/SummaryByPayee";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
-import SummaryByPayee from "../../components/Views/SummaryByPayee";
 
 const reportsList = [
   {
