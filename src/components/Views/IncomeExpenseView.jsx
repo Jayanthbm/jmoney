@@ -312,7 +312,7 @@ const IncomeExpenseView = () => {
                 </div>
               </div>
               <AnimatePresence>
-                 {showIncomeList && (
+                {showIncomeList && (
                   <motion.div
                     className="transaction-card-list"
                     initial={{ opacity: 0, height: 0 }}
