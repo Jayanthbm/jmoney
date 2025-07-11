@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import Budgets from "./pages/Budgets/Budgets";
 import Goals from "./pages/Goals/Goals";
-import Loading from "./components/Layouts/Loading";
+import Loading from "./components/Loader/Loading";
 import Login from "./pages/Login/Login";
 import MainLayout from "./components/Layouts/MainLayout";
 import Overview from "./pages/Overview/Overview";

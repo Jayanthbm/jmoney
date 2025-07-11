@@ -1,4 +1,6 @@
+// src/pages/Goals/Goals.js
 import "./Goals.css";
+
 import React, { useCallback, useEffect, useState } from "react";
 import {
   addGoalInDb,
@@ -9,17 +11,17 @@ import {
   getSupabaseUserIdFromLocalStorage,
   refreshGoalsCache,
 } from "../../utils";
+import { sortGoals, sortOptions } from "./goalUtils";
 
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import { FaCirclePlus } from "react-icons/fa6";
 import GoalCard from "./components/GoalCard";
-import Select from "react-select";
-import { useMediaQuery } from "react-responsive";
-import { getCachedGoals } from "../../data/goals";
-import MyModal from "../../components/Layouts/MyModal";
 import GoalForm from "./components/GoalForm";
-import { sortGoals, sortOptions } from "./goalUtils";
+import MyModal from "../../components/Layouts/MyModal";
+import MySelect from "../../components/Select/MySelect";
+import { getCachedGoals } from "../../data/goals";
+import { useMediaQuery } from "react-responsive";
 
 const Goals = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -107,13 +109,10 @@ const Goals = () => {
     >
       <div className="goals-header">
         <div className="left-controls">
-          <Select
+          <MySelect
             options={sortOptions}
             value={sortOptions.find((opt) => opt.value === orderBy)}
             onChange={(selected) => setOrderBy(selected.value)}
-            isSearchable={false}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
         <div className="right-controls">

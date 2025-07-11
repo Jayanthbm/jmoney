@@ -10,13 +10,13 @@ import {
 
 import Button from "../Button/Button";
 import DonutChart from "../Charts/DonutChart";
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
+import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
 import { useMediaQuery } from "react-responsive";
-import InlineLoader from "../Layouts/InlineLoader";
-import TransactionsMode from "./TransactionsMode";
-import MonthYearSelector from "./ MonthYearSelector";
 
 const SummaryView = ({ title, showMonthSelect = true }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });

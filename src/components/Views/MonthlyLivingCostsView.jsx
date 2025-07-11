@@ -1,19 +1,20 @@
 // src/components/Views/MonthlyLivingCostsView.jsx
 
 import React, { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
-import { get, set } from "idb-keyval";
-import Select from "react-select";
-import { FiSave } from "react-icons/fi";
-import { FaEdit } from "react-icons/fa";
-import TransactionCard from "../Cards/TransactionCard";
-import Button from "../Button/Button";
-import NoDataCard from "../Cards/NoDataCard";
 import { formatIndianNumber, getCategoryCachekeys, getMonthOptions, groupAndSortTransactions } from "../../utils";
-import { getAllTransactions } from "../../db/transactionDb";
-import InlineLoader from "../Layouts/InlineLoader";
+import { get, set } from "idb-keyval";
+
+import Button from "../Button/Button";
+import { FaEdit } from "react-icons/fa";
+import { FiSave } from "react-icons/fi";
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
+import MySelect from "../Select/MySelect";
+import NoDataCard from "../Cards/NoDataCard";
+import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
-import MonthYearSelector from "./ MonthYearSelector";
+import { getAllTransactions } from "../../db/transactionDb";
+import { useMediaQuery } from "react-responsive";
 
 const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
 
@@ -146,12 +147,11 @@ const MonthlyLivingCostsView = () => {
           <div style={{
             marginBottom: '1rem'
           }}>
-            <Select
+            <MySelect
               isMulti
               options={categoryOptions}
               value={selectedOptions}
               onChange={setSelectedOptions}
-              classNamePrefix="react-select"
               placeholder="Select categories to track"
             />
           </div>

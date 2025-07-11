@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { formatIndianNumber, getMonthOptions,groupAndSortTransactions } from "../../utils";
-import InlineLoader from "../Layouts/InlineLoader";
+import { formatIndianNumber, getMonthOptions, groupAndSortTransactions } from "../../utils";
+
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
-import { getAllTransactions } from "../../db/transactionDb";
-import MonthYearSelector from "./ MonthYearSelector";
 import TransactionsMode from "./TransactionsMode";
+import { getAllTransactions } from "../../db/transactionDb";
 
 const SummaryByPayee = () => {
   const [loading, setLoading] = useState(true);

@@ -1,12 +1,14 @@
 // src/components/Views/AddTransaction.jsx
 
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import { format } from "date-fns";
-import { FaPlus, FaTimes } from "react-icons/fa";
-import Button from "../Button/Button";
-import { addTransaction } from "../../supabaseData";
 import "./SingleTransaction.css";
+
+import { FaPlus, FaTimes } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+
+import Button from "../Button/Button";
+import MySelect from "../Select/MySelect";
+import { addTransaction } from "../../supabaseData";
+import { format } from "date-fns";
 
 const AddTransaction = ({
   incomeCategories,
@@ -127,25 +129,21 @@ const AddTransaction = ({
 
         <div className="form-group">
           <label>Category</label>
-          <Select
+          <MySelect
             options={categoryOptions}
             value={categoryOptions.find(
               (opt) => opt.value === selectedCategory
             )}
             onChange={(selected) => setSelectedCategory(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
 
         <div className="form-group">
           <label>Payee</label>
-          <Select
+          <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
             onChange={(selected) => setSelectedPayee(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
 

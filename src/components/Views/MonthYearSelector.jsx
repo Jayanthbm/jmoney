@@ -1,16 +1,15 @@
 // src/components/Views/MonthYearSelector.jsx
 
-import React from "react";
-import Select from "react-select";
 import { getMonthOptions, getYearOptions } from "../../utils";
+
+import MySelect from "../Select/MySelect";
+import React from "react";
 
 const MonthYearSelector = ({ showYear = true, showMonth = true, yearValue, onYearChange, monthValue, onMonthChange, disabled }) => {
   return (
     <div className="filters-wrapper">
       {showYear && (
-        <Select
-          className="react-select-container"
-          classNamePrefix="react-select"
+        <MySelect
           options={getYearOptions()}
           value={yearValue}
           onChange={onYearChange}
@@ -18,9 +17,7 @@ const MonthYearSelector = ({ showYear = true, showMonth = true, yearValue, onYea
         />
       )}
       {showMonth && (
-        <Select
-          className="react-select-container"
-          classNamePrefix="react-select"
+        <MySelect
           options={getMonthOptions()}
           value={monthValue}
           onChange={onMonthChange}

@@ -1,32 +1,33 @@
 // src/components/Views/IncomeExpenseView.jsx
 
-import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  CartesianGrid,
 } from "recharts";
-import { useMediaQuery } from "react-responsive";
 import { FaChartBar, FaEyeSlash } from "react-icons/fa";
-import TransactionCard from "../Cards/TransactionCard";
-import NoDataCard from "../Cards/NoDataCard";
-import Button from "../Button/Button";
-import { getAllTransactions } from "../../db/transactionDb";
-import useTheme from "../../hooks/useTheme";
+import React, { useEffect, useState } from "react";
 import {
   formatIndianNumber,
   getMonthOptions,
   groupAndSortTransactions,
 } from "../../utils";
-import InlineLoader from "../Layouts/InlineLoader";
-import MonthYearSelector from "./ MonthYearSelector";
+
+import Button from "../Button/Button";
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
+import NoDataCard from "../Cards/NoDataCard";
+import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
-import { AnimatePresence, motion } from "framer-motion";
+import { getAllTransactions } from "../../db/transactionDb";
+import { useMediaQuery } from "react-responsive";
+import useTheme from "../../hooks/useTheme";
 
 const IncomeExpenseView = () => {
   const theme = useTheme();

@@ -4,17 +4,17 @@ import "./SubscriptionBillsView.css";
 
 import { MdReceiptLong, MdSubscriptions } from "react-icons/md";
 import React, { useEffect, useState } from "react";
+
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
+import MyCountUp from "../Charts/MyCountUp";
+import OverviewCard from "../Cards/OverviewCard";
+import TransactionsMode from "./TransactionsMode";
+import { getAllTransactions } from "../../db/transactionDb";
 import {
   getMonthOptions,
 } from "../../utils";
-
-import MyCountUp from "../Charts/MyCountUp";
-import OverviewCard from "../Cards/OverviewCard";
-import { getAllTransactions } from "../../db/transactionDb";
-import { groupBy} from "lodash";
-import TransactionsMode from "./TransactionsMode";
-import InlineLoader from "../Layouts/InlineLoader";
-import MonthYearSelector from "./ MonthYearSelector";
+import { groupBy } from "lodash";
 
 const SubscriptionBillsView = () => {
   const [loading, setLoading] = useState(true);

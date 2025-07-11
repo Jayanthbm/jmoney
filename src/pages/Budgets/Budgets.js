@@ -1,6 +1,8 @@
 // src/pages/Budgets/Budgets.js
 import "./Budgets.css";
+
 import { useCallback, useState } from "react";
+
 import AppLayout from "../../components/Layouts/AppLayout";
 const Budgets = () => {
   const [loading,setLoading] = useState(false)

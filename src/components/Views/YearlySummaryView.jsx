@@ -6,9 +6,9 @@ import React, { useEffect, useState } from "react";
 import { formatIndianNumber, getYearOptions } from "../../utils";
 
 import MyCountUp from "../Charts/MyCountUp";
+import MySelect from "../Select/MySelect";
 import OverviewCard from "../Cards/OverviewCard";
 import ProgressBar from "../Charts/ProgressBar";
-import Select from "react-select";
 import { getAllTransactions } from "../../db/transactionDb";
 
 const YearlySummaryView = () => {
@@ -50,9 +50,7 @@ const YearlySummaryView = () => {
 
   return (
     <div className="yearly-summary-view">
-      <Select
-        className="react-select-container"
-        classNamePrefix="react-select"
+      <MySelect
         options={getYearOptions()}
         value={year}
         onChange={(opt) => setYear(opt)}

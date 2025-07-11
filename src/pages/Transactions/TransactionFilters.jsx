@@ -1,8 +1,9 @@
 // src/pages/Transactions/TransactionFilters.jsx
 
-import React from "react";
-import Select from "react-select";
 import { AnimatePresence, motion } from "framer-motion";
+
+import MySelect from "../../components/Select/MySelect";
+import React from "react";
 
 const TransactionFilters = ({
   showFilters,
@@ -22,23 +23,19 @@ const TransactionFilters = ({
         exit={{ opacity: 0, height: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Select
+        <MySelect
           isMulti
           options={categoryOptions}
           value={selectedCategories}
           onChange={onCategoryChange}
           placeholder="Filter by Categories"
-          className="react-select-container"
-          classNamePrefix="react-select"
         />
-        <Select
+        <MySelect
           isMulti
           options={payeeOptions}
           value={selectedPayees}
           onChange={onPayeeChange}
           placeholder="Filter by Payees"
-          className="react-select-container"
-          classNamePrefix="react-select"
         />
       </motion.div>
     )}

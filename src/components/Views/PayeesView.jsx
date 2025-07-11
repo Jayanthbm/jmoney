@@ -3,14 +3,15 @@ import "./PayeesView.css";
 
 import React, { useEffect, useState } from "react";
 import { formatIndianNumber, groupAndSortTransactions } from "../../utils";
-import { getAllTransactions } from "../../db/transactionDb";
-import { groupBy } from "lodash";
-import { MdClose } from "react-icons/md";
+
 import Fuse from "fuse.js";
-import { debounce } from "lodash";
+import InlineLoader from "../Loader/InlineLoader";
+import { MdClose } from "react-icons/md";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionsMode from "./TransactionsMode";
-import InlineLoader from "../Layouts/InlineLoader";
+import { debounce } from "lodash";
+import { getAllTransactions } from "../../db/transactionDb";
+import { groupBy } from "lodash";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);

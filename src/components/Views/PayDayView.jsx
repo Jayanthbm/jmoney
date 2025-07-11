@@ -7,13 +7,13 @@ import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 
 import Button from "../Button/Button";
 import Calendar from "react-calendar";
+import InlineLoader from "../Loader/InlineLoader";
 import { MdToday } from "react-icons/md";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
 import { isSameDay } from "date-fns";
 import { useMediaQuery } from "react-responsive";
-import InlineLoader from "../Layouts/InlineLoader";
 
 const PayDayView = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });

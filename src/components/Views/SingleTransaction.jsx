@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { deleteTransaction, updateTransaction } from "../../supabaseData";
 
 import Button from "../Button/Button";
-import Select from "react-select";
+import MySelect from "../Select/MySelect";
 
 const SingleTransaction = ({
   incomeCategories,
@@ -117,25 +117,21 @@ const SingleTransaction = ({
 
         <div className="form-group">
           <label>Category</label>
-          <Select
+          <MySelect
             options={categoryOptions}
             value={categoryOptions.find(
               (opt) => opt.value === selectedCategory
             )}
             onChange={(selected) => setSelectedCategory(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
 
         <div className="form-group">
           <label>Payee</label>
-          <Select
+          <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
             onChange={(selected) => setSelectedPayee(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
 
