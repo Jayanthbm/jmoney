@@ -4,9 +4,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1px;
-  margin: 1px;
   justify-content: flex-start;
+  margin-bottom: 1.5rem;
 }
+
 
 .overview-card-wrapper {
   flex: 1 1 100%;
