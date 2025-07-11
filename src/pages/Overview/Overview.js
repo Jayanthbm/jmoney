@@ -12,16 +12,16 @@ import {
 } from "../../utils";
 
 import AppLayout from "../../components/Layouts/AppLayout";
-import CircularProgressBar from "../../components/Charts/CircularProgressBar";
-import CustomDonutChart from "../../components/Charts/CustomDonutChart";
+import DailyLimit from "./components/DailyLimit";
 import DailyLimitView from "../../components/Views/DailyLimitView";
 import MyCountUp from "../../components/Charts/MyCountUp";
-import NoDataCard from "../../components/Cards/NoDataCard";
 import OverviewCard from "../../components/Cards/OverviewCard";
+import PayDay from "./components/PayDay";
 import PayDayView from "../../components/Views/PayDayView";
-import ProgressBar from "../../components/Charts/ProgressBar";
+import RemainingForPeriod from "./components/RemainingForPeriod";
 import StatCard from "../../components/Cards/StatCard";
 import SummaryView from "../../components/Views/SummaryView";
+import TopCategories from "./components/TopCategories";
 import { fetchUserOverviewData } from "../../supabaseData";
 import { get } from "idb-keyval";
 import useTheme from "../../hooks/useTheme";
@@ -107,20 +107,7 @@ const Overview = () => {
         <div className="overview-container">
           {/* Remainng for Period */}
           <div className="overview-card-wrapper">
-            <OverviewCard
-              title="Remaining for Period"
-              subtitle={data?.remainingForPeriod?.period}
-            >
-              <div>
-                <div className="big-income-text">
-                  <MyCountUp end={data?.remainingForPeriod?.remaining || 0} />
-                </div>
-                <ProgressBar
-                  value={data?.remainingForPeriod?.spent_percentage || 0}
-                  color="#3ecf8e"
-                />
-              </div>
-            </OverviewCard>
+            <RemainingForPeriod data={data?.remainingForPeriod} />
           </div>
 
           {/* Daily Limit */}
@@ -131,77 +118,7 @@ const Overview = () => {
               setTitle('Daily Limit');
             }}
           >
-            <OverviewCard
-              title="Daily Limit"
-              subtitle={`Limit: ${formatIndianNumber(
-                data?.dailyLimit?.daily_limit
-              )}`}
-            >
-              <div className="daily-limit-container">
-                {/* Remaining */}
-                <div className="daily-limit-section">
-                  {data?.dailyLimit?.remaining_percentage > 0 ? (
-                    <>
-                      <div className="daily-limit-label">REMAINING</div>
-                      <div className="daily-limit-value green-text">
-                        {formatIndianNumber(data?.dailyLimit?.remaining || 0)}
-                      </div></>
-                  ) : (
-                    <>
-                      <div className="daily-limit-label">OVERSPENT</div>
-                      <div className="daily-limit-value red-text">
-                        {formatIndianNumber(data?.dailyLimit?.spent - data?.dailyLimit?.daily_limit)}
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Divider */}
-                <div className="divider" />
-
-                {/* Spent */}
-                <div className="daily-limit-section">
-                  <div className="daily-limit-label">SPENT</div>
-                  <div className="daily-limit-value red-text">
-                    {formatIndianNumber(data?.dailyLimit?.spent || 0)}
-                  </div>
-                </div>
-
-                {/* Circular Progress */}
-                <div className="daily-limit-section progress-section">
-                  <CircularProgressBar
-                    progress={
-                      data?.dailyLimit?.remaining_percentage > 0
-                        ? data.dailyLimit.remaining_percentage
-                        : 100 || 0
-                    }
-                    text={
-                      data?.dailyLimit?.remaining_percentage > 0
-                        ? `${data.dailyLimit.remaining_percentage}%`
-                        : "⚠︎"
-                    }
-                    pathColor={
-                      data?.dailyLimit?.remaining_percentage > 0
-                        ? "#3ecf8e"
-                        : "#ef4444"
-                    }
-                    fontSize={
-                      data?.dailyLimit?.remaining_percentage < 0
-                        ? "1.1rem"
-                        : "0.8rem"
-                    }
-                    textColor={
-                      data?.dailyLimit?.remaining_percentage < 0
-                        ? "#ef4444"
-                        : theme === "dark"
-                          ? "#f1f1f1"
-                          : "#374151"
-                    }
-                    size={70}
-                  />
-                </div>
-              </div>
-            </OverviewCard>
+            <DailyLimit data={data?.dailyLimit} />
           </div>
 
           {/* Pay Day */}
@@ -212,40 +129,7 @@ const Overview = () => {
               setTitle('Calendar View');
             }}
           >
-            <OverviewCard title="Pay Day" subtitle="Days until next salary">
-              <div className="payday-container">
-                {/* Section 1: Pay Date & Dot Grid */}
-                <div className="payday-info">
-                  <div className="payday-date">{data?.payDay?.date || ""}</div>
-                  <div className="dot-grid">
-                    {Array.from({
-                      length: data?.payDay?.days_in_month || 30,
-                    }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`dot ${i + 1 < data?.payDay?.today
-                            ? "dot-past"
-                            : "dot-future"
-                          }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Section 2: Circular Progress */}
-                <div className="payday-progress">
-                  <CircularProgressBar
-                    progress={
-                      100 - data?.payDay?.remaining_days_percentage || 0
-                    }
-                    text={`${data?.payDay?.remaining_days || 0}`}
-                    subtext="DAYS"
-                    pathColor="#139af5"
-                    textColor={theme === "dark" ? "#5d9bff" : "#2c6c99"}
-                  />
-                </div>
-              </div>
-            </OverviewCard>
+            <PayDay data={data?.payDay} />
           </div>
 
           {/* Top Categories */}
@@ -256,52 +140,10 @@ const Overview = () => {
                 setViewMode("topCategories");
                 setTitle('Top Categories');
               }
+
             }}
           >
-            <OverviewCard
-              title="Top Categories"
-              subtitle={data?.remainingForPeriod?.period}
-            >
-              {data?.topCategories?.length > 0 ? (
-                <div className="top-categories-donut">
-                  {/* Section 1: Labels */}
-                  <div className="category-labels">
-                    <>
-                      {data?.topCategories?.map((cat, index) => (
-                        <div key={index} className="category-label-item">
-                          <span
-                            className="category-dot"
-                            style={{
-                              backgroundColor: CATEGORY_COLORS[index],
-                            }}
-                          />
-                          <div className="category-text">
-                            <div className="category-name">{cat.name}</div>
-                            <div className="category-value">
-                              {formatIndianNumber(cat?.amount || 0)} |{" "}
-                              {cat?.percentage || 0}%
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
-
-                  {/* Section 2: Donut Chart */}
-                  <div className="category-donut-chart">
-                    <CustomDonutChart
-                      data={data?.topCategories?.map((cat) => ({
-                        value: cat?.percentage,
-                      }))}
-                      colors={CATEGORY_COLORS}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <NoDataCard message="No data available" height="100" width="150" />
-              )}
-
-            </OverviewCard>
+            <TopCategories data={data} />
           </div>
 
           {/* Current Month */}
