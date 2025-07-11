@@ -29,6 +29,8 @@ const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("Overview");
+  const cardStyles = { cursor: 'default' };
+
   const refreshData = useCallback(async () => {
     const userId = getSupabaseUserIdFromLocalStorage();
     if (userId) {
@@ -92,7 +94,6 @@ const Overview = () => {
     }
   });
 
-
   return (
     <AppLayout
       title={title}
@@ -102,9 +103,13 @@ const Overview = () => {
       }}
       onBack={
         viewMode !== 'overview' ? () => {
-          setViewMode('overview');
-          setTitle('Overview');
-          sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
+          let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
+          if (!isTransactions) {
+            setViewMode('overview');
+            setTitle('Overview');
+          } else {
+            window.history.back();
+          }
         } : null
       }
     >
@@ -179,7 +184,7 @@ const Overview = () => {
 
           {/* Net Worth */}
           <div className="overview-card-wrapper">
-            <OverviewCard title="Net Worth" subtitle="ALL TIME">
+            <OverviewCard title="Net Worth" subtitle="ALL TIME" customStyles={cardStyles}>
               <div>
                 <div className="big-income-text">
                   <MyCountUp end={data?.networth?.amount || 0} />
