@@ -15,6 +15,7 @@ import {
   getMonthOptions,
 } from "../../utils";
 import { groupBy } from "lodash";
+import useDetectBack from "../../hooks/useDetectBack";
 
 const SubscriptionBillsView = () => {
   const [loading, setLoading] = useState(true);
@@ -72,7 +73,10 @@ const SubscriptionBillsView = () => {
 
   const handleBack = () => {
     setViewMode("summary");
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
+
+  useDetectBack(viewMode !== "summary", handleBack);
 
   return (
     <>
@@ -95,6 +99,7 @@ const SubscriptionBillsView = () => {
                   if (subscriptionsTotal > 0) {
                     setViewMode("transactions");
                     setSelectedCard("Subscriptions");
+                    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                   } else {
                     return;
                   }
@@ -118,6 +123,7 @@ const SubscriptionBillsView = () => {
                   if (billsTotal > 0) {
                     setViewMode("transactions");
                     setSelectedCard("Bills");
+                    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                   } else {
                     return;
                   }
@@ -158,17 +164,15 @@ const SubscriptionBillsView = () => {
 
               {selectedCard === "Subscriptions" && (
                 <TransactionsMode
-                  name={"back to list"}
-                  amount={subscriptionsTotal}
-                  handleBack={handleBack}
+                    name={"Total"}
+                    amount={subscriptionsTotal}
                   transactions={subscriptions}
                 />
               )}
               {selectedCard === "Bills" && (
                 <TransactionsMode
-                  name={"back to list"}
-                  amount={billsTotal}
-                  handleBack={handleBack}
+                    name={"Total"}
+                    amount={billsTotal}
                   transactions={bills}
                 />
               )}

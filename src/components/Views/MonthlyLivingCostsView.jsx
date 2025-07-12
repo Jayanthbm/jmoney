@@ -14,6 +14,7 @@ import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
+import useDetectBack from "../../hooks/useDetectBack";
 import { useMediaQuery } from "react-responsive";
 
 const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
@@ -135,8 +136,10 @@ const MonthlyLivingCostsView = () => {
     setViewMode("summary");
     setHeading(null);
     setTransactions([]);
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
 
+  useDetectBack(viewMode !== "summary", handleBack);
   return (
     <div>
       {heading && (
@@ -210,6 +213,7 @@ const MonthlyLivingCostsView = () => {
                       );
                       setSelectedCategory(category.category_name);
                       setSelectedCategoryAmount(category.amount);
+                      sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                     }}
                   />
                 );
@@ -220,7 +224,6 @@ const MonthlyLivingCostsView = () => {
       )}
       {viewMode === "transactions" && (
         <TransactionsMode
-          handleBack={handleBack}
           name={selectedCategory}
           amount={selectedCategoryAmount}
           transactions={transactions}

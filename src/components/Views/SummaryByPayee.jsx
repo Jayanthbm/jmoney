@@ -6,6 +6,7 @@ import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
+import useDetectBack from "../../hooks/useDetectBack";
 
 const SummaryByPayee = () => {
   const [loading, setLoading] = useState(true);
@@ -72,7 +73,10 @@ const SummaryByPayee = () => {
   const handleBack = () => {
     setViewMode("summary");
     setTransactions({});
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
+
+  useDetectBack(viewMode !== "summary", handleBack);
   return (
     <>
       {viewMode === "summary" && (
@@ -119,6 +123,7 @@ const SummaryByPayee = () => {
                         groupAndSortTransactions(payee.transactions)
                       );
                       setViewMode("transactions");
+                      sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                     }}
                     role="button"
                     tabIndex={0}

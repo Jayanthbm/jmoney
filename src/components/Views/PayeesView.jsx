@@ -12,6 +12,7 @@ import TransactionsMode from "./TransactionsMode";
 import { debounce } from "lodash";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
+import useDetectBack from "../../hooks/useDetectBack";
 
 const PayeesView = () => {
   const [loading, setLoading] = useState(true);
@@ -84,12 +85,16 @@ const PayeesView = () => {
     setSelectedPayeeTotal(payee.amount);
     setTransactions(groupAndSortTransactions(payee.transactions));
     setViewMode("transactions");
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
   };
 
   const handleBack = () => {
     setViewMode("summary");
     setTransactions([]);
+    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
+
+  useDetectBack(viewMode !== "summary", handleBack);
 
   return (
     <>
@@ -157,8 +162,7 @@ const PayeesView = () => {
           {viewMode === "transactions" && (
             <TransactionsMode
               name={selectedPayee}
-              amount={selectedPayeeTotal}
-              handleBack={handleBack}
+                amount={selectedPayeeTotal}
               transactions={transactions}
             />
           )}
