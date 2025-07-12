@@ -63,9 +63,10 @@ const IncomeExpenseView = () => {
 
   useEffect(() => {
     if (isMobile) {
-      setShowChart(false);
+      setShowExpenseList(showChart ? false : true);
+      setShowIncomeList(showChart ? false : true);
     }
-  }, [isMobile]);
+  }, [isMobile, showChart]);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -266,7 +267,7 @@ const IncomeExpenseView = () => {
                 <div className="summary-date" onClick={() => {
                   setShowExpenseList(!showExpenseList)
                 }} style={{ cursor: 'pointer' }}>Expense</div>
-                <div className="summary-amount">
+                    <div className="red-text">
                   {formatIndianNumber(totalExpense)}
                 </div>
               </div>
@@ -312,7 +313,7 @@ const IncomeExpenseView = () => {
                 <div className="summary-date" onClick={() => {
                   setShowIncomeList(!showIncomeList)
                 }} style={{ cursor: 'pointer' }}>Income</div>
-                <div className="summary-amount">
+                    <div className="green-text">
                   {formatIndianNumber(totalIncome)}
                 </div>
               </div>

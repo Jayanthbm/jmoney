@@ -87,11 +87,11 @@
 }
 
 .green-text {
-  color: var(--income-color, #3ecf8e);
+  color: var(--income-color, #3ecf8e) !important;
 }
 
 .red-text {
-  color: var(--expense-color, #f87171);
+  color: var(--expense-color, #f87171) !important;
 }
 
 .header-container {
