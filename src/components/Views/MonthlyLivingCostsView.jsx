@@ -105,7 +105,7 @@ const MonthlyLivingCostsView = () => {
             type: "Expense",
             transactions: data.transactions,
           }))
-          .sort((a, b) => b.percentage - a.percentage);
+          .sort((a, b) => b.amount - a.amount);
         setSummary(summaryArray);
       } else {
         setSummary([]);
@@ -123,7 +123,7 @@ const MonthlyLivingCostsView = () => {
     const selectedIds = selectedOptions?.map((opt) => opt.value);
     await set(CHOOSEN_CATEGORIES_CACHE_KEY, selectedIds);
     setChoosenCategories(selectedIds);
-    setHeading("Monthly Living Costs");
+    setHeading(null);
     setViewMode("summary");
   };
 
@@ -140,6 +140,16 @@ const MonthlyLivingCostsView = () => {
   };
 
   useDetectBack(viewMode !== "summary", handleBack);
+
+  useEffect(() => {
+    if (viewMode === 'summary') {
+      setTimeout(() => {
+        sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
+      }, 100)
+    }
+  }, [viewMode]);
+
+
   return (
     <div>
       {heading && (
@@ -173,6 +183,7 @@ const MonthlyLivingCostsView = () => {
                   .filter((cat) => choosenCategories.includes(cat.id))
                   ?.map((cat) => ({ value: cat.id, label: cat.name }));
                 setSelectedOptions(selected);
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
               }}
               text={isMobile ? null : "Edit Configuration"}
             />
