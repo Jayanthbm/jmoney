@@ -36,6 +36,7 @@ const SubscriptionBillsView = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
   const [selectedCard, setSelectedCard] = useState(null);
+  const [stopBack, setStopBack] = useState(false);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -76,15 +77,29 @@ const SubscriptionBillsView = () => {
     sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
 
-  useDetectBack(viewMode !== "summary", handleBack);
+  useDetectBack(viewMode !== "summary" && !stopBack, handleBack);
+
+  useEffect(() => {
+    if (stopBack) {
+      setTimeout(() => {
+        setStopBack(false);
+      }, 200)
+    }
+  }, [stopBack]);
 
   return (
     <>
       <MonthYearSelector
         yearValue={year}
-        onYearChange={(opt) => setYear(opt)}
+        onYearChange={(opt) => {
+          setYear(opt);
+          setStopBack(true);
+        }}
         monthValue={month}
-        onMonthChange={(opt) => setMonth(opt)}
+        onMonthChange={(opt) => {
+          setMonth(opt);
+          setStopBack(true);
+        }}
         disabled={loading}
       />
       {loading ? (
@@ -92,8 +107,7 @@ const SubscriptionBillsView = () => {
       ) : (
         <>
           {viewMode === "summary" && (
-            <>
-
+              <>
               <div
                 onClick={() => {
                   if (subscriptionsTotal > 0) {
@@ -149,13 +163,19 @@ const SubscriptionBillsView = () => {
               {/* Toggle Buttons */}
               <div className="toggle-button-group">
                 <button
-                  onClick={() => setSelectedCard("Subscriptions")}
+                    onClick={() => {
+                      setSelectedCard("Subscriptions")
+                      setStopBack(true);
+                    }}
                   className={selectedCard === "Subscriptions" ? "active" : ""}
                 >
                   Subscriptions
                 </button>
                 <button
-                  onClick={() => setSelectedCard("Bills")}
+                    onClick={() => {
+                      setSelectedCard("Bills");
+                      setStopBack(true);
+                    }}
                   className={selectedCard === "Bills" ? "active" : ""}
                 >
                   Bills
