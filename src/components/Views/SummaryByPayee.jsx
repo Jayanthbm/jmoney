@@ -22,6 +22,8 @@ const SummaryByPayee = () => {
   const [payeeSummary, setPayeeSummary] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
   const [transactions, setTransactions] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [selectedAmount, setSelectedAmount] = useState(0);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -62,7 +64,7 @@ const SummaryByPayee = () => {
           type: type,
           transactions: data.transactions,
         }))
-        .sort((a, b) => b.percentage - a.percentage);
+        .sort((a, b) => b.amount - a.amount);
 
       setPayeeSummary(summaryArray);
       setLoading(false);
@@ -77,6 +79,7 @@ const SummaryByPayee = () => {
   };
 
   useDetectBack(viewMode !== "summary", handleBack);
+
   return (
     <>
       {viewMode === "summary" && (
@@ -123,6 +126,8 @@ const SummaryByPayee = () => {
                         groupAndSortTransactions(payee.transactions)
                       );
                       setViewMode("transactions");
+                      setSelected(payee.name);
+                      setSelectedAmount(payee.amount);
                       sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
                     }}
                     role="button"
@@ -156,8 +161,8 @@ const SummaryByPayee = () => {
 
       {viewMode === "transactions" && (
         <TransactionsMode
-          name={"back to list"}
-          amount={0}
+          name={selected}
+          amount={selectedAmount}
           handleBack={handleBack}
           transactions={transactions}
         />

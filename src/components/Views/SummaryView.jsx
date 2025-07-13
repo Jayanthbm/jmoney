@@ -92,7 +92,7 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
           type: type,
           transactions: data.transactions,
         }))
-        .sort((a, b) => b.percentage - a.percentage);
+        .sort((a, b) => b.amount - a.amount);
 
       setCategorySummary(summaryArray);
       setLoading(false);

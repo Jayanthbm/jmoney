@@ -2,6 +2,7 @@
 
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 
+import NoDataCard from "../Cards/NoDataCard";
 import React from "react";
 import TransactionCard from "../Cards/TransactionCard";
 
@@ -36,6 +37,9 @@ const TransactionsMode = ({ name, amount, transactions }) => {
               </div>
             </div>
           ))}
+          {Object?.entries(transactions)?.length === 0 && (
+            <NoDataCard message="No transactions" />
+          )}
         </div>
       )}
 
