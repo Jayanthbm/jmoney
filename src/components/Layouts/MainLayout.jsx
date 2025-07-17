@@ -124,7 +124,10 @@ const MainLayout = ({ children }) => {
               className={`footer-nav-item ${
                 selected === item.path ? "active" : ""
               }`}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
+                navigate(item.path)
+              }}
             >
               <div className="footer-icon">{item.icon}</div>
               <div className="footer-label">{item.label}</div>
