@@ -22,7 +22,6 @@ import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView"
 import SummaryByPayee from "../../components/Views/SummaryByPayee";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
-import useDetectBack from "../../hooks/useDetectBack";
 
 const reportsList = [
   {
@@ -85,13 +84,6 @@ const Reports = () => {
     setLoading(false);
   }, []);
 
-  useDetectBack(viewMode !== "reportList", () => {
-    let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
-    if (!isTransactions) {
-      setViewMode('reportList');
-      setTitle('Reports');
-    }
-  });
 
   const onBack = () => {
     setViewMode('reportList');
