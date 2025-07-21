@@ -23,7 +23,6 @@ import SummaryView from "../../components/Views/SummaryView";
 import TopCategories from "./components/TopCategories";
 import { fetchUserOverviewData } from "../../supabaseData";
 import { get } from "idb-keyval";
-import useDetectBack from "../../hooks/useDetectBack";
 
 const Overview = () => {
   const [data, setData] = useState(null);
@@ -86,35 +85,27 @@ const Overview = () => {
 
   const [viewMode, setViewMode] = useState("overview");
 
-  useDetectBack(viewMode !== "overview", () => {
-    let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
-    if (!isTransactions) {
-      setViewMode('overview');
-      setTitle('Overview');
-    }
-  });
-
+  const onBack = () => {
+    setViewMode('overview');
+    setTitle('Overview');
+  }
   return (
-    <AppLayout
-      title={title}
-      loading={!data || loading}
-      onRefresh={() => {
-        refreshData();
-      }}
-      onBack={
-        viewMode !== 'overview' ? () => {
-          let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
-          if (!isTransactions) {
-            setViewMode('overview');
-            setTitle('Overview');
-          } else {
-            window.history.back();
-          }
-        } : null
-      }
-    >
+    <>
       {viewMode === "overview" && (
-        <div className="overview-container">
+        <AppLayout
+          title={title}
+          loading={!data || loading}
+          onRefresh={() => {
+            refreshData();
+          }}
+          onBack={
+            viewMode !== 'overview' ? () => {
+            setViewMode('overview');
+              setTitle('Overview');
+            } : null
+          }
+        >
+          <div className="overview-container">
           {/* Remainng for Period */}
           <div className="overview-card-wrapper">
             <RemainingForPeriod data={data?.remainingForPeriod} />
@@ -193,17 +184,15 @@ const Overview = () => {
             </OverviewCard>
           </div>
         </div>
+        </AppLayout>
       )}
       {viewMode === "dailyLimit" && (
-        <DailyLimitView dailyLimitData={data?.dailyLimit} />
+        <DailyLimitView dailyLimitData={data?.dailyLimit} title={title} onBack={onBack} />
       )}
-      {viewMode === "payDay" && <PayDayView />}
-      {viewMode === "topCategories" && <SummaryView />}
-      {viewMode === "thisMonth" && <SummaryView />}
-      {viewMode === "currentYear" && (
-        <SummaryView showMonthSelect={false} />
-      )}
-    </AppLayout>
+      {viewMode === "payDay" && <PayDayView title={title} onBack={onBack} />}
+
+      {(viewMode === "topCategories" || viewMode === "thisMonth" || viewMode === "currentYear") && <SummaryView title={title} onBack={onBack} showMonthSelect={!viewMode === "currentYear"} />}
+    </>
   );
 };
 

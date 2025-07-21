@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
+import AppLayout from "../Layouts/AppLayout";
 import CircularProgressBar from "../Charts/CircularProgressBar";
 import InlineLoader from "../Loader/InlineLoader";
 import NoDataCard from "../Cards/NoDataCard";
@@ -12,7 +13,7 @@ import { getAllTransactions } from "../../db/transactionDb";
 import { isToday } from "date-fns";
 import useTheme from "../../hooks/useTheme";
 
-const DailyLimitView = ({ dailyLimitData }) => {
+const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
@@ -32,7 +33,7 @@ const DailyLimitView = ({ dailyLimitData }) => {
   }, []);
 
   return (
-    <div>
+    <AppLayout title={title} onBack={onBack}>
       <div className="daily-limit-view">
         {/* Daily Limit Card */}
         <div className="overview-card-wrapper">
@@ -123,7 +124,7 @@ const DailyLimitView = ({ dailyLimitData }) => {
           )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

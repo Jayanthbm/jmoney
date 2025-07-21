@@ -4,6 +4,7 @@ import "./PayeesView.css";
 import React, { useEffect, useState } from "react";
 import { formatIndianNumber, groupAndSortTransactions } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import Fuse from "fuse.js";
 import InlineLoader from "../Loader/InlineLoader";
 import { MdClose } from "react-icons/md";
@@ -12,9 +13,8 @@ import TransactionsMode from "./TransactionsMode";
 import { debounce } from "lodash";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
-import useDetectBack from "../../hooks/useDetectBack";
 
-const PayeesView = () => {
+const PayeesView = ({ title, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("summary");
   const [payees, setPayees] = useState([]);
@@ -24,12 +24,13 @@ const PayeesView = () => {
   const [selectedPayeeTotal, setSelectedPayeeTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [fuse, setFuse] = useState(null);
+  const [type, setType] = useState("Expense");
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
       setLoading(true);
       const allTx = await getAllTransactions();
-      const filtered = allTx.filter((tx) => tx.payee_name);
+      const filtered = allTx.filter((tx) => tx.payee_name && tx.type === type);
       const grouped = groupBy(filtered, (tx) => tx.payee_name);
 
       const summarizedPayees = Object.entries(grouped)?.map(
@@ -61,7 +62,7 @@ const PayeesView = () => {
       setLoading(false);
     };
     fetchAndSummarize();
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     if (!fuse) return;
@@ -85,50 +86,61 @@ const PayeesView = () => {
     setSelectedPayeeTotal(payee.amount);
     setTransactions(groupAndSortTransactions(payee.transactions));
     setViewMode("transactions");
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
   };
 
   const handleBack = () => {
     setViewMode("summary");
     setTransactions([]);
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
-
-  useDetectBack(viewMode !== "summary", handleBack);
 
   return (
     <>
-      <div className="search-input-wrapper">
-        <input
-          type="text"
-          placeholder="Search Payees"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-bar"
-          spellCheck={false}
-          aria-label="Search payees"
-          disabled={loading}
-        />
-        {search && (
-          <span
-            className="search-clear-icon"
-            onClick={() => setSearch("")}
-            role="button"
-            tabIndex={0}
-            aria-label="Clear search"
-            title="Clear search"
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
-          >
-            <MdClose />
-          </span>
-        )}
-      </div>
-      {loading ? (
-        <InlineLoader />
-      ) : (
-        <>
-          {viewMode === "summary" && (
-            <div className="payee-summary-wrapper">
+      {viewMode === "summary" && (
+        <AppLayout title={title} onBack={onBack}>
+          {loading ? (
+            <InlineLoader />
+          ) : (
+            <>
+              <div className="toggle-button-group">
+                <button
+                  onClick={() => setType("Expense")}
+                  className={type === "Expense" ? "active" : ""}
+                >
+                  Expense
+                </button>
+                <button
+                  onClick={() => setType("Income")}
+                  className={type === "Income" ? "active" : ""}
+                >
+                  Income
+                </button>
+              </div>
+                <div className="search-input-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Search Payees"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="search-bar"
+                    spellCheck={false}
+                    aria-label="Search payees"
+                    disabled={loading}
+                  />
+                  {search && (
+                    <span
+                      className="search-clear-icon"
+                      onClick={() => setSearch("")}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Clear search"
+                      title="Clear search"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+                    >
+                      <MdClose />
+                    </span>
+                  )}
+                </div>
+                <div className="payee-summary-wrapper">
                 {groupedPayees?.length === 0 && (
                   <NoDataCard message="No Payee found" height="150" width="200" />
                 )}
@@ -158,15 +170,18 @@ const PayeesView = () => {
                   </div>
                 ))}
               </div>
+            </>
           )}
-          {viewMode === "transactions" && (
-            <TransactionsMode
-              name={selectedPayee}
-                amount={selectedPayeeTotal}
-              transactions={transactions}
-            />
-          )}
-        </>
+        </AppLayout>
+      )}
+      {viewMode === "transactions" && (
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
+            name={selectedPayee}
+            amount={selectedPayeeTotal}
+            transactions={transactions}
+          />
+        </AppLayout>
       )}
     </>
   );

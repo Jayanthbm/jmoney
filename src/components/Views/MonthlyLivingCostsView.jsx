@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { formatIndianNumber, getCategoryCachekeys, getMonthOptions, groupAndSortTransactions } from "../../utils";
 import { get, set } from "idb-keyval";
 
+import AppLayout from "../Layouts/AppLayout";
 import Button from "../Button/Button";
 import { FaEdit } from "react-icons/fa";
 import { FiSave } from "react-icons/fi";
@@ -14,12 +15,11 @@ import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
-import useDetectBack from "../../hooks/useDetectBack";
 import { useMediaQuery } from "react-responsive";
 
 const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
 
-const MonthlyLivingCostsView = () => {
+const MonthlyLivingCostsView = ({ title, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(true);
@@ -136,27 +136,12 @@ const MonthlyLivingCostsView = () => {
     setViewMode("summary");
     setHeading(null);
     setTransactions([]);
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
-
-  useDetectBack(viewMode !== "summary", handleBack);
-
-  useEffect(() => {
-    if (viewMode === 'summary') {
-      setTimeout(() => {
-        sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
-      }, 100)
-    }
-  }, [viewMode]);
-
 
   return (
     <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
       {viewMode === "configure" && (
-        <>
+        <AppLayout title={heading} onBack={handleBack}>
           <div style={{
             marginBottom: '1rem'
           }}>
@@ -169,10 +154,10 @@ const MonthlyLivingCostsView = () => {
             />
           </div>
           <Button icon={<FiSave />} variant="success" onClick={handleSaveCategories} text="Save Categories" disabled={selectedOptions.length === 0} />
-        </>
+        </AppLayout>
       )}
       {viewMode === "summary" && (
-        <>
+        <AppLayout title={title} onBack={onBack}>
           <div className="align-right">
             <Button
               icon={<FaEdit />}
@@ -231,14 +216,16 @@ const MonthlyLivingCostsView = () => {
               })}
             </div>
           )}
-        </>
+        </AppLayout>
       )}
       {viewMode === "transactions" && (
-        <TransactionsMode
-          name={selectedCategory}
-          amount={selectedCategoryAmount}
-          transactions={transactions}
-        />
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
+            name={selectedCategory}
+            amount={selectedCategoryAmount}
+            transactions={transactions}
+          />
+        </AppLayout>
       )}
     </div>
   );

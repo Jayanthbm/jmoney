@@ -5,13 +5,14 @@ import "./YearlySummaryView.css";
 import React, { useEffect, useState } from "react";
 import { formatIndianNumber, getMonthOptions } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import MonthYearSelector from "./MonthYearSelector";
 import MyCountUp from "../Charts/MyCountUp";
 import OverviewCard from "../Cards/OverviewCard";
 import ProgressBar from "../Charts/ProgressBar";
 import { getAllTransactions } from "../../db/transactionDb";
 
-const YearlySummaryView = ({ showMonth = false }) => {
+const YearlySummaryView = ({ showMonth = false, title, onBack }) => {
   const [year, setYear] = useState({
     value: new Date().getFullYear(),
     label: new Date().getFullYear().toString(),
@@ -62,7 +63,8 @@ const YearlySummaryView = ({ showMonth = false }) => {
     income > 0 ? Math.min((expense / income) * 100, 100) : 0;
 
   return (
-    <div className="yearly-summary-view">
+    <AppLayout title={title} onBack={onBack}>
+      <div className="yearly-summary-view">
 
       <MonthYearSelector
         yearValue={year}
@@ -129,6 +131,7 @@ const YearlySummaryView = ({ showMonth = false }) => {
         </div>
       </OverviewCard>
     </div>
+    </AppLayout>
   );
 };
 

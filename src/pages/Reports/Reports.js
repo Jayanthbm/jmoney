@@ -93,44 +93,38 @@ const Reports = () => {
     }
   });
 
+  const onBack = () => {
+    setViewMode('reportList');
+    setTitle('Reports');
+  }
+
   const renderView = () => {
     switch (viewMode) {
-      case "transactionsByCategory":
-        return <SummaryView />;
-      case "yearlySummary":
-        return <YearlySummaryView />;
-      case "incomeVsExpense":
-        return <IncomeExpenseView />;
-      case "subscriptionAndBills":
-        return <SubscriptionBillsView />;
-      case "payees":
-        return <PayeesView />;
       case "monthlyLivingCosts":
-        return <MonthlyLivingCostsView />;
+        return <MonthlyLivingCostsView title={title} onBack={onBack} />;
+      case "subscriptionAndBills":
+        return <SubscriptionBillsView title={title} onBack={onBack} />;
       case "transactionsByPayee":
-        return <SummaryByPayee />
+        return <SummaryByPayee title={title} onBack={onBack} />
+      case "transactionsByCategory":
+        return <SummaryView title={title} onBack={onBack} />;
       case "monthlySummary":
-        return <YearlySummaryView showMonth={true} />;
+        return <YearlySummaryView showMonth={true} title={title} onBack={onBack} />;
+      case "incomeVsExpense":
+        return <IncomeExpenseView title={title} onBack={onBack} />;
+      case "yearlySummary":
+        return <YearlySummaryView title={title} onBack={onBack} />;
+      case "payees":
+        return <PayeesView title={title} onBack={onBack} />;
       default:
         return null;
     }
   };
-
   return (
-    <AppLayout title={title} loading={loading} onBack={
-      viewMode !== 'reportList' ? () => {
-        let isTransactions = JSON.parse(sessionStorage.getItem('transactionsViewMode') || false);
-        if (!isTransactions) {
-          setViewMode('reportList');
-          setTitle('Reports');
-        } else {
-          window.history.back();
-        }
-      } : null
-    }>
-
+    <>
       {viewMode === "reportList" ? (
-        <div className="report-container">
+        <AppLayout title={title} loading={loading}>
+          <div className="report-container">
           {reportsList.map((report, index) => (
             <div
               key={report.title}
@@ -149,10 +143,11 @@ const Reports = () => {
             </div>
           ))}
         </div>
+        </AppLayout>
       ) : (
         renderView()
       )}
-    </AppLayout>
+    </>
   );
 };
 

@@ -5,6 +5,7 @@ import "react-calendar/dist/Calendar.css";
 import React, { useEffect, useState } from "react";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import Button from "../Button/Button";
 import Calendar from "react-calendar";
 import InlineLoader from "../Loader/InlineLoader";
@@ -15,7 +16,7 @@ import { getAllTransactions } from "../../db/transactionDb";
 import { isSameDay } from "date-fns";
 import { useMediaQuery } from "react-responsive";
 
-const PayDayView = () => {
+const PayDayView = ({ title, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -69,7 +70,7 @@ const PayDayView = () => {
   const netTotal = incomeTotal - expenseTotal;
 
   return (
-    <div>
+    <AppLayout title={title} onBack={onBack}>
       <div className="align-right">
         {!isSameDay(selectedDate, today) && (
           <Button onClick={goToToday} text={isMobile ? null : "Today"} icon={<MdToday />} />
@@ -112,7 +113,7 @@ const PayDayView = () => {
           ))
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

@@ -5,7 +5,7 @@ import "./SubscriptionBillsView.css";
 import { MdReceiptLong, MdSubscriptions } from "react-icons/md";
 import React, { useEffect, useState } from "react";
 
-import InlineLoader from "../Loader/InlineLoader";
+import AppLayout from "../Layouts/AppLayout";
 import MonthYearSelector from "./MonthYearSelector";
 import MyCountUp from "../Charts/MyCountUp";
 import OverviewCard from "../Cards/OverviewCard";
@@ -15,9 +15,8 @@ import {
   getMonthOptions,
 } from "../../utils";
 import { groupBy } from "lodash";
-import useDetectBack from "../../hooks/useDetectBack";
 
-const SubscriptionBillsView = () => {
+const SubscriptionBillsView = ({ title, onBack }) => {
   const [loading, setLoading] = useState(true);
 
   const [month, setMonth] = useState({
@@ -36,7 +35,6 @@ const SubscriptionBillsView = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
   const [selectedCard, setSelectedCard] = useState(null);
-  const [stopBack, setStopBack] = useState(false);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -74,131 +72,121 @@ const SubscriptionBillsView = () => {
 
   const handleBack = () => {
     setViewMode("summary");
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
-
-  useDetectBack(viewMode !== "summary" && !stopBack, handleBack);
-
-  useEffect(() => {
-    if (stopBack) {
-      setTimeout(() => {
-        setStopBack(false);
-      }, 200)
-    }
-  }, [stopBack]);
 
   return (
     <>
-      <MonthYearSelector
-        yearValue={year}
-        onYearChange={(opt) => {
-          setYear(opt);
-          setStopBack(true);
-        }}
-        monthValue={month}
-        onMonthChange={(opt) => {
-          setMonth(opt);
-          setStopBack(true);
-        }}
-        disabled={loading}
-      />
-      {loading ? (
-        <InlineLoader />
-      ) : (
-        <>
-          {viewMode === "summary" && (
-              <>
-              <div
-                onClick={() => {
-                  if (subscriptionsTotal > 0) {
-                    setViewMode("transactions");
-                    setSelectedCard("Subscriptions");
-                    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
-                  } else {
-                    return;
-                  }
-                }}
-              >
-                <OverviewCard
-                  title="Subscriptions"
-                  subtitle={`Total spent on subscriptions in ${month.label}, ${year.label}`}
-                >
-                  <div className="subscription-bills-icon-count-wrapper ">
-                    <MdSubscriptions className="subscription-bills-overview-icon" />
-                    <div className="subscription-bills-amount expense-text">
-                      <MyCountUp end={subscriptionsTotal} />
-                    </div>
-                  </div>
-                </OverviewCard>
+      {viewMode === "summary" && (
+        <AppLayout title={title} onBack={onBack}>
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => {
+              setYear(opt);
+            }}
+            monthValue={month}
+            onMonthChange={(opt) => {
+              setMonth(opt);
+            }}
+            disabled={loading}
+          />
+          <div
+            onClick={() => {
+              if (subscriptionsTotal > 0) {
+                setViewMode("transactions");
+                setSelectedCard("Subscriptions");
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
+              } else {
+                return;
+              }
+            }}
+          >
+            <OverviewCard
+              title="Subscriptions"
+              subtitle={`Total spent on subscriptions in ${month.label}, ${year.label}`}
+            >
+              <div className="subscription-bills-icon-count-wrapper ">
+                <MdSubscriptions className="subscription-bills-overview-icon" />
+                <div className="subscription-bills-amount expense-text">
+                  <MyCountUp end={subscriptionsTotal} />
+                </div>
               </div>
+            </OverviewCard>
+          </div>
 
-              <div
-                onClick={() => {
-                  if (billsTotal > 0) {
-                    setViewMode("transactions");
-                    setSelectedCard("Bills");
-                    sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
-                  } else {
-                    return;
-                  }
-                }}
-              >
-                <OverviewCard
-                  title="Bills"
-                  subtitle={`Total spent on bills in ${month.label}, ${year.label}`}
-                >
-                  <div className="subscription-bills-icon-count-wrapper ">
-                    <MdReceiptLong className="subscription-bills-overview-icon" />
-                    <div className="subscription-bills-amount expense-text">
-                      <MyCountUp end={billsTotal} />
-                    </div>
-                  </div>
-                </OverviewCard>
+          <div
+            onClick={() => {
+              if (billsTotal > 0) {
+                setViewMode("transactions");
+                setSelectedCard("Bills");
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
+              } else {
+                return;
+              }
+            }}
+          >
+            <OverviewCard
+              title="Bills"
+              subtitle={`Total spent on bills in ${month.label}, ${year.label}`}
+            >
+              <div className="subscription-bills-icon-count-wrapper ">
+                <MdReceiptLong className="subscription-bills-overview-icon" />
+                <div className="subscription-bills-amount expense-text">
+                  <MyCountUp end={billsTotal} />
+                </div>
               </div>
-            </>
+            </OverviewCard>
+          </div>
+        </AppLayout>
+      )}
+      {viewMode === "transactions" && (
+        <AppLayout title={title} onBack={handleBack}>
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => {
+              setYear(opt);
+
+            }}
+            monthValue={month}
+            onMonthChange={(opt) => {
+              setMonth(opt);
+            }}
+            disabled={loading}
+          />
+          {/* Toggle Buttons */}
+          <div className="toggle-button-group">
+            <button
+              onClick={() => {
+                setSelectedCard("Subscriptions");
+              }}
+              className={selectedCard === "Subscriptions" ? "active" : ""}
+            >
+              Subscriptions
+            </button>
+            <button
+              onClick={() => {
+                setSelectedCard("Bills");
+              }}
+              className={selectedCard === "Bills" ? "active" : ""}
+            >
+              Bills
+            </button>
+          </div>
+
+          {selectedCard === "Subscriptions" && (
+            <TransactionsMode
+              name={"Total"}
+              amount={subscriptionsTotal}
+              transactions={subscriptions}
+            />
           )}
-
-          {viewMode === "transactions" && (
-            <>
-              {/* Toggle Buttons */}
-              <div className="toggle-button-group">
-                <button
-                    onClick={() => {
-                      setSelectedCard("Subscriptions")
-                      setStopBack(true);
-                    }}
-                  className={selectedCard === "Subscriptions" ? "active" : ""}
-                >
-                  Subscriptions
-                </button>
-                <button
-                    onClick={() => {
-                      setSelectedCard("Bills");
-                      setStopBack(true);
-                    }}
-                  className={selectedCard === "Bills" ? "active" : ""}
-                >
-                  Bills
-                </button>
-              </div>
-
-              {selectedCard === "Subscriptions" && (
-                <TransactionsMode
-                    name={"Total"}
-                    amount={subscriptionsTotal}
-                  transactions={subscriptions}
-                />
-              )}
-              {selectedCard === "Bills" && (
-                <TransactionsMode
-                    name={"Total"}
-                    amount={billsTotal}
-                  transactions={bills}
-                />
-              )}
-            </>
+          {selectedCard === "Bills" && (
+            <TransactionsMode
+              name={"Total"}
+              amount={billsTotal}
+              transactions={bills}
+            />
           )}
-        </>
+        </AppLayout>
       )}
     </>
   );

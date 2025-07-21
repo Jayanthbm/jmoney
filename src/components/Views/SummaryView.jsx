@@ -8,6 +8,7 @@ import {
   groupAndSortTransactions,
 } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import Button from "../Button/Button";
 import DonutChart from "../Charts/DonutChart";
 import InlineLoader from "../Loader/InlineLoader";
@@ -16,10 +17,9 @@ import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
-import useDetectBack from "../../hooks/useDetectBack";
 import { useMediaQuery } from "react-responsive";
 
-const SummaryView = ({ title, showMonthSelect = true }) => {
+const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("Expense");
@@ -105,15 +105,13 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
   const handleBack = () => {
     setViewMode("summary");
     setTransactions({});
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
 
-  useDetectBack(viewMode !== "summary", handleBack)
 
   return (
     <>
       {viewMode === "summary" && (
-        <>
+        <AppLayout title={title} onBack={onBack}>
           {/* Toggle Buttons */}
           <div className="toggle-button-group">
             <button
@@ -192,15 +190,18 @@ const SummaryView = ({ title, showMonthSelect = true }) => {
               </>
             )}
           </>
-        </>
+        </AppLayout>
       )}
 
       {viewMode === "transactions" && (
-        <TransactionsMode
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
           name={selectedCategory}
           amount={selectedCategoryAmount}
           transactions={transactions}
         />
+        </AppLayout>
+
       )}
     </>
   );

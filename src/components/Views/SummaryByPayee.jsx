@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { formatIndianNumber, getMonthOptions, groupAndSortTransactions } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import InlineLoader from "../Loader/InlineLoader";
 import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
-import useDetectBack from "../../hooks/useDetectBack";
 
-const SummaryByPayee = () => {
+const SummaryByPayee = ({ title, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("Expense");
   const [month, setMonth] = useState({
@@ -75,15 +75,12 @@ const SummaryByPayee = () => {
   const handleBack = () => {
     setViewMode("summary");
     setTransactions({});
-    sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
   };
-
-  useDetectBack(viewMode !== "summary", handleBack);
 
   return (
     <>
       {viewMode === "summary" && (
-        <>
+        <AppLayout title={title} onBack={onBack}>
           {/* Toggle Buttons */}
           <div className="toggle-button-group">
             <button
@@ -156,16 +153,18 @@ const SummaryByPayee = () => {
               </div>
             )}
           </>
-        </>
+        </AppLayout>
       )}
 
       {viewMode === "transactions" && (
-        <TransactionsMode
-          name={selected}
-          amount={selectedAmount}
-          handleBack={handleBack}
-          transactions={transactions}
-        />
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
+            name={selected}
+            amount={selectedAmount}
+            transactions={transactions}
+          />
+        </AppLayout>
+
       )}
     </>
   )
