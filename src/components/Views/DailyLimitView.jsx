@@ -22,8 +22,11 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
     const fetchTodayExpenses = async () => {
       setLoading(true);
       const allTx = await getAllTransactions();
-      const todayTx = allTx.filter(
+      let todayTx = allTx.filter(
         (tx) => tx.type === "Expense" && isToday(new Date(tx.date))
+      );
+      todayTx = todayTx.sort(
+        (a, b) => new Date(a.transaction_timestamp) - new Date(b.transaction_timestamp)
       );
       setTodayExpenses(todayTx);
       setLoading(false);
