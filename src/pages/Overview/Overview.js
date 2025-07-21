@@ -191,7 +191,7 @@ const Overview = () => {
       )}
       {viewMode === "payDay" && <PayDayView title={title} onBack={onBack} />}
 
-      {(viewMode === "topCategories" || viewMode === "thisMonth" || viewMode === "currentYear") && <SummaryView title={title} onBack={onBack} showMonthSelect={!viewMode === "currentYear"} />}
+      {(viewMode === "topCategories" || viewMode === "thisMonth" || viewMode === "currentYear") && <SummaryView title={title} onBack={onBack} showMonthSelect={viewMode === "currentYear" ? false : true} />}
     </>
   );
 };
