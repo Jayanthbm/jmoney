@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import ScrollToTop from "./ScrollToTop";
 import { supabase } from "../../supabaseClient";
 import { updateThemeColorMetaTag } from "../../utils/themeUtils";
 
@@ -125,7 +126,6 @@ const MainLayout = ({ children }) => {
                 selected === item.path ? "active" : ""
               }`}
               onClick={() => {
-                sessionStorage.setItem('transactionsViewMode', JSON.stringify(false));
                 navigate(item.path)
               }}
             >
@@ -134,6 +134,7 @@ const MainLayout = ({ children }) => {
             </div>
           ))}
       </footer>
+      <ScrollToTop scrollContainerSelector=".content" />
     </div>
   );
 };
