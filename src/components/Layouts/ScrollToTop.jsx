@@ -5,6 +5,7 @@ import { MdArrowUpward } from "react-icons/md";
 const ScrollToTop = ({ scrollContainerSelector = ".content" }) => {
    const [visible, setVisible] = useState(false);
    const scrollContainerRef = useRef(null);
+   const [isPwa, setIsPwa] = useState(false);
 
    useEffect(() => {
       const container = document.querySelector(scrollContainerSelector);
@@ -29,14 +30,19 @@ const ScrollToTop = ({ scrollContainerSelector = ".content" }) => {
       }
    };
 
+   useEffect(() => {
+      setIsPwa(window.matchMedia("(display-mode: standalone)").matches ||
+         window.navigator.standalone === true);
+   }, [])
+
    return (
       <div
          onClick={scrollToTop}
          title="Scroll to Top"
          style={{
             position: "fixed",
-            bottom: "70px",
-            right: "10px",
+            bottom: isPwa ? "110px" : "70px",
+            right: "8px",
             cursor: "pointer",
             zIndex: 1000,
             display: visible ? "flex" : "none",
