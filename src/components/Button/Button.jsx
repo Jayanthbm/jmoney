@@ -1,5 +1,6 @@
 // src/components/Button/Button.jsx
 import "./Button.css";
+
 import React from "react";
 
 const Button = ({
@@ -29,7 +30,6 @@ const Button = ({
   };
 
   const styles = variant === "custom" ? { backgroundColor: bgColor } : {};
-
   return (
     <button
       type={type}
@@ -42,7 +42,7 @@ const Button = ({
       aria-label={ariaLabel || text}
     >
       {icon && <span className="btn-icon">{icon}</span>}
-      {text && <span className="btn-text">{text}</span>}
+      {text && <span className="btn-text" style={fullWidth ? { marginLeft: 'auto', marginRight: 'auto' } : {}}>{text}</span>}
     </button>
   );
 };
