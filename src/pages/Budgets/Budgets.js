@@ -82,6 +82,7 @@ const Budgets = () => {
       } else {
         await addBudgetInDb(payload);
       }
+      setSaving(false);
       handleDialogClose();
       await refreshData();
     } catch (error) {
@@ -257,17 +258,7 @@ const Budgets = () => {
         </div>
         <AnimatePresence mode="wait">
           {viewMode === "summary" && (
-            <motion.div
-              key="summary"
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <BudgetSummary loading={loading} sortedBudgets={sortedBudgets} refreshData={refreshData} handleDialogOpen={handleDialogOpen} handleDelete={handleDelete} onBudgetCardClick={onBudgetCardClick} />
-            </motion.div>
-
+            <BudgetSummary loading={loading} sortedBudgets={sortedBudgets} refreshData={refreshData} handleDialogOpen={handleDialogOpen} handleDelete={handleDelete} onBudgetCardClick={onBudgetCardClick} />
           )}
           {viewMode === "info" && selectedBudget && (
             <motion.div
@@ -323,7 +314,7 @@ const Budgets = () => {
             initialData={editBudget}
             onSave={handleSave}
             onCancel={handleDialogClose}
-            saving={loading}
+            saving={saving}
             categoryOptions={categoryOptions}
           />
         </motion.div>
