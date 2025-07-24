@@ -25,33 +25,10 @@ const BudgetCard = ({
 }) => {
   const theme = useTheme();
 
-  const getInterval = (type) => {
-  const now = new Date();
-  let interval = '';
-
-  if (type === 'Month') {
-    const year = now.getFullYear();
-    const month = now.getMonth(); // 0-based
-    const monthName = now.toLocaleString('default', { month: 'short' }); // e.g. Jun
-
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of current month
-
-    const startDay = startDate.getDate().toString().padStart(2, '0');
-    const endDay = endDate.getDate().toString().padStart(2, '0');
-
-    interval = `${monthName} ${startDay} - ${monthName} ${endDay}`;
-  } else if (type === 'Year') {
-    interval = `${now.getFullYear()}`;
-  }
-
-  return interval;
-};
-
   return (
-    <div className="budget-card" onClick={onClick}>
+    <div className="budget-card" >
       <div className="budget-card-header">
-        <div className="budget-card-title">{title} - {getInterval(interval)} </div>
+        <div className="budget-card-title">{title} </div>
         <div className="budget-progress">
           <CircularProgressBar
             progress={percentage_remaining}
@@ -64,7 +41,7 @@ const BudgetCard = ({
           />
         </div>
       </div>
-      <div className="budget-card-body">
+      <div className="budget-card-body" onClick={onClick}>
         <div className="budget-amount-container">
 
           {/* Remaining */}
