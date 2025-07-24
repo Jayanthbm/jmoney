@@ -18,7 +18,7 @@ const MonthYearSelector = ({ showYear = true, showMonth = true, yearValue, onYea
       )}
       {showMonth && (
         <MySelect
-          options={getMonthOptions()}
+          options={getMonthOptions(yearValue.value)}
           value={monthValue}
           onChange={onMonthChange}
           isDisabled={disabled}
