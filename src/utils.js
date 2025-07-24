@@ -13,7 +13,6 @@ import React from "react";
 import { format } from "date-fns";
 import { groupBy } from "lodash";
 
-
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
   const isNegative = num < 0;
@@ -80,21 +79,21 @@ export function formatDateToDayMonthYear(input) {
   return format(new Date(input), "dd MMM yyyy");
 }
 
-export const getMonthOptions = () => {
-  return [
-    { value: 0, label: "Jan" },
-    { value: 1, label: "Feb" },
-    { value: 2, label: "Mar" },
-    { value: 3, label: "Apr" },
-    { value: 4, label: "May" },
-    { value: 5, label: "Jun" },
-    { value: 6, label: "Jul" },
-    { value: 7, label: "Aug" },
-    { value: 8, label: "Sep" },
-    { value: 9, label: "Oct" },
-    { value: 10, label: "Nov" },
-    { value: 11, label: "Dec" },
+export const getMonthOptions = (year) => {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-based
+
+  const maxMonth = year === currentYear ? currentMonth : 11;
+
+  return monthNames
+    .slice(0, maxMonth + 1)
+    .map((label, value) => ({ value, label }));
 };
 
 export const getYearOptions = (startYear = 2022) => {
