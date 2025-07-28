@@ -2,6 +2,7 @@
 
 import { get, set } from "idb-keyval";
 
+import { fetchGoalsData } from "../supabaseData";
 import { getGoalsCacheKey } from "../utils";
 
 export const addGoal = async (goal) => {
@@ -26,3 +27,12 @@ export const deleteGoal = async (id) => {
   const updated = existing.filter((g) => g.id !== id);
   await set(GOALS_CACHE_KEY, updated);
 };
+
+export const getCachedGoals = async () => {
+  const { GOALS_CACHE_KEY } = getGoalsCacheKey();
+  let goals = await get(GOALS_CACHE_KEY);
+  if (!goals || !Array.isArray(goals)) {
+    goals = await fetchGoalsData();
+  }
+  return goals;
+}

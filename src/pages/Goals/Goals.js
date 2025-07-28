@@ -20,7 +20,7 @@ import GoalCard from "./components/GoalCard";
 import GoalForm from "./components/GoalForm";
 import MyModal from "../../components/Layouts/MyModal";
 import MySelect from "../../components/Select/MySelect";
-import { getCachedGoals } from "../../data/goals";
+import { getCachedGoals } from "../../db/goalDb";
 import { useMediaQuery } from "react-responsive";
 
 const Goals = () => {

@@ -354,8 +354,10 @@ export const updateBudgetInDb = async (budget) => {
 export const deleteBudgetInDb = async (id) => {
   const userId = getSupabaseUserIdFromLocalStorage();
 
+  // 1. Delete from IndexedDB
   await deleteBudget(id);
 
+  // 2. Sync with Supabase
   supabase
     .from("budgets")
     .delete()

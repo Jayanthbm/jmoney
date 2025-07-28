@@ -4,8 +4,8 @@ import "./Budgets.css";
 import { AnimatePresence, motion } from "framer-motion";
 import { addBudgetInDb, deleteBudgetInDb, updateBudgetInDb } from "../../supabaseData";
 import { budgetSortOptions, sortBudgets } from "./budgetUtils";
-import { getCachedBudgetAmountMap, getCachedBudgets } from "../../data/budgets";
-import { getCategoryCachekeys, getMonthOptions, getSupabaseUserIdFromLocalStorage, getYearOptions, groupAndSortTransactions } from "../../utils";
+import { getCachedBudgetAmountMap, getCachedBudgets } from "../../db/budgetDb";
+import { getCategoryCachekeys, getMonthOptions, getSupabaseUserIdFromLocalStorage, groupAndSortTransactions } from "../../utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -15,6 +15,7 @@ import BudgetSummary from "./components/BudgetSummary";
 import Button from "../../components/Button/Button";
 import { FaCirclePlus } from "react-icons/fa6";
 import InlineLoader from "../../components/Loader/InlineLoader";
+import MonthYearSelector from "../../components/Views/MonthYearSelector";
 import MyModal from "../../components/Layouts/MyModal";
 import MySelect from "../../components/Select/MySelect";
 import TransactionsMode from "../../components/Views/TransactionsMode";
@@ -84,7 +85,9 @@ const Budgets = () => {
       }
       setSaving(false);
       handleDialogClose();
-      await refreshData();
+      setTimeout(async () => {
+        await refreshData(false);
+      }, 1000);
     } catch (error) {
       console.error("Error saving budget:", error);
     }
@@ -93,7 +96,9 @@ const Budgets = () => {
   const handleDelete = async (id) => {
     try {
       await deleteBudgetInDb(id);
-      await refreshData();
+      setTimeout(async () => {
+        await refreshData(false);
+      }, 1000);
     } catch (e) {
       console.error("Error deleting budget:", e);
     }
@@ -105,10 +110,10 @@ const Budgets = () => {
     setBudgetMapLoaded(true);
   }, []);
 
-  const refreshData = useCallback(async () => {
+  const refreshData = useCallback(async (force = true) => {
     setLoading(true);
     setViewMode("summary");
-    await loadBudgetMap(true);
+    await loadBudgetMap(force);
     setLoading(false);
   }, [loadBudgetMap]);
 
@@ -228,20 +233,6 @@ const Budgets = () => {
                 isDisabled={loading}
               />
             )}
-
-            {/* Month/Year Selectors */}
-            <MySelect
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-              isDisabled={loading}
-            />
-            <MySelect
-              options={getMonthOptions(year.value)}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-              isDisabled={loading}
-            />
           </div>
           <div className="right-controls">
             {/* Add Button */}
@@ -256,6 +247,10 @@ const Budgets = () => {
 
           </div>
         </div>
+
+        {/* Month/Year Selectors */}
+        <MonthYearSelector yearValue={year} onYearChange={(opt) => setYear(opt)} monthValue={month} onMonthChange={(opt) => setMonth(opt)} disabled={loading} />
+
         <AnimatePresence mode="wait">
           {viewMode === "summary" && (
             <BudgetSummary loading={loading} sortedBudgets={sortedBudgets} refreshData={refreshData} handleDialogOpen={handleDialogOpen} handleDelete={handleDelete} onBudgetCardClick={onBudgetCardClick} />
@@ -298,7 +293,6 @@ const Budgets = () => {
             </>
           )}
         </AnimatePresence>
-
       </AppLayout>
 
 
