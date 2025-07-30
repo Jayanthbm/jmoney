@@ -48,7 +48,7 @@ const ScrollToTop = ({ scrollContainerSelector = ".content" }) => {
             display: visible ? "flex" : "none",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "var(--primary-color, #2684ff)",
+            backgroundColor: "#2684ff",
             borderRadius: "50%",
             width: "40px",
             height: "40px",
