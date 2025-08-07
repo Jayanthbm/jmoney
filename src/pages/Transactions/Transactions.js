@@ -2,19 +2,14 @@
 
 import "./Transactions.css";
 
-import { motion } from "framer-motion";
 import { MdClose, MdSync } from "react-icons/md";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  clearTransactions,
-  getAllTransactions,
-  storeTransactions,
-} from "../../db/transactionDb";
 import {
   getCategoryCachekeys,
   getPayeeCacheKey,
   getRelativeTime,
   getTransactionCachekeys,
+  isTransactionCacheExpired,
   refreshOverviewCache,
 } from "../../utils";
 
@@ -22,15 +17,19 @@ import AddTransaction from "../../components/Views/AddTransaction";
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import Fuse from "fuse.js";
+import GroupedTransactions from "./GroupedTransactions";
 import MyModal from "../../components/Layouts/MyModal";
 import NoDataCard from "../../components/Cards/NoDataCard";
 import SingleTransaction from "../../components/Views/SingleTransaction";
-import { get } from "idb-keyval";
-import { groupBy } from "lodash";
-import { loadTransactionsFromSupabase } from "../../supabaseData";
 import TransactionControls from "./TransactionControls";
 import TransactionFilters from "./TransactionFilters";
-import GroupedTransactions from "./GroupedTransactions";
+import { get } from "idb-keyval";
+import {
+  getAllTransactions,
+} from "../../db/transactionDb";
+import { groupBy } from "lodash";
+import { loadTransactionsFromSupabase } from "../../supabaseData";
+import { motion } from "framer-motion";
 
 const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
 const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
@@ -92,9 +91,7 @@ const Transactions = () => {
 
   const refreshData = useCallback(async () => {
     setSyncing(true);
-    await clearTransactions();
     const fetched = await loadTransactionsFromSupabase();
-    await storeTransactions(fetched);
     setLastSynced(Date.now());
     setAllTransactions(fetched);
     setSyncing(false);
@@ -132,10 +129,13 @@ const Transactions = () => {
         setLastSynced(now);
       }
       setLoading(false);
+      if (isTransactionCacheExpired()) {
+        refreshData();
+      }
     };
 
     init();
-  }, [getAndSortTransactions]);
+  }, [getAndSortTransactions, refreshData]);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
