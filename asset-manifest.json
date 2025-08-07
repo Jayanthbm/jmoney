@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/jmoney/static/css/main.c2a75b18.css",
-    "main.js": "/jmoney/static/js/main.9cac7241.js",
+    "main.css": "/jmoney/static/css/main.56135edc.css",
+    "main.js": "/jmoney/static/js/main.54feba89.js",
     "index.html": "/jmoney/index.html",
-    "main.c2a75b18.css.map": "/jmoney/static/css/main.c2a75b18.css.map",
-    "main.9cac7241.js.map": "/jmoney/static/js/main.9cac7241.js.map"
+    "main.56135edc.css.map": "/jmoney/static/css/main.56135edc.css.map",
+    "main.54feba89.js.map": "/jmoney/static/js/main.54feba89.js.map"
   },
   "entrypoints": [
-    "static/css/main.c2a75b18.css",
-    "static/js/main.9cac7241.js"
+    "static/css/main.56135edc.css",
+    "static/js/main.54feba89.js"
   ]
 }
