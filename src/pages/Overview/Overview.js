@@ -56,7 +56,7 @@ const Overview = () => {
     let fetchNeeded = false;
     for (const key of keys) {
       const cache = await get(userId + "_" + key);
-      if (cache && !isCacheExpired(cache.timestamp, cache.date)) {
+      if (cache && !isCacheExpired(cache.timestamp, cache.date, 4)) {
         result[key] = cache.data;
       } else {
         fetchNeeded = true;
