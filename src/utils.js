@@ -159,21 +159,22 @@ export function getSupabaseUserIdFromLocalStorage() {
   return null; // Return null if no user ID found
 }
 
-export const refreshTransactionsCache = async (force = false) => {
+export const isTransactionCacheExpired = (hours = 4) => {
   const userId = getSupabaseUserIdFromLocalStorage();
   const CACHE_KEY = `${userId}_${MY_KEYS.LAST_TRANSACTION_FETCH_CACHE_KEY}`;
-  const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
-
+  const EXPIRY_MS = hours * 60 * 60 * 1000; // 4 hours
   const lastFetch = localStorage.getItem(CACHE_KEY);
   const now = Date.now();
-
   const isExpired = !lastFetch || now - Number(lastFetch) > EXPIRY_MS;
+  return isExpired;
+}
 
+export const refreshTransactionsCache = async (force = false) => {
+  const isExpired = isTransactionCacheExpired();
   if (force || isExpired) {
-    await loadTransactionsFromSupabase(); // This function handles updating localStorage
+    await loadTransactionsFromSupabase();
     return true;
   }
-
   return false;
 };
 

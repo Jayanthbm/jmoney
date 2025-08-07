@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { addBudgetInDb, deleteBudgetInDb, updateBudgetInDb } from "../../supabaseData";
 import { budgetSortOptions, sortBudgets } from "./budgetUtils";
 import { getCachedBudgetAmountMap, getCachedBudgets } from "../../db/budgetDb";
-import { getCategoryCachekeys, getMonthOptions, getSupabaseUserIdFromLocalStorage, groupAndSortTransactions } from "../../utils";
+import { getCategoryCachekeys, getMonthOptions, getRelativeTime, getSupabaseUserIdFromLocalStorage, groupAndSortTransactions } from "../../utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -15,6 +15,7 @@ import BudgetSummary from "./components/BudgetSummary";
 import Button from "../../components/Button/Button";
 import { FaCirclePlus } from "react-icons/fa6";
 import InlineLoader from "../../components/Loader/InlineLoader";
+import { MdSync } from "react-icons/md";
 import MonthYearSelector from "../../components/Views/MonthYearSelector";
 import MyModal from "../../components/Layouts/MyModal";
 import MySelect from "../../components/Select/MySelect";
@@ -29,6 +30,8 @@ const Budgets = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const [loading, setLoading] = useState(true)
+  const [syncing, setSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState(null);
   const [viewMode, setViewMode] = useState('summary');
 
   const [month, setMonth] = useState({
@@ -104,17 +107,26 @@ const Budgets = () => {
     }
   };
 
-  const loadBudgetMap = useCallback(async (force = false) => {
-    const map = await getCachedBudgetAmountMap(force);
+  const loadBudgetMap = useCallback(async (force = false, forceBudgets = false) => {
+    const map = await getCachedBudgetAmountMap(force, forceBudgets);
     setBudgetMap(map);
     setBudgetMapLoaded(true);
   }, []);
 
   const refreshData = useCallback(async (force = true) => {
-    setLoading(true);
+    setSyncing(true);
     setViewMode("summary");
-    await loadBudgetMap(force);
-    setLoading(false);
+    await loadBudgetMap(force, true);
+    const last = localStorage.getItem("budgets_amount_map_cache_last_fetched");
+    if (last) {
+      setLastSynced(Number(last));
+    } else {
+      const now = Date.now();
+      localStorage.setItem("budgets_amount_map_cache_last_fetched", now);
+      setLastSynced(now);
+    }
+    setSyncing(false);
+
   }, [loadBudgetMap]);
 
   const updateBudgets = useCallback((budgets, selectedYear, selectedMonth, budgetMap) => {
@@ -160,6 +172,14 @@ const Budgets = () => {
       const categories = await get(EXPENSE_CACHE_KEY);
       setCategoryOptions(categories?.map((cat) => ({ value: cat.id, label: cat.name })) || []);
       await loadBudgetMap();
+      const last = localStorage.getItem("budgets_amount_map_cache_last_fetched");
+      if (last) {
+        setLastSynced(Number(last));
+      } else {
+        const now = Date.now();
+        localStorage.setItem("budgets_amount_map_cache_last_fetched", now);
+        setLastSynced(now);
+      }
     };
     init();
   }, [loadBudgetMap]);
@@ -223,6 +243,13 @@ const Budgets = () => {
   return (
     <>
       <AppLayout title={`Budgets ${selectedBudget ? "<> " + selectedBudget.name : ''} ${viewMode === 'transactions' ? '<> Transactions' : ''}`} onRefresh={refreshData} onBack={viewMode === "summary" ? null : () => handleBackToSummary()}>
+        <div className="sync-status">
+          {lastSynced && (
+            <small className="sync-time">
+              {syncing && <MdSync className="syncing-icon" />}Calcualted: {getRelativeTime(lastSynced)}
+            </small>
+          )}
+        </div>
         <div className="budgets-header">
           <div className="left-buttons">
             {viewMode === "summary" && (

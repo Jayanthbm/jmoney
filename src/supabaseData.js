@@ -2,12 +2,13 @@
 
 import { addBudget, deleteBudget, updateBudget } from "./db/budgetDb";
 import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
-import { del, set } from "idb-keyval";
 import {
+  clearTransactions,
   deleteTransactionInDb,
   storeTransactions,
   updateTransactionInDb,
 } from "./db/transactionDb";
+import { del, set } from "idb-keyval";
 import { getGoalsCacheKey, getSupabaseUserIdFromLocalStorage } from "./utils";
 
 import { supabase } from "./supabaseClient";
@@ -38,11 +39,11 @@ export const loadTransactionsFromSupabase = async () => {
       break;
     }
 
-    await storeTransactions(data);
     allData = [...allData, ...data];
     offset += CHUNK_SIZE;
   }
-
+  await clearTransactions()
+  await storeTransactions(allData);
   return allData;
 };
 

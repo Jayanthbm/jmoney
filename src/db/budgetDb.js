@@ -50,11 +50,19 @@ export const getCachedBudgets = async (force = false) => {
   return budgets;
 };
 
-export const getCachedBudgetAmountMap = async (force = false) => {
+export const getCachedBudgetAmountMap = async (force = false, forceBudgets = false) => {
   let budget_amount_map = await get("budgets_amount_map_cache");
+  let lastFetched = localStorage.getItem("budgets_amount_map_cache_last_fetched");
 
-  if (!budget_amount_map || typeof budget_amount_map !== "object" || force) {
-    const budgets = await getCachedBudgets(force);
+  const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000;
+  let freshDataRequired = false;
+
+  if (!lastFetched || Date.now() - lastFetched > FOUR_HOURS_IN_MS) {
+    freshDataRequired = true;
+  }
+
+  if (!budget_amount_map || typeof budget_amount_map !== "object" || force || freshDataRequired) {
+    const budgets = await getCachedBudgets(forceBudgets);
 
     // Collect all budget category IDs
     const budget_categories = budgets.flatMap((budget) => budget.categories);
@@ -113,6 +121,7 @@ export const getCachedBudgetAmountMap = async (force = false) => {
     });
 
     await set("budgets_amount_map_cache", budgetAmountMap);
+    localStorage.setItem("budgets_amount_map_cache_last_fetched", Date.now())
     return budgetAmountMap;
   }
 
