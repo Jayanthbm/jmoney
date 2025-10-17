@@ -18,9 +18,6 @@ import { supabase } from "../../supabaseClient";
 
 const LAST_REFRESHED_KEY = "settings-last-refreshed";
 
-const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
-const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
-
 const Settings = () => {
   const [categoryType, setCategoryType] = useState("Expense");
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -29,6 +26,9 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState(null);
+
+  const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
+  const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
 
   const getVisibleLimit = useCallback(() => {
     const width = window.innerWidth;
@@ -61,13 +61,14 @@ const Settings = () => {
 
   const fetchIfMissing = async (key, fetcher) => {
     const cached = await get(key);
-    if (cached && cached.length > 0) return cached;
+    if (cached && cached.length > 0) {
+      return cached;
+    }
+    console.log("from supabase");
     const fresh = await fetcher();
     await set(key, fresh);
     return fresh;
   };
-
-
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -113,7 +114,7 @@ const Settings = () => {
     }
 
     setLoading(false);
-  }, []);
+  }, [EXPENSE_CACHE_KEY, INCOME_CACHE_KEY, PAYEE_CACHE_KEY]);
 
   const refreshData = useCallback(async () => {
     setSyncing(true);
@@ -149,7 +150,7 @@ const Settings = () => {
     setLastSynced(now);
 
     setSyncing(false);
-  }, []);
+  }, [EXPENSE_CACHE_KEY, INCOME_CACHE_KEY, PAYEE_CACHE_KEY]);
 
   useEffect(() => {
     fetchData();

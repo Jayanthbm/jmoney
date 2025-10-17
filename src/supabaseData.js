@@ -47,43 +47,6 @@ export const loadTransactionsFromSupabase = async () => {
   return allData;
 };
 
-export const fetchUserOverviewData = async (uid) => {
-  const today = new Date().toISOString().split("T")[0];
-
-  const calls = [
-    { key: "remainingForPeriod", fn: "get_user_overview_remaining" },
-    { key: "dailyLimit", fn: "get_user_overview_daily_limit" },
-    { key: "topCategories", fn: "get_user_overview_top_categories" },
-    { key: "current_month", fn: "get_user_overview_current_month" },
-    { key: "current_year", fn: "get_user_overview_current_year" },
-    { key: "networth", fn: "get_user_overview_networth" },
-  ];
-
-  const result = {};
-
-  for (const { key, fn } of calls) {
-    const { data, error } = await supabase.rpc(fn, { uid });
-    if (error) {
-      console.error(`Error fetching ${key}:`, error);
-      continue;
-    }
-
-    const normalizedData =
-      Array.isArray(data) && data.length === 1 ? data[0] : data;
-
-    result[key] = normalizedData;
-
-    // ✅ Store to IndexedDB
-    await set(uid + "_" + key, {
-      data: normalizedData,
-      timestamp: new Date().toISOString(),
-      date: today,
-    });
-  }
-
-  return result;
-};
-
 export const updateTransaction = async (id, payload, options = {}) => {
   const {
     incomeCategories = [],

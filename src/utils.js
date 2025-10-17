@@ -2,14 +2,11 @@
 
 import * as MdIcons from "react-icons/md";
 
-import {
-  fetchGoalsData,
-  fetchUserOverviewData,
-  loadTransactionsFromSupabase,
-} from "./supabaseData";
-
 import { MY_KEYS } from "./constants";
 import React from "react";
+import {
+  fetchGoalsData,
+} from "./supabaseData";
 import { format } from "date-fns";
 import { groupBy } from "lodash";
 
@@ -59,20 +56,6 @@ export const calculatePayDayInfo = () => {
     remaining_days: remainingDays,
     remaining_days_percentage: Number(remainingDaysPercentage),
   };
-};
-
-export const isCacheExpired = (timestamp, storedDate, expiryHours = 20) => {
-  const now = new Date();
-  const diffHours = (now - new Date(timestamp)) / 1000 / 60 / 60;
-  const today = now.toISOString().split("T")[0];
-  return diffHours > expiryHours || storedDate !== today;
-};
-
-export const refreshOverviewCache = async () => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  if (userId) {
-    await fetchUserOverviewData(userId);
-  }
 };
 
 export function formatDateToDayMonthYear(input) {
@@ -169,15 +152,6 @@ export const isTransactionCacheExpired = (hours = 4) => {
   return isExpired;
 }
 
-export const refreshTransactionsCache = async (force = false) => {
-  const isExpired = isTransactionCacheExpired();
-  if (force || isExpired) {
-    await loadTransactionsFromSupabase();
-    return true;
-  }
-  return false;
-};
-
 export const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
   return Icon ? <Icon size={size} /> : null;
@@ -214,11 +188,14 @@ export const getGoalsCacheKey = () => {
 
 export const getCategoryCachekeys = (type) => {
   const userId = getSupabaseUserIdFromLocalStorage();
+
+  console.log("Fetched UserId is ", userId)
   let result = {
     INCOME_CACHE_KEY: `${userId}_${MY_KEYS.INCOME_CATEGORIES_CACHE_KEY}`,
     EXPENSE_CACHE_KEY: `${userId}_${MY_KEYS.EXPENSE_CATEGORIES_CACHE_KEY}`,
     CHOOSEN_CATEGORIES_CACHE_KEY: `${userId}_${MY_KEYS.CHOOSEN_CATEGORIES_CACHE_KEY}`,
   };
+  console.log("result", result)
   return result;
 };
 
@@ -239,7 +216,7 @@ export const getTransactionCachekeys = () => {
   return result;
 };
 
-export const groupAndSortTransactions =(transactions) =>{
+export const groupAndSortTransactions = (transactions) => {
   let sorted = transactions.sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );

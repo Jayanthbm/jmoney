@@ -10,7 +10,6 @@ import {
   getRelativeTime,
   getTransactionCachekeys,
   isTransactionCacheExpired,
-  refreshOverviewCache,
 } from "../../utils";
 
 import AddTransaction from "../../components/Views/AddTransaction";
@@ -192,7 +191,6 @@ const Transactions = () => {
   const handleTransactionUpdated = async () => {
     const sorted = await getAndSortTransactions();
     setAllTransactions(sorted);
-    await refreshOverviewCache();
   };
 
   const [showSearch, setShowSearch] = useState(false);

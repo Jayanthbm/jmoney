@@ -135,6 +135,7 @@ const AddTransaction = ({
               (opt) => opt.value === selectedCategory
             )}
             onChange={(selected) => setSelectedCategory(selected.value)}
+            isSearchable={true}
           />
         </div>
 
@@ -144,22 +145,24 @@ const AddTransaction = ({
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
             onChange={(selected) => setSelectedPayee(selected.value)}
+            isSearchable={true}
           />
         </div>
 
         <div className="button-group">
+          <Button
+            onClick={onClose}
+            text="Cancel"
+            icon={<FaTimes />}
+            variant="info"
+          />
+
           <Button
             onClick={handleAdd}
             text={isAdding ? "Adding..." : "Add"}
             disabled={isAdding}
             icon={<FaPlus />}
             variant="success"
-          />
-          <Button
-            onClick={onClose}
-            text="Cancel"
-            icon={<FaTimes />}
-            variant="info"
           />
         </div>
       </div>
