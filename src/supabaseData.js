@@ -5,6 +5,7 @@ import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
 import {
   clearTransactions,
   deleteTransactionInDb,
+  getAllTransactions,
   storeTransactions,
   updateTransactionInDb,
 } from "./db/transactionDb";
@@ -46,6 +47,52 @@ export const loadTransactionsFromSupabase = async () => {
   await storeTransactions(allData);
   return allData;
 };
+
+export const getMaxTransactionTimestamp = async () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("transaction_timestamp")
+    .eq("user_id", userId)
+    .order("transaction_timestamp", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error("Error fetching max transaction timestamp:", error);
+    return null;
+  }
+
+  return data.length > 0 ? data[0].transaction_timestamp : null;
+}
+
+export const needsTransactionSync = async () => {
+  try {
+    const allTx = await getAllTransactions();
+    if (allTx.length < 1) {
+      return true; // no local data → needs sync
+    }
+
+    const maxLocalDate = new Date(
+      Math.max(...allTx.map((tx) => new Date(tx.transaction_timestamp).getTime()))
+    );
+
+    const maxSupabaseDateStr = await getMaxTransactionTimestamp();
+    const maxSupabaseDate = maxSupabaseDateStr ? new Date(maxSupabaseDateStr) : null;
+
+    // If Supabase has no timestamp or local is behind, we need sync
+    if (!maxSupabaseDate || maxLocalDate < maxSupabaseDate) {
+      return true;
+    }
+
+    // If both are same or local is ahead, no sync needed
+    return false;
+  } catch (error) {
+    console.error("Error in needsTransactionSync:", error);
+    return true; // safe default → try to sync
+  }
+};
+
+
 
 export const updateTransaction = async (id, payload, options = {}) => {
   const {

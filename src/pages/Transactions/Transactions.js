@@ -9,8 +9,8 @@ import {
   getPayeeCacheKey,
   getRelativeTime,
   getTransactionCachekeys,
-  isTransactionCacheExpired,
 } from "../../utils";
+import { loadTransactionsFromSupabase, needsTransactionSync } from "../../supabaseData";
 
 import AddTransaction from "../../components/Views/AddTransaction";
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -27,7 +27,6 @@ import {
   getAllTransactions,
 } from "../../db/transactionDb";
 import { groupBy } from "lodash";
-import { loadTransactionsFromSupabase } from "../../supabaseData";
 import { motion } from "framer-motion";
 
 const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
@@ -114,23 +113,29 @@ const Transactions = () => {
           get(INCOME_CACHE_KEY),
           get(PAYEE_CACHE_KEY),
         ]);
-      const sorted = await getAndSortTransactions();
-      setExpenseCategories(expenseCategories || []);
-      setIncomeCategories(incomeCategories || []);
-      setPayees(cachedPayees || []);
-      setAllTransactions(sorted);
-      const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
-      if (last) {
-        setLastSynced(Number(last));
-      } else {
-        const now = Date.now();
-        localStorage.setItem(LAST_TRANSACTION_FETCH, now);
-        setLastSynced(now);
-      }
-      setLoading(false);
-      if (isTransactionCacheExpired()) {
+      let shouldSync = await needsTransactionSync();
+      if (shouldSync) {
+        console.log("Needs Sync..")
         refreshData();
+      } else {
+        console.log("Fetching From cache..")
+        const sorted = await getAndSortTransactions();
+        setExpenseCategories(expenseCategories || []);
+        setIncomeCategories(incomeCategories || []);
+        setPayees(cachedPayees || []);
+        setAllTransactions(sorted);
+        const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
+        if (last) {
+          setLastSynced(Number(last));
+        } else {
+          const now = Date.now();
+          localStorage.setItem(LAST_TRANSACTION_FETCH, now);
+          setLastSynced(now);
+        }
       }
+
+      setLoading(false);
+
     };
 
     init();
@@ -195,6 +200,7 @@ const Transactions = () => {
 
   const [showSearch, setShowSearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+
   return (
     <AppLayout
       title="Transactions"

@@ -142,16 +142,6 @@ export function getSupabaseUserIdFromLocalStorage() {
   return null; // Return null if no user ID found
 }
 
-export const isTransactionCacheExpired = (hours = 4) => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  const CACHE_KEY = `${userId}_${MY_KEYS.LAST_TRANSACTION_FETCH_CACHE_KEY}`;
-  const EXPIRY_MS = hours * 60 * 60 * 1000; // 4 hours
-  const lastFetch = localStorage.getItem(CACHE_KEY);
-  const now = Date.now();
-  const isExpired = !lastFetch || now - Number(lastFetch) > EXPIRY_MS;
-  return isExpired;
-}
-
 export const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
   return Icon ? <Icon size={size} /> : null;
@@ -188,14 +178,11 @@ export const getGoalsCacheKey = () => {
 
 export const getCategoryCachekeys = (type) => {
   const userId = getSupabaseUserIdFromLocalStorage();
-
-  console.log("Fetched UserId is ", userId)
   let result = {
     INCOME_CACHE_KEY: `${userId}_${MY_KEYS.INCOME_CATEGORIES_CACHE_KEY}`,
     EXPENSE_CACHE_KEY: `${userId}_${MY_KEYS.EXPENSE_CATEGORIES_CACHE_KEY}`,
     CHOOSEN_CATEGORIES_CACHE_KEY: `${userId}_${MY_KEYS.CHOOSEN_CATEGORIES_CACHE_KEY}`,
   };
-  console.log("result", result)
   return result;
 };
 

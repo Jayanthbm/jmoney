@@ -4,6 +4,7 @@ import "./Overview.css";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { endOfMonth, isThisYear, isToday, startOfMonth, } from "date-fns";
+import { loadTransactionsFromSupabase, needsTransactionSync } from "../../supabaseData";
 
 import AppLayout from "../../components/Layouts/AppLayout";
 import DailyLimit from "./components/DailyLimit";
@@ -20,7 +21,6 @@ import {
   calculatePayDayInfo,
 } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
-import { loadTransactionsFromSupabase } from "../../supabaseData";
 
 const Overview = () => {
   const [data, setData] = useState(null);
@@ -30,11 +30,12 @@ const Overview = () => {
 
   const fetchOverviewLocal = useCallback(async () => {
     setLoading(true);
-    let allTx = await getAllTransactions();
-    if (allTx.length < 1) {
+    let allTx;
+    let shouldSync = await needsTransactionSync();
+    if (shouldSync) {
       allTx = await loadTransactionsFromSupabase()
     }
-
+    allTx = await getAllTransactions();
     const today = new Date();
     const startMonth = startOfMonth(today);
     const endMonth = endOfMonth(today);
