@@ -3,19 +3,21 @@
 import "./App.css";
 
 import { Route, HashRouter as Router, Routes } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 
-import Budgets from "./pages/Budgets/Budgets";
-import Goals from "./pages/Goals/Goals";
 import Loading from "./components/Loader/Loading";
-import Login from "./pages/Login/Login";
 import MainLayout from "./components/Layouts/MainLayout";
-import Overview from "./pages/Overview/Overview";
 import PwaBanner from "./components/Views/PwaBanner";
-import Reports from "./pages/Reports/Reports";
-import Settings from "./pages/Settings/Settings";
-import Transactions from "./pages/Transactions/Transactions";
 import { supabase } from "./supabaseClient";
+
+// Lazy load pages
+const Overview = lazy(() => import("./pages/Overview/Overview"));
+const Transactions = lazy(() => import("./pages/Transactions/Transactions"));
+const Budgets = lazy(() => import("./pages/Budgets/Budgets"));
+const Goals = lazy(() => import("./pages/Goals/Goals"));
+const Reports = lazy(() => import("./pages/Reports/Reports"));
+const Settings = lazy(() => import("./pages/Settings/Settings"));
+const Login = lazy(() => import("./pages/Login/Login"));
 
 function App() {
   const [session, setSession] = useState(null);
@@ -101,7 +103,12 @@ function App() {
   };
 
   if (loading) return <Loading />;
-  if (!session) return <Login />;
+  if (!session)
+    return (
+      <Suspense fallback={<Loading />}>
+        <Login />
+      </Suspense>
+    );
 
   return (
     <>
@@ -113,14 +120,16 @@ function App() {
           onClose={handleCloseModal}
         />
         <MainLayout>
-          <Routes>
-            <Route path="/" element={<Overview />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/budgets" element={<Budgets />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
+          <Suspense fallback={<Loading />}>
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/goals" element={<Goals />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </Suspense>
         </MainLayout>
       </Router>
     </>

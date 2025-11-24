@@ -15,10 +15,9 @@ This document outlines the status of the project "jmoney" regarding its readines
 
 ## 2. Performance
 - [x] **Build Optimization**: `react-scripts build` handles minification.
-- [ ] **Code Splitting**: All pages are loaded in the main bundle.
-    - *Action*: Use `React.lazy` and `Suspense` for route-based code splitting in `App.js`.
+- [x] **Code Splitting**: Implemented `React.lazy` and `Suspense` for all main routes in `App.js`.
 - [ ] **Image Optimization**: Icons are used, but ensure any static images are optimized (WebP).
-- [ ] **Bundle Analysis**: Run `source-map-explorer` to ensure no large unnecessary dependencies are included.
+- [x] **Bundle Analysis**: Ran `source-map-explorer`. Bundle size is ~800KB (gzipped). Major contributors are `recharts` and `fuse.js`. No unexpected bloat found.
 
 ## 3. PWA & Mobile Experience
 - [x] **Manifest**: `manifest.json` exists and is configured.
