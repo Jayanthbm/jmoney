@@ -43,7 +43,7 @@ export const loadTransactionsFromSupabase = async () => {
     allData = [...allData, ...data];
     offset += CHUNK_SIZE;
   }
-  await clearTransactions()
+  await clearTransactions();
   await storeTransactions(allData);
   return allData;
 };
@@ -63,7 +63,7 @@ export const getMaxTransactionTimestamp = async () => {
   }
 
   return data.length > 0 ? data[0].transaction_timestamp : null;
-}
+};
 
 export const needsTransactionSync = async () => {
   try {
@@ -73,11 +73,15 @@ export const needsTransactionSync = async () => {
     }
 
     const maxLocalDate = new Date(
-      Math.max(...allTx.map((tx) => new Date(tx.transaction_timestamp).getTime()))
+      Math.max(
+        ...allTx.map((tx) => new Date(tx.transaction_timestamp).getTime())
+      )
     );
 
     const maxSupabaseDateStr = await getMaxTransactionTimestamp();
-    const maxSupabaseDate = maxSupabaseDateStr ? new Date(maxSupabaseDateStr) : null;
+    const maxSupabaseDate = maxSupabaseDateStr
+      ? new Date(maxSupabaseDateStr)
+      : null;
 
     // If Supabase has no timestamp or local is behind, we need sync
     if (!maxSupabaseDate || maxLocalDate < maxSupabaseDate) {
@@ -91,8 +95,6 @@ export const needsTransactionSync = async () => {
     return true; // safe default → try to sync
   }
 };
-
-
 
 export const updateTransaction = async (id, payload, options = {}) => {
   const {
@@ -118,6 +120,7 @@ export const updateTransaction = async (id, payload, options = {}) => {
     payee_logo: payee?.logo || null,
     type: category?.type || "Expense",
     date: payload.transaction_timestamp.split("T")[0],
+    product_link: payload.product_link || null,
   };
 
   // 1. Update in IndexedDB immediately

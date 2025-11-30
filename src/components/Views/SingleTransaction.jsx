@@ -25,11 +25,15 @@ const SingleTransaction = ({
     description,
     category_id,
     payee_id,
+    product_link,
   } = transaction;
 
   const [updatedAmount, setUpdatedAmount] = useState(amount);
   const [updatedDescription, setUpdatedDescription] = useState(
     description || ""
+  );
+  const [updatedProductLink, setUpdatedProductLink] = useState(
+    product_link || ""
   );
   const [updatedTimestamp, setUpdatedTimestamp] = useState(
     transaction_timestamp
@@ -58,6 +62,7 @@ const SingleTransaction = ({
       transaction_timestamp: updatedTimestamp,
       category_id: selectedCategory,
       payee_id: selectedPayee,
+      product_link: updatedProductLink,
     };
 
     // Optimistic UI update
@@ -127,11 +132,21 @@ const SingleTransaction = ({
         </div>
 
         <div className="form-group">
-          <label>Payee</label>
           <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
             onChange={(selected) => setSelectedPayee(selected.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Product Link</label>
+          <input
+            type="text"
+            value={updatedProductLink}
+            onChange={(e) => setUpdatedProductLink(e.target.value)}
+            className="input"
+            placeholder="https://..."
           />
         </div>
 

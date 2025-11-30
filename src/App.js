@@ -18,6 +18,7 @@ const Goals = lazy(() => import("./pages/Goals/Goals"));
 const Reports = lazy(() => import("./pages/Reports/Reports"));
 const Settings = lazy(() => import("./pages/Settings/Settings"));
 const Login = lazy(() => import("./pages/Login/Login"));
+const NotFound = lazy(() => import("./pages/NotFound/NotFound"));
 
 function App() {
   const [session, setSession] = useState(null);
@@ -128,6 +129,7 @@ function App() {
               <Route path="/goals" element={<Goals />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </MainLayout>

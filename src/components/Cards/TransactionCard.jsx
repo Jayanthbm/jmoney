@@ -5,6 +5,7 @@ import "./TransactionCard.css";
 import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
 
 import React from "react";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
   const {
@@ -17,6 +18,7 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
     type,
     transaction_timestamp,
     percentage = null,
+    product_link = null,
   } = transaction;
 
   return (
@@ -38,18 +40,38 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
               {formatTimestamp(transaction_timestamp)}
             </div>
           )}
-          {payee_name && (
-            <div className="payee-info">
-              {payee_logo && (
-                <img
-                  src={payee_logo}
-                  alt={payee_name}
-                  className="transaction-payee-logo"
-                />
-              )}
-              <span className="payee-name">{payee_name}</span>
-            </div>
-          )}
+          <div className="payee-info">
+            {(payee_logo || product_link) && (
+              <>
+                {payee_logo && (
+                  <>
+                    <img
+                      src={payee_logo}
+                      alt={payee_name}
+                      className="transaction-payee-logo"
+                    />
+                    <span className="payee-name">{payee_name}</span>
+                  </>
+                )}
+
+                {product_link && (
+                  <a
+                    href={product_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#007bff", cursor: "pointer" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FaExternalLinkAlt
+                      size={14}
+                      color="#007bff"
+                      title="Product Link"
+                    />
+                  </a>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

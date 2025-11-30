@@ -1,52 +1,73 @@
 // src/pages/Overview/components/TopCategories.jsx
 
-import CustomDonutChart from '../../../components/Charts/CustomDonutChart';
-import NoDataCard from '../../../components/Cards/NoDataCard';
-import OverviewCard from '../../../components/Cards/OverviewCard';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { formatIndianNumber } from '../../../utils';
+import CustomDonutChart from "../../../components/Charts/CustomDonutChart";
+import NoDataCard from "../../../components/Cards/NoDataCard";
+import OverviewCard from "../../../components/Cards/OverviewCard";
+import PropTypes from "prop-types";
+import React from "react";
+import { formatIndianNumber } from "../../../utils";
+import MySkeletion from "../../../components/Loader/MySkeletion";
 
 const CATEGORY_COLORS = ["#3b82f6", "#10b981", "#9ca3af"];
 
-const TopCategories = ({ data }) => {
+const TopCategories = ({ data, loading }) => {
   const topCategories = data?.topCategories || [];
   const period = data?.remainingForPeriod?.period || "";
 
   return (
     <OverviewCard title="Top Categories" subtitle={period}>
-      {topCategories.length > 0 ? (
+      {loading ? (
         <div className="top-categories-donut">
-          {/* Labels */}
           <div className="category-labels">
-            {topCategories.map((cat, index) => (
-              <div key={index} className="category-label-item">
-                <span
-                  className="category-dot"
-                  style={{ backgroundColor: CATEGORY_COLORS[index] }}
-                />
-                <div className="category-text">
-                  <div className="category-name">{cat.name}</div>
-                  <div className="category-value">
-                    {formatIndianNumber(cat?.amount || 0)} | {cat?.percentage || 0}%
-                  </div>
-                </div>
-              </div>
-            ))}
+            <MySkeletion count={3} keyName="top-categories" />
           </div>
-
-          {/* Donut Chart */}
           <div className="category-donut-chart">
-            <CustomDonutChart
-              data={topCategories.map((cat) => ({
-                value: cat?.percentage,
-              }))}
-              colors={CATEGORY_COLORS}
+            <MySkeletion
+              count={1}
+              keyName="top-categories"
+              variant="circular"
+              width={"100%"}
+              height={"100%"}
             />
           </div>
         </div>
       ) : (
-        <NoDataCard message="No data available" height="100" width="150" />
+        <>
+          {topCategories.length > 0 ? (
+            <div className="top-categories-donut">
+              {/* Labels */}
+              <div className="category-labels">
+                {topCategories.map((cat, index) => (
+                  <div key={index} className="category-label-item">
+                    <span
+                      className="category-dot"
+                      style={{ backgroundColor: CATEGORY_COLORS[index] }}
+                    />
+                    <div className="category-text">
+                      <div className="category-name">{cat.name}</div>
+                      <div className="category-value">
+                        {formatIndianNumber(cat?.amount || 0)} |{" "}
+                        {cat?.percentage || 0}%
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Donut Chart */}
+              <div className="category-donut-chart">
+                <CustomDonutChart
+                  data={topCategories.map((cat) => ({
+                    value: cat?.percentage,
+                  }))}
+                  colors={CATEGORY_COLORS}
+                />
+              </div>
+            </div>
+          ) : (
+            <NoDataCard message="No data available" height="100" width="150" />
+          )}
+        </>
       )}
     </OverviewCard>
   );

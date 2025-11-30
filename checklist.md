@@ -7,9 +7,8 @@ This document outlines the status of the project "jmoney" regarding its readines
 - [x] **State Management**: React Hooks and Local State used effectively.
 - [x] **Data Persistence**: Robust local-first approach with IndexedDB and Supabase sync.
 - [ ] **Type Safety**: Project is in JavaScript. Consider migrating to TypeScript or adding JSDoc for better maintainability.
-- [ ] **Testing**: No unit or integration tests found (`src/**/*.test.js`).
-    - *Action*: Add unit tests for utility functions and critical components.
-    - *Action*: Add integration tests for the sync logic.
+- [x] **Testing**: Added unit tests for utility functions in `src/utils.test.js` (14 tests passed).
+    - *Action*: Add integration tests for the sync logic (Future).
 - [x] **Error Handling**: Implemented Global Error Boundary wrapping `App` in `index.js`.
 - [x] **Linting & Formatting**: Added `.prettierrc`, `husky`, and `lint-staged` to enforce code style on commit.
 
@@ -22,8 +21,7 @@ This document outlines the status of the project "jmoney" regarding its readines
 ## 3. PWA & Mobile Experience
 - [x] **Manifest**: `manifest.json` exists and is configured.
 - [x] **Install Prompts**: Custom logic for iOS and Android install prompts is present.
-- [ ] **Service Worker**: Currently set to `unregister()` in `index.js`.
-    - *Action*: Change to `register()` to enable offline caching and faster loads.
+- [x] **Service Worker**: Changed to `register()` in `index.js` to enable offline caching.
 - [x] **Responsive Design**: `react-responsive` and CSS media queries are used.
 
 ## 4. Security
@@ -41,8 +39,7 @@ This document outlines the status of the project "jmoney" regarding its readines
 
 ## 6. UI/UX
 - [x] **Loading States**: `Loading` component is used during auth checks.
-- [ ] **404 Page**: No "Not Found" route defined.
-    - *Action*: Add a `*` route in `App.js` for 404 handling.
+- [x] **404 Page**: Added `NotFound.jsx` and catch-all route `*` in `App.js`.
 - [ ] **Accessibility (a11y)**:
     - *Action*: Audit for `aria-label` on icon-only buttons.
     - *Action*: Ensure color contrast ratios meet WCAG standards.

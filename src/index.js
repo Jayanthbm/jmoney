@@ -20,4 +20,4 @@ root.render(
 );
 
 // ✅ Register the service worker
-serviceWorkerRegistration.unregister();
+serviceWorkerRegistration.register();

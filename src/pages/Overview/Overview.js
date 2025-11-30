@@ -3,8 +3,11 @@
 import "./Overview.css";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { endOfMonth, isThisYear, isToday, startOfMonth, } from "date-fns";
-import { loadTransactionsFromSupabase, needsTransactionSync } from "../../supabaseData";
+import { endOfMonth, isThisYear, isToday, startOfMonth } from "date-fns";
+import {
+  loadTransactionsFromSupabase,
+  needsTransactionSync,
+} from "../../supabaseData";
 
 import AppLayout from "../../components/Layouts/AppLayout";
 import DailyLimit from "./components/DailyLimit";
@@ -17,31 +20,26 @@ import RemainingForPeriod from "./components/RemainingForPeriod";
 import StatCard from "../../components/Cards/StatCard";
 import SummaryView from "../../components/Views/SummaryView";
 import TopCategories from "./components/TopCategories";
-import {
-  calculatePayDayInfo,
-} from "../../utils";
+import { calculatePayDayInfo } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
+import { MdSync } from "react-icons/md";
+import { FaCircleCheck } from "react-icons/fa6";
+import MySkeletion from "../../components/Loader/MySkeletion";
 
 const Overview = () => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("Overview");
-  const cardStyles = { cursor: 'default' };
+  const cardStyles = { cursor: "default" };
+  const [overviewLoaded, setOverviewLoaded] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
-  const fetchOverviewLocal = useCallback(async () => {
-    setLoading(true);
-    let allTx;
-    let shouldSync = await needsTransactionSync();
-    if (shouldSync) {
-      allTx = await loadTransactionsFromSupabase()
-    }
-    allTx = await getAllTransactions();
+  const calculateLocal = (allTx) => {
     const today = new Date();
     const startMonth = startOfMonth(today);
     const endMonth = endOfMonth(today);
 
     const sumTx = (txs) => txs.reduce((sum, t) => sum + t.amount, 0);
-
     const monthIncomeTx = allTx.filter(
       (tx) =>
         tx.type === "Income" &&
@@ -62,30 +60,42 @@ const Overview = () => {
 
     // Remaining for Period
     const remainingForPeriod = {
-      period: `${startMonth.getDate().toString().padStart(2, "0")}/${(startMonth.getMonth() + 1)
+      period: `${startMonth.getDate().toString().padStart(2, "0")}/${(
+        startMonth.getMonth() + 1
+      )
         .toString()
-        .padStart(2, "0")}/${startMonth.getFullYear().toString().slice(2)} - ${endMonth
-          .getDate()
-          .toString()
-          .padStart(2, "0")}/${(endMonth.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}/${endMonth.getFullYear().toString().slice(2)}`,
+        .padStart(
+          2,
+          "0"
+        )}/${startMonth.getFullYear().toString().slice(2)} - ${endMonth
+        .getDate()
+        .toString()
+        .padStart(2, "0")}/${(endMonth.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${endMonth.getFullYear().toString().slice(2)}`,
       remaining: parseFloat((totalMonthIncome - totalMonthExpense).toFixed(2)),
-      spent_percentage: totalMonthIncome === 0 ? 0 : parseFloat(((totalMonthExpense / totalMonthIncome) * 100).toFixed(0))
+      spent_percentage:
+        totalMonthIncome === 0
+          ? 0
+          : parseFloat(
+              ((totalMonthExpense / totalMonthIncome) * 100).toFixed(0)
+            ),
     };
 
     // Daily Limit
-    const spentTodayTx = allTx.filter((tx) => tx.type === "Expense" && isToday(new Date(tx.date)));
+    const spentTodayTx = allTx.filter(
+      (tx) => tx.type === "Expense" && isToday(new Date(tx.date))
+    );
     const spentToday = sumTx(spentTodayTx);
-
     // Remaining days in month (inclusive of today)
     const msPerDay = 24 * 60 * 60 * 1000;
     const remainingDays = Math.floor((endMonth - today) / msPerDay) + 1;
 
-    const spentTillYesterday = (totalMonthIncome - totalMonthExpense + spentToday)
+    const spentTillYesterday =
+      totalMonthIncome - totalMonthExpense + spentToday;
     // Daily limit = (income - spentTillYesterday) / remainingDays
     const dailyLimitAmount =
-      remainingDays > 0 ? (spentTillYesterday / remainingDays) : 0;
+      remainingDays > 0 ? spentTillYesterday / remainingDays : 0;
 
     // Remaining for today = daily limit - today's spending
     const remainingToday = dailyLimitAmount - spentToday;
@@ -122,15 +132,23 @@ const Overview = () => {
       ...(otherSum > 0 ? [{ name: "Other", amount: otherSum }] : []),
     ].map((cat) => ({
       ...cat,
-      percentage: totalMonthExpense === 0 ? 0 : parseFloat(((cat.amount / totalMonthExpense) * 100).toFixed(2)),
-      period: `${startMonth.getDate().toString().padStart(2, "0")}/${(startMonth.getMonth() + 1)
+      percentage:
+        totalMonthExpense === 0
+          ? 0
+          : parseFloat(((cat.amount / totalMonthExpense) * 100).toFixed(2)),
+      period: `${startMonth.getDate().toString().padStart(2, "0")}/${(
+        startMonth.getMonth() + 1
+      )
         .toString()
-        .padStart(2, "0")}/${startMonth.getFullYear().toString().slice(2)} - ${endMonth
-          .getDate()
-          .toString()
-          .padStart(2, "0")}/${(endMonth.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}/${endMonth.getFullYear().toString().slice(2)}`,
+        .padStart(
+          2,
+          "0"
+        )}/${startMonth.getFullYear().toString().slice(2)} - ${endMonth
+        .getDate()
+        .toString()
+        .padStart(2, "0")}/${(endMonth.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${endMonth.getFullYear().toString().slice(2)}`,
     }));
 
     // Current Month
@@ -138,25 +156,39 @@ const Overview = () => {
       period: `${today.toLocaleString("default", { month: "long" })} ${today.getFullYear()}`,
       income: parseFloat(totalMonthIncome.toFixed(2)),
       expense: parseFloat(totalMonthExpense.toFixed(2)),
-      spent_percentage: parseFloat((totalMonthExpense / totalMonthIncome * 100).toFixed(2)),
+      spent_percentage: parseFloat(
+        ((totalMonthExpense / totalMonthIncome) * 100).toFixed(2)
+      ),
     };
 
     // Current Year
-    const yearIncomeTx = allTx.filter((tx) => tx.type === "Income" && isThisYear(new Date(tx.date)));
-    const yearExpenseTx = allTx.filter((tx) => tx.type === "Expense" && isThisYear(new Date(tx.date)));
+    const yearIncomeTx = allTx.filter(
+      (tx) => tx.type === "Income" && isThisYear(new Date(tx.date))
+    );
+    const yearExpenseTx = allTx.filter(
+      (tx) => tx.type === "Expense" && isThisYear(new Date(tx.date))
+    );
     const totalYearIncome = sumTx(yearIncomeTx);
     const totalYearExpense = sumTx(yearExpenseTx);
     const current_year = {
       period: today.getFullYear(),
       income: parseFloat(totalYearIncome.toFixed(2)),
       expense: parseFloat(totalYearExpense.toFixed(2)),
-      spent_percentage: parseFloat((totalYearExpense / totalYearIncome * 100).toFixed(2)),
+      spent_percentage: parseFloat(
+        ((totalYearExpense / totalYearIncome) * 100).toFixed(2)
+      ),
     };
 
     // Networth
     const networth = {
       amount: parseFloat(
-        allTx.reduce((sum, tx) => (tx.type === "Income" ? sum + tx.amount : sum - tx.amount), 0).toFixed(3)
+        allTx
+          .reduce(
+            (sum, tx) =>
+              tx.type === "Income" ? sum + tx.amount : sum - tx.amount,
+            0
+          )
+          .toFixed(3)
       ),
     };
 
@@ -172,7 +204,14 @@ const Overview = () => {
       payDay,
     };
     setData(result);
+  };
+
+  const fetchOverviewLocal = useCallback(async () => {
+    setLoading(true);
+    const allTx = await getAllTransactions();
+    calculateLocal(allTx);
     setLoading(false);
+    setOverviewLoaded(true);
     return true;
   }, []);
 
@@ -180,112 +219,159 @@ const Overview = () => {
     fetchOverviewLocal();
   }, [fetchOverviewLocal]);
 
+  useEffect(() => {
+    async function backgroundSync() {
+      let shouldSync = await needsTransactionSync();
+      if (shouldSync) {
+        const allTx = await loadTransactionsFromSupabase();
+        calculateLocal(allTx);
+      }
+    }
+    if (overviewLoaded) {
+      setSyncing(true);
+      backgroundSync().then(() => setSyncing(false));
+    }
+  }, [overviewLoaded]);
   const [viewMode, setViewMode] = useState("overview");
 
   const onBack = () => {
-    setViewMode('overview');
-    setTitle('Overview');
-  }
+    setViewMode("overview");
+    setTitle("Overview");
+  };
   return (
     <>
       {viewMode === "overview" && (
         <AppLayout
           title={title}
-          loading={!data || loading}
           onBack={
-            viewMode !== 'overview' ? () => {
-            setViewMode('overview');
-              setTitle('Overview');
-            } : null
+            viewMode !== "overview"
+              ? () => {
+                  setViewMode("overview");
+                  setTitle("Overview");
+                }
+              : null
           }
         >
+          <div className="sync-status">
+            <small className="sync-time">
+              {syncing ? (
+                <span style={{ display: "flex", gap: 5 }}>
+                  <MdSync className="syncing-icon" />
+                  Syncing
+                </span>
+              ) : (
+                <span style={{ display: "flex", gap: 5 }}>
+                  <FaCircleCheck />
+                  Synced
+                </span>
+              )}
+            </small>
+          </div>
           <div className="overview-container">
-          {/* Remainng for Period */}
-          <div className="overview-card-wrapper">
-            <RemainingForPeriod data={data?.remainingForPeriod} />
-          </div>
-
-          {/* Daily Limit */}
-          <div
-            className="overview-card-wrapper"
-            onClick={() => {
-              setViewMode("dailyLimit");
-              setTitle('Daily Limit');
-            }}
-          >
-            <DailyLimit data={data?.dailyLimit} />
-          </div>
-
-          {/* Pay Day */}
-          <div
-            className="overview-card-wrapper"
-            onClick={() => {
-              setViewMode("payDay");
-              setTitle('Calendar View');
-            }}
-          >
-            <PayDay data={data?.payDay} />
-          </div>
-
-          {/* Top Categories */}
-          <div
-            className="overview-card-wrapper"
-            onClick={() => {
-              if (data?.topCategories?.length > 0) {
-                setViewMode("topCategories");
-                setTitle('Top Categories');
-              }
-
-            }}
-          >
-            <TopCategories data={data} />
-          </div>
-
-          {/* Current Month */}
-          <StatCard
-            title="This Month"
-            subtitle={data?.current_month?.period}
-            expense={data?.current_month?.expense}
-            income={data?.current_month?.income}
-            percentage={data?.current_month?.spent_percentage}
-            onClick={() => {
-              setViewMode("thisMonth");
-              setTitle('Summary For Month');
-            }}
-          />
-
-          {/* Current Year */}
-          <StatCard
-            title="Current Year"
-            subtitle={data?.current_year?.period}
-            expense={data?.current_year?.expense}
-            income={data?.current_year?.income}
-            percentage={data?.current_year?.spent_percentage}
-            onClick={() => {
-              setViewMode("currentYear");
-              setTitle('Summary For Year');
-            }}
-          />
-
-          {/* Net Worth */}
-          <div className="overview-card-wrapper">
-            <OverviewCard title="Net Worth" subtitle="ALL TIME" customStyles={cardStyles}>
-              <div>
-                <div className="big-income-text">
-                  <MyCountUp end={data?.networth?.amount || 0} />
+            {/* Remainng for Period */}
+            <div className="overview-card-wrapper">
+              <RemainingForPeriod
+                data={data?.remainingForPeriod}
+                loading={loading}
+              />
+            </div>
+            {/* Daily Limit */}
+            <div
+              className="overview-card-wrapper"
+              onClick={() => {
+                setViewMode("dailyLimit");
+                setTitle("Daily Limit");
+              }}
+            >
+              <DailyLimit data={data?.dailyLimit} loading={loading} />
+            </div>
+            {/* Pay Day */}
+            <div
+              className="overview-card-wrapper"
+              onClick={() => {
+                setViewMode("payDay");
+                setTitle("Calendar View");
+              }}
+            >
+              <PayDay data={data?.payDay} />
+            </div>
+            {/* Top Categories */}
+            <div
+              className="overview-card-wrapper"
+              onClick={() => {
+                if (data?.topCategories?.length > 0) {
+                  setViewMode("topCategories");
+                  setTitle("Top Categories");
+                }
+              }}
+            >
+              <TopCategories data={data} loading={loading} />
+            </div>
+            {/* Current Month */}
+            <StatCard
+              title="This Month"
+              subtitle={data?.current_month?.period}
+              expense={data?.current_month?.expense}
+              income={data?.current_month?.income}
+              percentage={data?.current_month?.spent_percentage}
+              onClick={() => {
+                setViewMode("thisMonth");
+                setTitle("Summary For Month");
+              }}
+              loading={loading}
+            />
+            {/* Current Year */}
+            <StatCard
+              title="Current Year"
+              subtitle={data?.current_year?.period}
+              expense={data?.current_year?.expense}
+              income={data?.current_year?.income}
+              percentage={data?.current_year?.spent_percentage}
+              onClick={() => {
+                setViewMode("currentYear");
+                setTitle("Summary For Year");
+              }}
+              loading={loading}
+            />
+            {/* Net Worth */}
+            <div className="overview-card-wrapper">
+              <OverviewCard
+                title="Net Worth"
+                subtitle="ALL TIME"
+                customStyles={cardStyles}
+              >
+                <div>
+                  <div className="big-income-text">
+                    {loading ? (
+                      <MySkeletion count={1} keyName="networth" />
+                    ) : (
+                      <MyCountUp end={data?.networth?.amount || 0} />
+                    )}
+                  </div>
                 </div>
-              </div>
-            </OverviewCard>
+              </OverviewCard>
+            </div>
           </div>
-        </div>
         </AppLayout>
       )}
       {viewMode === "dailyLimit" && (
-        <DailyLimitView dailyLimitData={data?.dailyLimit} title={title} onBack={onBack} />
+        <DailyLimitView
+          dailyLimitData={data?.dailyLimit}
+          title={title}
+          onBack={onBack}
+        />
       )}
       {viewMode === "payDay" && <PayDayView title={title} onBack={onBack} />}
 
-      {(viewMode === "topCategories" || viewMode === "thisMonth" || viewMode === "currentYear") && <SummaryView title={title} onBack={onBack} showMonthSelect={viewMode === "currentYear" ? false : true} />}
+      {(viewMode === "topCategories" ||
+        viewMode === "thisMonth" ||
+        viewMode === "currentYear") && (
+        <SummaryView
+          title={title}
+          onBack={onBack}
+          showMonthSelect={viewMode === "currentYear" ? false : true}
+        />
+      )}
     </>
   );
 };

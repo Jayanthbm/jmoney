@@ -29,6 +29,7 @@ const TransactionFilters = ({
           value={selectedCategories}
           onChange={onCategoryChange}
           placeholder="Filter by Categories"
+          isSearchable={true}
         />
         <MySelect
           isMulti
@@ -36,6 +37,7 @@ const TransactionFilters = ({
           value={selectedPayees}
           onChange={onPayeeChange}
           placeholder="Filter by Payees"
+          isSearchable={true}
         />
       </motion.div>
     )}

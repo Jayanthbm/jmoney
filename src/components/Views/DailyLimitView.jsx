@@ -26,7 +26,8 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
         (tx) => tx.type === "Expense" && isToday(new Date(tx.date))
       );
       todayTx = todayTx.sort(
-        (a, b) => new Date(a.transaction_timestamp) - new Date(b.transaction_timestamp)
+        (a, b) =>
+          new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
       );
       setTodayExpenses(todayTx);
       setLoading(false);
@@ -54,12 +55,15 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
                     <div className="daily-limit-label">REMAINING</div>
                     <div className="daily-limit-value green-text">
                       {formatIndianNumber(dailyLimitData?.remaining || 0)}
-                    </div></>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className="daily-limit-label">OVERSPENT</div>
                     <div className="daily-limit-value red-text">
-                      {formatIndianNumber(dailyLimitData?.spent - dailyLimitData.daily_limit)}
+                      {formatIndianNumber(
+                        dailyLimitData?.spent - dailyLimitData.daily_limit
+                      )}
                     </div>
                   </>
                 )}
