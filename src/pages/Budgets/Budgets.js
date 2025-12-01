@@ -2,10 +2,20 @@
 import "./Budgets.css";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { addBudgetInDb, deleteBudgetInDb, updateBudgetInDb } from "../../supabaseData";
+import {
+  addBudgetInDb,
+  deleteBudgetInDb,
+  updateBudgetInDb,
+} from "../../supabaseData";
 import { budgetSortOptions, sortBudgets } from "./budgetUtils";
 import { getCachedBudgetAmountMap, getCachedBudgets } from "../../db/budgetDb";
-import { getCategoryCachekeys, getMonthOptions, getRelativeTime, getSupabaseUserIdFromLocalStorage, groupAndSortTransactions } from "../../utils";
+import {
+  getCategoryCachekeys,
+  getMonthOptions,
+  getRelativeTime,
+  getSupabaseUserIdFromLocalStorage,
+  groupAndSortTransactions,
+} from "../../utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -13,7 +23,7 @@ import BudgetForm from "./components/BudgetForm";
 import BudgetInfoCard from "./components/BudgetInfoCard";
 import BudgetSummary from "./components/BudgetSummary";
 import Button from "../../components/Button/Button";
-import { FaCirclePlus } from "react-icons/fa6";
+import { FaCircleCheck, FaCirclePlus } from "react-icons/fa6";
 import InlineLoader from "../../components/Loader/InlineLoader";
 import { MdSync } from "react-icons/md";
 import MonthYearSelector from "../../components/Views/MonthYearSelector";
@@ -29,10 +39,10 @@ const { EXPENSE_CACHE_KEY } = getCategoryCachekeys();
 const Budgets = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState(null);
-  const [viewMode, setViewMode] = useState('summary');
+  const [viewMode, setViewMode] = useState("summary");
 
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
@@ -82,7 +92,11 @@ const Budgets = () => {
         categories: formData.categories.map((c) => c.value),
       };
       if (editBudget) {
-        await updateBudgetInDb({ ...payload, id: editBudget.id, user_id: userId });
+        await updateBudgetInDb({
+          ...payload,
+          id: editBudget.id,
+          user_id: userId,
+        });
       } else {
         await addBudgetInDb(payload);
       }
@@ -107,54 +121,70 @@ const Budgets = () => {
     }
   };
 
-  const loadBudgetMap = useCallback(async (force = false, forceBudgets = false) => {
-    const map = await getCachedBudgetAmountMap(force, forceBudgets);
-    setBudgetMap(map);
-    setBudgetMapLoaded(true);
-  }, []);
+  const loadBudgetMap = useCallback(
+    async (force = false, forceBudgets = false) => {
+      const map = await getCachedBudgetAmountMap(force, forceBudgets);
+      setBudgetMap(map);
+      setBudgetMapLoaded(true);
+    },
+    []
+  );
 
-  const refreshData = useCallback(async (force = true) => {
-    setSyncing(true);
-    setViewMode("summary");
-    await loadBudgetMap(force, true);
-    const last = localStorage.getItem("budgets_amount_map_cache_last_fetched");
-    if (last) {
-      setLastSynced(Number(last));
-    } else {
-      const now = Date.now();
-      localStorage.setItem("budgets_amount_map_cache_last_fetched", now);
-      setLastSynced(now);
-    }
-    setSyncing(false);
+  const refreshData = useCallback(
+    async (force = true) => {
+      setSyncing(true);
+      setViewMode("summary");
+      await loadBudgetMap(force, true);
+      const last = localStorage.getItem(
+        "budgets_amount_map_cache_last_fetched"
+      );
+      if (last) {
+        setLastSynced(Number(last));
+      } else {
+        const now = Date.now();
+        localStorage.setItem("budgets_amount_map_cache_last_fetched", now);
+        setLastSynced(now);
+      }
+      setSyncing(false);
+    },
+    [loadBudgetMap]
+  );
 
-  }, [loadBudgetMap]);
+  const updateBudgets = useCallback(
+    (budgets, selectedYear, selectedMonth, budgetMap) => {
+      return budgets.map((budget) => {
+        const amount = parseFloat(budget.amount);
+        const spent = (budget.categories || []).reduce((total, categoryId) => {
+          const key = `${selectedYear}_${selectedMonth}_${categoryId}`;
+          return total + (budgetMap[key] || 0);
+        }, 0);
 
-  const updateBudgets = useCallback((budgets, selectedYear, selectedMonth, budgetMap) => {
-    return budgets.map((budget) => {
-      const amount = parseFloat(budget.amount);
-      const spent = (budget.categories || []).reduce((total, categoryId) => {
-        const key = `${selectedYear}_${selectedMonth}_${categoryId}`;
-        return total + (budgetMap[key] || 0);
-      }, 0);
+        const percentage_spent =
+          amount > 0 ? +((spent / amount) * 100).toFixed(2) : 0;
+        const percentage_remaining = +(100 - percentage_spent).toFixed(2);
 
-      const percentage_spent = amount > 0 ? +(spent / amount * 100).toFixed(2) : 0;
-      const percentage_remaining = +(100 - percentage_spent).toFixed(2);
-
-      return {
-        ...budget,
-        spent: +spent.toFixed(2),
-        percentage_spent,
-        percentage_remaining,
-      };
-    });
-  }, []);
+        return {
+          ...budget,
+          spent: +spent.toFixed(2),
+          percentage_spent,
+          percentage_remaining,
+        };
+      });
+    },
+    []
+  );
 
   const loadBudgets = useCallback(async () => {
     setLoading(true);
     const allBudgets = await getCachedBudgets();
     const selectedYear = year.value;
     const selectedMonth = month.value;
-    const updated = updateBudgets(allBudgets, selectedYear, selectedMonth, budgetMap);
+    const updated = updateBudgets(
+      allBudgets,
+      selectedYear,
+      selectedMonth,
+      budgetMap
+    );
     setBudgets(updated);
 
     // Also update selectedBudget if visible
@@ -170,9 +200,13 @@ const Budgets = () => {
     const init = async () => {
       setLoading(true);
       const categories = await get(EXPENSE_CACHE_KEY);
-      setCategoryOptions(categories?.map((cat) => ({ value: cat.id, label: cat.name })) || []);
+      setCategoryOptions(
+        categories?.map((cat) => ({ value: cat.id, label: cat.name })) || []
+      );
       await loadBudgetMap();
-      const last = localStorage.getItem("budgets_amount_map_cache_last_fetched");
+      const last = localStorage.getItem(
+        "budgets_amount_map_cache_last_fetched"
+      );
       if (last) {
         setLastSynced(Number(last));
       } else {
@@ -190,10 +224,13 @@ const Budgets = () => {
     }
   }, [budgetMapLoaded, year, month, budgetMap, loadBudgets]);
 
-  const sortedBudgets = useMemo(() => sortBudgets(budgets, orderBy), [budgets, orderBy]);
+  const sortedBudgets = useMemo(
+    () => sortBudgets(budgets, orderBy),
+    [budgets, orderBy]
+  );
 
   const onBudgetCardClick = useCallback((budget) => {
-    setViewMode('info');
+    setViewMode("info");
     setSelectedBudgetId(budget.id);
     setSelectedBudget(budget);
   }, []);
@@ -205,10 +242,11 @@ const Budgets = () => {
     } else {
       setViewMode("info");
     }
-  }
+  };
 
   useEffect(() => {
-    if (viewMode !== 'transactions' || !selectedBudget?.categories?.length) return;
+    if (viewMode !== "transactions" || !selectedBudget?.categories?.length)
+      return;
 
     let isMounted = true;
 
@@ -217,70 +255,98 @@ const Budgets = () => {
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
-      return (
-        tx.type === "Expense" &&
-        selectedBudget.categories.includes(tx.category_id) &&
-        date.getMonth() === month.value &&
-        date.getFullYear() === year.value
-      );
-    });
+        return (
+          tx.type === "Expense" &&
+          selectedBudget.categories.includes(tx.category_id) &&
+          date.getMonth() === month.value &&
+          date.getFullYear() === year.value
+        );
+      });
 
-     if (!isMounted) return;
+      if (!isMounted) return;
 
-     setGroupedTransactions(groupAndSortTransactions(filtered));
-     setTransactionTotal(filtered.reduce((sum, tx) => sum + tx.amount, 0));
-     setLoading(false);
-   };
+      setGroupedTransactions(groupAndSortTransactions(filtered));
+      setTransactionTotal(filtered.reduce((sum, tx) => sum + tx.amount, 0));
+      setLoading(false);
+    };
 
-   fetchTransactions();
+    fetchTransactions();
 
-   return () => {
-     isMounted = false;
-   };
- }, [viewMode, month, year, selectedBudget]);
-
+    return () => {
+      isMounted = false;
+    };
+  }, [viewMode, month, year, selectedBudget]);
 
   return (
     <>
-      <AppLayout title={`Budgets ${selectedBudget ? "<> " + selectedBudget.name : ''} ${viewMode === 'transactions' ? '<> Transactions' : ''}`} onRefresh={refreshData} onBack={viewMode === "summary" ? null : () => handleBackToSummary()}>
+      <AppLayout
+        title={`Budgets ${selectedBudget ? "<> " + selectedBudget.name : ""} ${viewMode === "transactions" ? "<> Transactions" : ""}`}
+        onRefresh={refreshData}
+        onBack={viewMode === "summary" ? null : () => handleBackToSummary()}
+      >
         <div className="sync-status">
-          {lastSynced && (
-            <small className="sync-time">
-              {syncing && <MdSync className="syncing-icon" />}Calcualted: {getRelativeTime(lastSynced)}
-            </small>
-          )}
-        </div>
-        <div className="budgets-header">
-          <div className="left-buttons">
-            {viewMode === "summary" && (
-              <MySelect
-                options={budgetSortOptions}
-                value={budgetSortOptions.find((opt) => opt.value === orderBy)}
-                onChange={(selected) => setOrderBy(selected.value)}
-                isDisabled={loading}
-              />
+          <small className="sync-time">
+            {syncing ? (
+              <span style={{ display: "flex", gap: 5 }}>
+                <MdSync className="syncing-icon" />
+                Recalculating Budget
+              </span>
+            ) : (
+              <span style={{ display: "flex", gap: 5 }}>
+                <FaCircleCheck />
+                Calcualted:&nbsp;{getRelativeTime(lastSynced)}
+              </span>
             )}
-          </div>
-          <div className="right-controls">
-            {/* Add Button */}
-            {viewMode === 'summary' && (
-              <Button
-                icon={<FaCirclePlus />}
-                text={isMobile ? null : "Add Budget"}
-                variant="primary"
-                onClick={() => handleDialogOpen()}
-              />
-            )}
-
-          </div>
+          </small>
         </div>
-
-        {/* Month/Year Selectors */}
-        <MonthYearSelector yearValue={year} onYearChange={(opt) => setYear(opt)} monthValue={month} onMonthChange={(opt) => setMonth(opt)} disabled={loading} />
+        {!loading && (
+          <>
+            <div className="budgets-header">
+              <div className="left-buttons">
+                {viewMode === "summary" && (
+                  <MySelect
+                    options={budgetSortOptions}
+                    value={budgetSortOptions.find(
+                      (opt) => opt.value === orderBy
+                    )}
+                    onChange={(selected) => setOrderBy(selected.value)}
+                    isDisabled={loading}
+                  />
+                )}
+              </div>
+              <div className="right-controls">
+                {/* Add Button */}
+                {viewMode === "summary" && (
+                  <Button
+                    icon={<FaCirclePlus />}
+                    text={isMobile ? null : "Add Budget"}
+                    variant="primary"
+                    onClick={() => handleDialogOpen()}
+                  />
+                )}
+              </div>
+            </div>
+            {/* Month/Year Selectors */}
+            <MonthYearSelector
+              yearValue={year}
+              onYearChange={(opt) => setYear(opt)}
+              monthValue={month}
+              onMonthChange={(opt) => setMonth(opt)}
+              disabled={loading}
+            />
+          </>
+        )}
 
         <AnimatePresence mode="wait">
           {viewMode === "summary" && (
-            <BudgetSummary loading={loading} sortedBudgets={sortedBudgets} refreshData={refreshData} handleDialogOpen={handleDialogOpen} handleDelete={handleDelete} onBudgetCardClick={onBudgetCardClick} />
+            <BudgetSummary
+              loading={loading}
+              sortedBudgets={sortedBudgets}
+              refreshData={refreshData}
+              handleDialogOpen={handleDialogOpen}
+              handleDelete={handleDelete}
+              onBudgetCardClick={onBudgetCardClick}
+            />
           )}
           {viewMode === "info" && selectedBudget && (
             <motion.div
@@ -291,40 +357,51 @@ const Budgets = () => {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
             >
-              <BudgetInfoCard budget={selectedBudget} selectedYear={year} selectedMonth={month} onViewTransations={() => {
-                setViewMode('transactions')
-              }} />
+              <BudgetInfoCard
+                budget={selectedBudget}
+                selectedYear={year}
+                selectedMonth={month}
+                onViewTransations={() => {
+                  setViewMode("transactions");
+                }}
+              />
             </motion.div>
           )}
 
           {viewMode === "transactions" && (
-            <>{loading ? (
-              <InlineLoader text="Loading Transactions" />
-            ) : (
-              <motion.div
-                key="transactions"
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <TransactionsMode
-                  name={selectedBudget?.name}
-                  amount={transactionTotal}
-                  transactions={groupedTransactions}
-                />
-              </motion.div>
-
-            )}
+            <>
+              {loading ? (
+                <InlineLoader text="Loading Transactions" />
+              ) : (
+                <motion.div
+                  key="transactions"
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TransactionsMode
+                    name={selectedBudget?.name}
+                    amount={transactionTotal}
+                    transactions={groupedTransactions}
+                  />
+                </motion.div>
+              )}
             </>
           )}
         </AnimatePresence>
       </AppLayout>
 
-
       <MyModal showModal={openDialog} onClose={handleDialogClose}>
-        <h3>{editBudget ? "Edit Budget" : "Add Budget"}</h3>
+        <div
+          style={{
+            marginTop: 5,
+            marginBottom: 10,
+          }}
+        >
+          <h3>{editBudget ? "Edit Budget" : "Add Budget"}</h3>
+        </div>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -339,7 +416,6 @@ const Budgets = () => {
             categoryOptions={categoryOptions}
           />
         </motion.div>
-
       </MyModal>
     </>
   );

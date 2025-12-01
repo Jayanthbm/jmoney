@@ -20,12 +20,13 @@ import RemainingForPeriod from "./components/RemainingForPeriod";
 import StatCard from "../../components/Cards/StatCard";
 import SummaryView from "../../components/Views/SummaryView";
 import TopCategories from "./components/TopCategories";
-import { calculatePayDayInfo } from "../../utils";
+import { calculatePayDayInfo, getTransactionCachekeys } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import { MdSync } from "react-icons/md";
 import { FaCircleCheck } from "react-icons/fa6";
 import MySkeletion from "../../components/Loader/MySkeletion";
 
+const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
 const Overview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -224,6 +225,7 @@ const Overview = () => {
       let shouldSync = await needsTransactionSync();
       if (shouldSync) {
         const allTx = await loadTransactionsFromSupabase();
+        localStorage.setItem(LAST_TRANSACTION_FETCH, Date.now());
         calculateLocal(allTx);
       }
     }
