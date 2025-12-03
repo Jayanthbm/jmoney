@@ -15,6 +15,7 @@ import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
 import { isSameDay } from "date-fns";
 import { useMediaQuery } from "react-responsive";
+import MySkeletion from "../Loader/MySkeletion";
 
 const PayDayView = ({ title, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -73,7 +74,11 @@ const PayDayView = ({ title, onBack }) => {
     <AppLayout title={title} onBack={onBack}>
       <div className="align-right">
         {!isSameDay(selectedDate, today) && (
-          <Button onClick={goToToday} text={isMobile ? null : "Today"} icon={<MdToday />} />
+          <Button
+            onClick={goToToday}
+            text={isMobile ? null : "Today"}
+            icon={<MdToday />}
+          />
         )}
       </div>
 
@@ -104,9 +109,16 @@ const PayDayView = ({ title, onBack }) => {
       {/* Transactions */}
       <div className="transaction-list-wrapper">
         {loading ? (
-          <InlineLoader />
+          <>
+            <InlineLoader />
+            <MySkeletion count={1} keyName="payday-view" height={70} />
+          </>
         ) : filteredTx?.length === 0 ? (
-          <NoDataCard message="No transactions on this date" height="100" width="150" />
+          <NoDataCard
+            message="No transactions on this date"
+            height="100"
+            width="150"
+          />
         ) : (
           filteredTx?.map((tx) => (
             <TransactionCard key={tx.id} transaction={tx} />

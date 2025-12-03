@@ -50,7 +50,7 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
                       alt={payee_name}
                       className="transaction-payee-logo"
                     />
-                    <span className="payee-name">{payee_name}</span>
+                    <span className="transaction-payee-name">{payee_name}</span>
                   </>
                 )}
 

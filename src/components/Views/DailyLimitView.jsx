@@ -12,6 +12,7 @@ import { formatIndianNumber } from "../../utils";
 import { getAllTransactions } from "../../db/transactionDb";
 import { isToday } from "date-fns";
 import useTheme from "../../hooks/useTheme";
+import MySkeletion from "../Loader/MySkeletion";
 
 const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
   const [todayExpenses, setTodayExpenses] = useState([]);
@@ -115,15 +116,18 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
 
         {/* Today's Transactions */}
         <div className="transaction-list-wrapper">
+          <div className="date-summary-bar">
+            <div className="summary-date">Today</div>
+          </div>
           {loading ? (
-            <InlineLoader />
+            <>
+              <InlineLoader />
+              <MySkeletion count={3} keyName="daily-limit-view" height={70} />
+            </>
           ) : todayExpenses?.length === 0 ? (
             <NoDataCard message="No expenses today" height="150" width="150" />
           ) : (
             <>
-              <div className="date-summary-bar">
-                <div className="summary-date">Today</div>
-              </div>
               {todayExpenses?.map((tx) => (
                 <TransactionCard key={tx.id} transaction={tx} />
               ))}
