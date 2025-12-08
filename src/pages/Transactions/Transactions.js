@@ -10,10 +10,7 @@ import {
   getRelativeTime,
   getTransactionCachekeys,
 } from "../../utils";
-import {
-  loadTransactionsFromSupabase,
-  needsTransactionSync,
-} from "../../supabaseData";
+import { loadTransactionsFromSupabase } from "../../supabaseData";
 
 import AddTransaction from "../../components/Views/AddTransaction";
 import AppLayout from "../../components/Layouts/AppLayout";
