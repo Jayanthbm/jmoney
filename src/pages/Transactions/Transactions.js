@@ -10,7 +10,10 @@ import {
   getRelativeTime,
   getTransactionCachekeys,
 } from "../../utils";
-import { loadTransactionsFromSupabase, needsTransactionSync } from "../../supabaseData";
+import {
+  loadTransactionsFromSupabase,
+  needsTransactionSync,
+} from "../../supabaseData";
 
 import AddTransaction from "../../components/Views/AddTransaction";
 import AppLayout from "../../components/Layouts/AppLayout";
@@ -23,9 +26,7 @@ import SingleTransaction from "../../components/Views/SingleTransaction";
 import TransactionControls from "./TransactionControls";
 import TransactionFilters from "./TransactionFilters";
 import { get } from "idb-keyval";
-import {
-  getAllTransactions,
-} from "../../db/transactionDb";
+import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
 import { motion } from "framer-motion";
 
@@ -34,7 +35,6 @@ const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
 const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
 
 const Transactions = () => {
-
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [grouped, setGrouped] = useState({});
@@ -78,7 +78,9 @@ const Transactions = () => {
       const groupedData = groupBy(filtered, "date");
       Object.keys(groupedData).forEach((date) => {
         groupedData[date] = groupedData[date].sort(
-          (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+          (a, b) =>
+            new Date(b.transaction_timestamp) -
+            new Date(a.transaction_timestamp)
         );
       });
       setGrouped(groupedData);
@@ -113,29 +115,20 @@ const Transactions = () => {
           get(INCOME_CACHE_KEY),
           get(PAYEE_CACHE_KEY),
         ]);
-      let shouldSync = await needsTransactionSync();
-      if (shouldSync) {
-        console.log("Needs Sync..")
-        refreshData();
+      const sorted = await getAndSortTransactions();
+      setExpenseCategories(expenseCategories || []);
+      setIncomeCategories(incomeCategories || []);
+      setPayees(cachedPayees || []);
+      setAllTransactions(sorted);
+      const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
+      if (last) {
+        setLastSynced(Number(last));
       } else {
-        console.log("Fetching From cache..")
-        const sorted = await getAndSortTransactions();
-        setExpenseCategories(expenseCategories || []);
-        setIncomeCategories(incomeCategories || []);
-        setPayees(cachedPayees || []);
-        setAllTransactions(sorted);
-        const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
-        if (last) {
-          setLastSynced(Number(last));
-        } else {
-          const now = Date.now();
-          localStorage.setItem(LAST_TRANSACTION_FETCH, now);
-          setLastSynced(now);
-        }
+        const now = Date.now();
+        localStorage.setItem(LAST_TRANSACTION_FETCH, now);
+        setLastSynced(now);
       }
-
       setLoading(false);
-
     };
 
     init();
@@ -160,26 +153,34 @@ const Transactions = () => {
     setSelectedPayees([]);
   };
 
-  const payeeOptions = useMemo(() => payees.map((p) => ({
-    value: p.id, label: p.name
-  })), [payees]);
+  const payeeOptions = useMemo(
+    () =>
+      payees.map((p) => ({
+        value: p.id,
+        label: p.name,
+      })),
+    [payees]
+  );
 
-  const categoryOptions = useMemo(() => [
-    {
-      label: "Expense Categories",
-      options: (expenseCategories || []).map((cat) => ({
-        value: cat.id,
-        label: cat.name,
-      })),
-    },
-    {
-      label: "Income Categories",
-      options: (incomeCategories || []).map((cat) => ({
-        value: cat.id,
-        label: cat.name,
-      })),
-    },
-  ], [expenseCategories, incomeCategories]);
+  const categoryOptions = useMemo(
+    () => [
+      {
+        label: "Expense Categories",
+        options: (expenseCategories || []).map((cat) => ({
+          value: cat.id,
+          label: cat.name,
+        })),
+      },
+      {
+        label: "Income Categories",
+        options: (incomeCategories || []).map((cat) => ({
+          value: cat.id,
+          label: cat.name,
+        })),
+      },
+    ],
+    [expenseCategories, incomeCategories]
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -262,7 +263,9 @@ const Transactions = () => {
                 tabIndex={0}
                 aria-label="Clear search"
                 title="Clear search"
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") && setSearch("")
+                }
               >
                 <MdClose />
               </span>
