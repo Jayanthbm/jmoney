@@ -4,7 +4,7 @@
   "homepage": "https://jayanthbm.github.io/jmoney",
   "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2.90.1",
+    "@supabase/supabase-js": "^2.91.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.27.0",
     "fuse.js": "^7.1.0",
