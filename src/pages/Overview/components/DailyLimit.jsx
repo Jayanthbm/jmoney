@@ -13,6 +13,12 @@ const DailyLimit = ({ data, loading }) => {
 
   const subtitle = `Limit: ${formatIndianNumber(data?.daily_limit)}`;
 
+  let colorClass = "green-text";
+  let subheading = "REMAINING";
+  if (data?.remaining < 0) {
+    colorClass = "red-text";
+    subheading = "OVERSPENT";
+  }
   return (
     <OverviewCard title="Daily Limit" subtitle={subtitle}>
       <div className="daily-limit-container">
@@ -24,9 +30,9 @@ const DailyLimit = ({ data, loading }) => {
             <div className="daily-limit-section">
               {data?.remaining_percentage > 0 ? (
                 <>
-                  <div className="daily-limit-label">REMAINING</div>
-                  <div className="daily-limit-value green-text">
-                    {formatIndianNumber(data?.remaining || 0)}
+                  <div className="daily-limit-label">{subheading}</div>
+                  <div className={`daily-limit-value ${colorClass}`}>
+                    ₹ {formatIndianNumber(data?.remaining || 0)}
                   </div>
                 </>
               ) : (
@@ -62,12 +68,14 @@ const DailyLimit = ({ data, loading }) => {
                     : 100
                 }
                 text={
-                  data?.remaining_percentage > 0
+                  data?.remaining_percentage > 0 && data.remaining > 0
                     ? `${data.remaining_percentage}%`
                     : "⚠︎"
                 }
                 pathColor={
-                  data?.remaining_percentage > 0 ? "#3ecf8e" : "#ef4444"
+                  data?.remaining_percentage > 0 && data.remaining > 0
+                    ? "#3ecf8e"
+                    : "#ef4444"
                 }
                 fontSize={data?.remaining_percentage < 0 ? "1.1rem" : "0.8rem"}
                 textColor={

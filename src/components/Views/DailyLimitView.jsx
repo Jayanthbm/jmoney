@@ -37,6 +37,12 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
     fetchTodayExpenses();
   }, []);
 
+  let colorClass = "green-text";
+  let subheading = "REMAINING";
+  if (dailyLimitData?.remaining < 0) {
+    colorClass = "red-text";
+    subheading = "OVERSPENT";
+  }
   return (
     <AppLayout title={title} onBack={onBack}>
       <div className="daily-limit-view">
@@ -53,8 +59,8 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
               <div className="daily-limit-section">
                 {dailyLimitData?.remaining_percentage > 0 ? (
                   <>
-                    <div className="daily-limit-label">REMAINING</div>
-                    <div className="daily-limit-value green-text">
+                    <div className="daily-limit-label">{subheading}</div>
+                    <div className={`daily-limit-value ${colorClass}`}>
                       {formatIndianNumber(dailyLimitData?.remaining || 0)}
                     </div>
                   </>
@@ -89,12 +95,14 @@ const DailyLimitView = ({ dailyLimitData, title, onBack }) => {
                       : 100 || 0
                   }
                   text={
-                    dailyLimitData?.remaining_percentage > 0
+                    dailyLimitData?.remaining_percentage > 0 &&
+                    dailyLimitData.remaining > 0
                       ? `${dailyLimitData.remaining_percentage}%`
                       : "⚠︎"
                   }
                   pathColor={
-                    dailyLimitData?.remaining_percentage > 0
+                    dailyLimitData?.remaining_percentage > 0 &&
+                    dailyLimitData.remaining > 0
                       ? "#3ecf8e"
                       : "#ef4444"
                   }

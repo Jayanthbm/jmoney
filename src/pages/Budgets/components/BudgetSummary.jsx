@@ -2,7 +2,6 @@
 
 import BudgetCard from "../../../components/Cards/BudgetCard";
 import Button from "../../../components/Button/Button";
-import InlineLoader from "../../../components/Loader/InlineLoader";
 import { IoIosFunnel } from "react-icons/io";
 import NoDataCard from "../../../components/Cards/NoDataCard";
 import React from "react";

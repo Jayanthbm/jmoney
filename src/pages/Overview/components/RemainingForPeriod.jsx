@@ -9,7 +9,12 @@ import MySkeletion from "../../../components/Loader/MySkeletion";
 
 const RemainingForPeriod = ({ data, loading }) => {
   const cardStyles = { cursor: "default" };
-
+  let colorCode = "#3ecf8e";
+  let className = "big-income-text";
+  if (data?.spent_percentage > 100) {
+    colorCode = " #ef4444";
+    className = "big-expense-text";
+  }
   return (
     <OverviewCard
       title="Remaining for Period"
@@ -20,10 +25,10 @@ const RemainingForPeriod = ({ data, loading }) => {
         <MySkeletion count={2} keyName="remaining-for-period" />
       ) : (
         <div>
-          <div className="big-income-text">
+          <div className={className}>
             <MyCountUp end={data?.remaining || 0} />
           </div>
-          <ProgressBar value={data?.spent_percentage || 0} color="#3ecf8e" />
+          <ProgressBar value={data?.spent_percentage || 0} color={colorCode} />
         </div>
       )}
     </OverviewCard>

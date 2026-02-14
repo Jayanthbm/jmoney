@@ -8,7 +8,6 @@
   margin-bottom: 1.5rem;
 }
 
-
 .overview-card-wrapper {
   flex: 1 1 100%;
 }
@@ -22,6 +21,12 @@
 .big-income-text {
   font-size: 2rem;
   color: var(--income-color);
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+.big-expense-text {
+  font-size: 2rem;
+  color: var(--expense-color);
   font-weight: bold;
   margin-bottom: 3px;
 }
@@ -216,14 +221,12 @@
   text-align: center;
 }
 
-
 .transaction-list-wrapper {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
-
 
 .sub-section-heading {
   font-size: 1.25rem;
