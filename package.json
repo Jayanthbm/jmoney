@@ -6,7 +6,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.98.0",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.35.1",
+    "framer-motion": "^12.36.0",
     "fuse.js": "^7.1.0",
     "idb-keyval": "^6.2.2",
     "react": "^19.2.1",
