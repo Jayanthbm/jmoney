@@ -52,12 +52,18 @@ const Transactions = () => {
     setTimeout(() => {
       let filtered = [...allTransactions];
 
-      if (search.trim()) {
-        const fuse = new Fuse(filtered, {
-          keys: ["description"],
-          threshold: 0.3,
-        });
-        filtered = fuse.search(search.trim()).map((result) => result.item);
+      const searchVal = search.trim();
+      if (searchVal) {
+        if (/^-?\d+(\.\d+)?$/.test(searchVal)) {
+          const searchAmount = Number(searchVal);
+          filtered = filtered.filter((tx) => tx.amount === searchAmount);
+        } else {
+          const fuse = new Fuse(filtered, {
+            keys: ["description"],
+            threshold: 0.3,
+          });
+          filtered = fuse.search(searchVal).map((result) => result.item);
+        }
       }
 
       if (selectedCategories.length > 0) {
@@ -73,14 +79,17 @@ const Transactions = () => {
       }
 
       const groupedData = groupBy(filtered, "date");
-      Object.keys(groupedData).forEach((date) => {
-        groupedData[date] = groupedData[date].sort(
-          (a, b) =>
-            new Date(b.transaction_timestamp) -
-            new Date(a.transaction_timestamp)
-        );
-      });
-      setGrouped(groupedData);
+      const sortedGroupedData = {};
+      Object.keys(groupedData)
+        .sort((a, b) => new Date(b) - new Date(a))
+        .forEach((date) => {
+          sortedGroupedData[date] = groupedData[date].sort(
+            (a, b) =>
+              new Date(b.transaction_timestamp) -
+              new Date(a.transaction_timestamp)
+          );
+        });
+      setGrouped(sortedGroupedData);
       setHasGrouped(true);
       setFadeOut(false); // turn transition off after update
     }, 150); // syncs with CSS transition duration
