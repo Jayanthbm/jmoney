@@ -41,48 +41,73 @@ const GoalForm = ({ initialData, onSave, onCancel, saving }) => {
   return (
     <div className="goal-form">
       <div className="goal-form-fields">
-        <input
-          type="text"
-          placeholder="Name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="goal-form-input"
-        />
-        <input
-          type="text"
-          placeholder="Logo URL"
-          value={formData.logo}
-          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-          className="goal-form-input"
-        />
-        <input
-          type="number"
-          placeholder="Goal Amount"
-          value={formData.goal_amount}
-          onChange={(e) => setFormData({ ...formData, goal_amount: e.target.value })}
-          className="goal-form-input"
-        />
-        <input
-          type="number"
-          placeholder="Current Amount"
-          value={formData.current_amount}
-          onChange={(e) => setFormData({ ...formData, current_amount: e.target.value })}
-          className="goal-form-input"
-        />
+        <div className="input-group">
+          <label htmlFor="goal-name">Goal Name</label>
+          <input
+            id="goal-name"
+            type="text"
+            placeholder="e.g. Dream Car, Vacation"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="goal-form-input"
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="goal-logo">Logo URL/Emoji</label>
+          <input
+            id="goal-logo"
+            type="text"
+            placeholder="Image URL or Emoji"
+            value={formData.logo}
+            onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+            className="goal-form-input"
+          />
+        </div>
+
+        <div style={{ display: "flex", gap: "16px" }}>
+          <div className="input-group" style={{ flex: 1 }}>
+            <label htmlFor="goal-amount">Target Amount</label>
+            <input
+              id="goal-amount"
+              type="number"
+              placeholder="0.00"
+              value={formData.goal_amount}
+              onChange={(e) =>
+                setFormData({ ...formData, goal_amount: e.target.value })
+              }
+              className="goal-form-input"
+            />
+          </div>
+          <div className="input-group" style={{ flex: 1 }}>
+            <label htmlFor="current-amount">Current Savings</label>
+            <input
+              id="current-amount"
+              type="number"
+              placeholder="0.00"
+              value={formData.current_amount}
+              onChange={(e) =>
+                setFormData({ ...formData, current_amount: e.target.value })
+              }
+              className="goal-form-input"
+            />
+          </div>
+        </div>
       </div>
+
       <div className="goal-form-actions">
-        <Button
-          icon={<FaSave />}
-          text={saving ? "Saving..." : "Save"}
-          variant="success"
-          onClick={handleSubmit}
-          disabled={saving}
-        />
         <Button
           icon={<FaWindowClose />}
           text="Cancel"
-          variant="warning"
+          variant="light"
           onClick={onCancel}
+        />
+        <Button
+          icon={<FaSave />}
+          text={saving ? "Saving..." : "Save Goal"}
+          variant="success"
+          onClick={handleSubmit}
+          disabled={saving}
         />
       </div>
     </div>

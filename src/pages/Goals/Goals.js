@@ -2,6 +2,7 @@
 import "./Goals.css";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   addGoalInDb,
   deleteGoalInDb,
@@ -107,7 +108,12 @@ const Goals = () => {
       loading={!goals || loading}
       onRefresh={refreshData}
     >
-      <div className="goals-header">
+      <motion.div
+        className="goals-header"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="left-controls">
           <MySelect
             options={sortOptions}
@@ -124,27 +130,55 @@ const Goals = () => {
             aria-label="Add new goal"
           />
         </div>
-      </div>
-      <div className="goal-card-container">
-        {sortedGoals.map((goal) => {
-          const progress = goal.goal_amount
-            ? (goal.current_amount / goal.goal_amount) * 100
-            : 0;
-          return (
-            <div className="goal-card-wrapper" key={goal.id}>
-              <GoalCard
-                title={goal.name}
-                progress={progress}
-                logo={goal.logo}
-                target={goal.goal_amount}
-                current={goal.current_amount}
-                onEdit={() => handleDialogOpen(goal)}
-                onDelete={() => handleDelete(goal.id)}
-              />
-            </div>
-          );
-        })}
-      </div>
+      </motion.div>
+      <motion.div
+        className="goal-card-container"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+      >
+        <AnimatePresence mode="popLayout">
+          {sortedGoals.map((goal) => {
+            const progress = goal.goal_amount
+              ? (goal.current_amount / goal.goal_amount) * 100
+              : 0;
+            return (
+              <motion.div
+                className="goal-card-wrapper"
+                key={goal.id}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 20 },
+                  show: { opacity: 1, scale: 1, y: 0 },
+                }}
+                layout
+                exit={{
+                  opacity: 0,
+                  scale: 0.95,
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <GoalCard
+                  title={goal.name}
+                  progress={progress}
+                  logo={goal.logo}
+                  target={goal.goal_amount}
+                  current={goal.current_amount}
+                  onEdit={() => handleDialogOpen(goal)}
+                  onDelete={() => handleDelete(goal.id)}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
       <MyModal showModal={isModalOpen} onClose={handleDialogClose}>
         <h3>{editGoal ? "Edit Goal" : "Add Goal"}</h3>
         <GoalForm
