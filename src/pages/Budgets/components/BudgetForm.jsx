@@ -1,4 +1,4 @@
-// src/pages/Budgets/components/BudgetForm.js
+// src/pages/Budgets/components/BudgetForm.jsx
 
 import { FaSave, FaWindowClose } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
@@ -58,51 +58,74 @@ const BudgetForm = ({
 
   return (
     <div className="budget-dialog-content">
-      <input
-        type="text"
-        placeholder="Name"
-        value={formData.name}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      />
+      <div className="input-group">
+        <label>Budget Name</label>
+        <input
+          type="text"
+          placeholder="e.g. Groceries"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+      </div>
 
-      <input
-        type="number"
-        placeholder="Amount"
-        value={formData.amount}
-        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-      />
+      <div className="input-group">
+        <label>Amount (₹)</label>
+        <input
+          type="number"
+          placeholder="0.00"
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+        />
+      </div>
 
-      <select
-        value={formData.interval}
-        onChange={(e) => setFormData({ ...formData, interval: e.target.value })}
-      >
-        <option value="Month">Month</option>
-      </select>
-      <input
-        type="date"
-        value={formData.start_date}
-        onChange={(e) =>
-          setFormData({ ...formData, start_date: e.target.value })
-        }
-      />
+      <div className="input-row">
+        <div className="input-group">
+          <label>Interval</label>
+          <select
+            value={formData.interval}
+            onChange={(e) =>
+              setFormData({ ...formData, interval: e.target.value })
+            }
+          >
+            <option value="Month">Month</option>
+          </select>
+        </div>
 
-      <input
-        type="text"
-        placeholder="Logo URL"
-        value={formData.logo}
-        onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-      />
+        <div className="input-group">
+          <label>Start Date</label>
+          <input
+            type="date"
+            value={formData.start_date}
+            onChange={(e) =>
+              setFormData({ ...formData, start_date: e.target.value })
+            }
+          />
+        </div>
+      </div>
 
-      <MySelect
-        isMulti
-        options={categoryOptions}
-        placeholder="Select Categories"
-        value={formData.categories}
-        onChange={(selected) =>
-          setFormData({ ...formData, categories: selected })
-        }
-        isSearchable={true}
-      />
+      <div className="input-group">
+        <label>Categories (Select Multiple)</label>
+        <MySelect
+          isMulti
+          options={categoryOptions}
+          placeholder="Select Categories"
+          value={formData.categories}
+          onChange={(selected) =>
+            setFormData({ ...formData, categories: selected })
+          }
+          isSearchable={true}
+        />
+      </div>
+
+      <div className="input-group">
+        <label>Logo URL (Optional)</label>
+        <input
+          type="text"
+          placeholder="https://..."
+          value={formData.logo}
+          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+        />
+      </div>
 
       <div className="budget-dialog-actions">
         <Button

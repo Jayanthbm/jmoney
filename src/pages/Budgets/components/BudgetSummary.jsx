@@ -14,7 +14,16 @@ const BudgetSummary = ({
   handleDialogOpen,
   handleDelete,
   onBudgetCardClick,
+  selectedYear,
+  selectedMonth,
 }) => {
+  const now = new Date();
+  const isCurrentMonth =
+    selectedYear &&
+    selectedMonth &&
+    now.getFullYear() === selectedYear.value &&
+    now.getMonth() === selectedMonth.value;
+
   return (
     <div className="budget-card-container">
       {loading ? (
@@ -48,6 +57,7 @@ const BudgetSummary = ({
                 onClick={() => {
                   onBudgetCardClick(budget);
                 }}
+                isCurrentMonth={isCurrentMonth}
               />
             </div>
           ))}

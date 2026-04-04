@@ -284,24 +284,34 @@ const Budgets = () => {
         onRefresh={refreshData}
         onBack={viewMode === "summary" ? null : () => handleBackToSummary()}
       >
-        <div className="sync-status">
+        <motion.div
+          className="sync-status"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
           <small className="sync-time">
             {syncing ? (
-              <span style={{ display: "flex", gap: 5 }}>
+              <span style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <MdSync className="syncing-icon" />
                 Recalculating Budget
               </span>
             ) : (
-              <span style={{ display: "flex", gap: 5 }}>
-                <FaCircleCheck />
-                Calcualted:&nbsp;{getRelativeTime(lastSynced)}
+              <span style={{ display: "flex", gap: 5, alignItems: "center" }}>
+                <FaCircleCheck color="#3ecf8e" />
+                Calculated:&nbsp;{getRelativeTime(lastSynced)}
               </span>
             )}
           </small>
-        </div>
+        </motion.div>
         {!loading && (
           <>
-            <div className="budgets-header">
+            <motion.div
+              className="budgets-header"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="left-buttons">
                 {viewMode === "summary" && (
                   <MySelect
@@ -325,15 +335,21 @@ const Budgets = () => {
                   />
                 )}
               </div>
-            </div>
+            </motion.div>
             {/* Month/Year Selectors */}
-            <MonthYearSelector
-              yearValue={year}
-              onYearChange={(opt) => setYear(opt)}
-              monthValue={month}
-              onMonthChange={(opt) => setMonth(opt)}
-              disabled={loading}
-            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <MonthYearSelector
+                yearValue={year}
+                onYearChange={(opt) => setYear(opt)}
+                monthValue={month}
+                onMonthChange={(opt) => setMonth(opt)}
+                disabled={loading}
+              />
+            </motion.div>
           </>
         )}
 
@@ -346,6 +362,8 @@ const Budgets = () => {
               handleDialogOpen={handleDialogOpen}
               handleDelete={handleDelete}
               onBudgetCardClick={onBudgetCardClick}
+              selectedYear={year}
+              selectedMonth={month}
             />
           )}
           {viewMode === "info" && selectedBudget && (
