@@ -32,7 +32,7 @@ const DailyLimit = ({ data, loading }) => {
                 <>
                   <div className="daily-limit-label">{subheading}</div>
                   <div className={`daily-limit-value ${colorClass}`}>
-                    ₹ {formatIndianNumber(data?.remaining || 0)}
+                    {formatIndianNumber(data?.remaining || 0)}
                   </div>
                 </>
               ) : (
