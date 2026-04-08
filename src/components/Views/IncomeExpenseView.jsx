@@ -1,17 +1,6 @@
 // src/components/Views/IncomeExpenseView.jsx
 
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { FaChartBar, FaEyeSlash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import {
   formatIndianNumber,
@@ -20,20 +9,15 @@ import {
 } from "../../utils";
 
 import AppLayout from "../Layouts/AppLayout";
-import Button from "../Button/Button";
 import InlineLoader from "../Loader/InlineLoader";
 import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
-import { useMediaQuery } from "react-responsive";
-import useTheme from "../../hooks/useTheme";
 
 const IncomeExpenseView = ({ title, onBack }) => {
-  const theme = useTheme();
   const [loading, setLoading] = useState(true);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -55,18 +39,9 @@ const IncomeExpenseView = ({ title, onBack }) => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
-  const [chartData, setChartData] = useState([]);
-  const [showChart, setShowChart] = useState(true);
 
   const [showExpenseList, setShowExpenseList] = useState(true);
   const [showIncomeList, setShowIncomeList] = useState(true);
-
-  useEffect(() => {
-    if (isMobile) {
-      setShowExpenseList(showChart ? false : true);
-      setShowIncomeList(showChart ? false : true);
-    }
-  }, [isMobile, showChart]);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -140,37 +115,6 @@ const IncomeExpenseView = ({ title, onBack }) => {
         .sort((a, b) => b.percentage - a.percentage);
       setIncomeSummary(incomeSummaryArray);
 
-      const filteredByYear = allTx.filter((tx) => {
-        const date = new Date(tx.date);
-        return date.getFullYear() === year.value;
-      });
-      // Build monthly data for bar chart (ensure all 12 months are present)
-      const monthlyChartData = Array.from({ length: 12 }, (_, monthIndex) => {
-        const monthIncome = filteredByYear
-          .filter(
-            (tx) =>
-              tx.type === "Income" &&
-              new Date(tx.date).getMonth() === monthIndex
-          )
-          .reduce((sum, tx) => sum + tx.amount, 0);
-
-        const monthExpense = filteredByYear
-          .filter(
-            (tx) =>
-              tx.type === "Expense" &&
-              new Date(tx.date).getMonth() === monthIndex
-          )
-          .reduce((sum, tx) => sum + tx.amount, 0);
-
-        return {
-          full_name: getMonthOptions()[monthIndex].label,
-          name: monthIndex + 1,
-          income: monthIncome,
-          expense: monthExpense,
-        };
-      });
-
-      setChartData(monthlyChartData);
       setLoading(false);
     };
 
@@ -194,64 +138,6 @@ const IncomeExpenseView = ({ title, onBack }) => {
             onMonthChange={(opt) => setMonth(opt)}
             disabled={loading}
           />
-          {!loading && (
-            <div className="align-right">
-              <Button text={
-                isMobile ? null : showChart ? "Hide Chart" : "Show Chart"
-              } onClick={() => {
-                setShowChart(!showChart)
-              }}
-                icon={showChart ? <FaEyeSlash /> : <FaChartBar />}
-              />
-            </div>
-          )}
-
-          {showChart && (
-            <div className="chart-wrapper">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-                  onClick={(e) => {
-                    if (e?.activeLabel) {
-                      const selectedMonthIndex = e.activeLabel - 1;
-                      setMonth({
-                        value: selectedMonthIndex,
-                        label: getMonthOptions()[selectedMonthIndex].label,
-                      });
-                    }
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey={isMobile ? "name" : "full_name"} />
-                  <YAxis hide={isMobile} />
-                  <Tooltip
-                    formatter={(value) => formatIndianNumber(value)}
-                    labelFormatter={(label) => {
-                      const index = label - 1;
-                      return getMonthOptions()[index]?.label || "";
-                    }}
-                    contentStyle={{
-                      backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
-                      borderColor: theme === "dark" ? "#333" : "#ccc",
-                      borderRadius: "6px",
-                      boxShadow: "0 0 10px rgba(0,0,0,0.15)",
-                    }}
-                    itemStyle={{
-                      color: theme === "dark" ? "#e0e0e0" : "#333",
-                    }}
-                    labelStyle={{
-                      color: theme === "dark" ? "#cccccc" : "#000000",
-                      fontWeight: "bold",
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="income" fill="#3ecf8e" name="Income" />
-                  <Bar dataKey="expense" fill="#ef4444" name="Expense" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
 
           {loading ? (
             <InlineLoader />
@@ -260,11 +146,22 @@ const IncomeExpenseView = ({ title, onBack }) => {
           ) : (
             <>
               {/* Category Summary */}
-              <div className="date-summary-bar">
-                <div className="summary-date" onClick={() => {
-                  setShowExpenseList(!showExpenseList)
-                }} style={{ cursor: 'pointer' }}>Expense</div>
-                    <div className="red-text">
+              <div
+                className="date-summary-bar"
+                style={{
+                  marginTop: "2rem",
+                }}
+              >
+                <div
+                  className="summary-date"
+                  onClick={() => {
+                    setShowExpenseList(!showExpenseList);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Expense
+                </div>
+                <div className="red-text">
                   {formatIndianNumber(totalExpense)}
                 </div>
               </div>
@@ -289,7 +186,10 @@ const IncomeExpenseView = ({ title, onBack }) => {
                             );
                             setSelectedCategory(category.category_name);
                             setSelectedCategoryAmount(category.amount);
-                            sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
+                            sessionStorage.setItem(
+                              "transactionsViewMode",
+                              JSON.stringify(true)
+                            );
                           }}
                         />
                       );
@@ -307,10 +207,16 @@ const IncomeExpenseView = ({ title, onBack }) => {
           ) : (
             <>
               <div className="date-summary-bar">
-                <div className="summary-date" onClick={() => {
-                  setShowIncomeList(!showIncomeList)
-                }} style={{ cursor: 'pointer' }}>Income</div>
-                    <div className="green-text">
+                <div
+                  className="summary-date"
+                  onClick={() => {
+                    setShowIncomeList(!showIncomeList);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Income
+                </div>
+                <div className="green-text">
                   {formatIndianNumber(totalIncome)}
                 </div>
               </div>

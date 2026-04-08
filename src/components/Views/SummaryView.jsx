@@ -1,26 +1,17 @@
 // src/components/Views/SummaryView.jsx
 
-import { FaChartBar, FaEyeSlash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-import {
-  getMonthOptions,
-  getTopCategoryColors,
-  groupAndSortTransactions,
-} from "../../utils";
+import { getMonthOptions, groupAndSortTransactions } from "../../utils";
 
 import AppLayout from "../Layouts/AppLayout";
-import Button from "../Button/Button";
-import DonutChart from "../Charts/DonutChart";
 import InlineLoader from "../Loader/InlineLoader";
 import MonthYearSelector from "./MonthYearSelector";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
-import { useMediaQuery } from "react-responsive";
 
 const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("Expense");
   const [month, setMonth] = useState({
@@ -37,14 +28,6 @@ const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
-  const [showSummaryChart, setShowSummaryChart] = useState(true);
-
-  useEffect(() => {
-    if (isMobile) {
-      setShowSummaryChart(false);
-    }
-  }, [isMobile]);
-
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
@@ -101,12 +84,10 @@ const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
     fetchAndSummarize();
   }, [type, month, year, showMonthSelect]);
 
-
   const handleBack = () => {
     setViewMode("summary");
     setTransactions({});
   };
-
 
   return (
     <>
@@ -146,28 +127,6 @@ const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
               <NoDataCard message="No transactions" height="150" width="200" />
             ) : (
               <>
-                <div className="align-right">
-                  <Button text={
-                    isMobile ? null : showSummaryChart ? "Hide Chart" : "Show Chart"
-                  } onClick={() => {
-                    setShowSummaryChart(!showSummaryChart)
-                  }}
-                    icon={showSummaryChart ? <FaEyeSlash /> : <FaChartBar />}
-                  />
-                </div>
-                {showSummaryChart && (
-                  <>
-                    {/* Donut Chart */}
-                    <DonutChart
-                      data={categorySummary?.map((cat) => ({
-                        value: cat?.percentage,
-                        name: cat?.category_name,
-                      }))}
-                      colors={getTopCategoryColors(categorySummary.length)}
-                    />
-                  </>
-                )}
-
                 <div className="transaction-card-list">
                   {categorySummary?.map((category, index) => {
                     return (
@@ -181,7 +140,10 @@ const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
                           );
                           setSelectedCategory(category.category_name);
                           setSelectedCategoryAmount(category.amount);
-                          sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
+                          sessionStorage.setItem(
+                            "transactionsViewMode",
+                            JSON.stringify(true)
+                          );
                         }}
                       />
                     );
@@ -196,12 +158,11 @@ const SummaryView = ({ title, showMonthSelect = true, onBack }) => {
       {viewMode === "transactions" && (
         <AppLayout title={title} onBack={handleBack}>
           <TransactionsMode
-          name={selectedCategory}
-          amount={selectedCategoryAmount}
-          transactions={transactions}
-        />
+            name={selectedCategory}
+            amount={selectedCategoryAmount}
+            transactions={transactions}
+          />
         </AppLayout>
-
       )}
     </>
   );
