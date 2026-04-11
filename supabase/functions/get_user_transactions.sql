@@ -23,8 +23,9 @@ returns table (
   payee_logo text,
   type text,
   category_id uuid,
-  payee_id uuid
-  product_link text
+  payee_id uuid,
+  product_link text,
+  category_app_icon text
 )
 language sql
 as $$
@@ -41,7 +42,8 @@ as $$
     t.type,
     t.category_id,
     t.payee_id,
-    t.product_link
+    t.product_link,
+    c.app_icon as category_app_icon
   from transactions t
   left join categories c on c.id = t.category_id
   left join payees p on p.id = t.payee_id
