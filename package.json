@@ -4,8 +4,10 @@
   "homepage": "https://jayanthbm.github.io/jmoney",
   "private": true,
   "dependencies": {
+    "@m3e/react": "^2.3.2",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "react-router-dom": "^7.14.2",
     "react-scripts": "5.0.1"
   },
   "scripts": {

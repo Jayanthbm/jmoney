@@ -1,11 +1,8 @@
 import React from 'react';
+import AppRouter from './AppRouter';
 
 function App() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif' }}>
-      <h1>Hello World</h1>
-    </div>
-  );
+  return <AppRouter />;
 }
 
 export default App;
