@@ -73,6 +73,7 @@ const Settings = () => {
   const handleCloudSync = async () => {
     if (!user) return;
     setSyncing(true);
+    window.dispatchEvent(new CustomEvent('sync-start'));
     try {
       await runFullSync(user.id, (status) => {
         message.loading({ content: `Syncing: ${status}`, key: 'sync' });
@@ -85,6 +86,7 @@ const Settings = () => {
       message.error({ content: 'Sync failed.', key: 'sync' });
     } finally {
       setSyncing(false);
+      window.dispatchEvent(new CustomEvent('sync-end'));
     }
   };
 

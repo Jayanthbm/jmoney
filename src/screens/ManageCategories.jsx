@@ -94,6 +94,7 @@ const ManageCategories = () => {
   const handleSync = async () => {
     if (!user) return;
     setSyncing(true);
+    window.dispatchEvent(new CustomEvent('sync-start'));
     try {
       await syncCategories(user.id);
       message.success('Categories synced successfully');
@@ -106,6 +107,7 @@ const ManageCategories = () => {
       message.error('Sync failed');
     } finally {
       setSyncing(false);
+      window.dispatchEvent(new CustomEvent('sync-end'));
     }
   };
 

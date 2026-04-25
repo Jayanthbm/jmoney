@@ -92,6 +92,7 @@ const ManagePayees = () => {
   const handleSync = async () => {
     if (!user) return;
     setSyncing(true);
+    window.dispatchEvent(new CustomEvent('sync-start'));
     try {
       await syncPayees(user.id);
       message.success('Payees synced successfully');
@@ -103,6 +104,7 @@ const ManagePayees = () => {
       message.error('Sync failed');
     } finally {
       setSyncing(false);
+      window.dispatchEvent(new CustomEvent('sync-end'));
     }
   };
 

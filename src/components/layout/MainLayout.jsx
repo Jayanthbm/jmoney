@@ -1,5 +1,5 @@
 // src/components/layout/MainLayout.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Drawer, theme, Typography } from 'antd';
 import {
   MenuFoldOutlined,
@@ -29,6 +29,19 @@ const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDarkMode } = useTheme();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  useEffect(() => {
+    const handleSyncStart = () => setIsSyncing(true);
+    const handleSyncEnd = () => setIsSyncing(false);
+
+    window.addEventListener('sync-start', handleSyncStart);
+    window.addEventListener('sync-end', handleSyncEnd);
+    return () => {
+      window.removeEventListener('sync-start', handleSyncStart);
+      window.removeEventListener('sync-end', handleSyncEnd);
+    };
+  }, []);
 
   const {
     token: { colorBgContainer },
@@ -63,7 +76,15 @@ const MainLayout = () => {
       case '/budgets':
         return { title: 'Budgets' };
       case '/goals':
-        return { title: 'Goals' };
+        return { 
+          title: 'Goals',
+          subtitle: () => {
+            const time = localStorage.getItem(`${STORAGE_KEYS.LAST_SYNC_GOALS}${user?.id}`);
+            return time ? `Last synced ${getRelativeTime(time)}` : 'Never synced';
+          },
+          rightIcon: <SyncOutlined />,
+          onRightClick: () => window.dispatchEvent(new CustomEvent('trigger-sync-goals'))
+        };
       case '/reports':
         return { title: 'Reports' };
       case '/settings':
@@ -191,7 +212,7 @@ const MainLayout = () => {
             {config.rightIcon && (
               <Button 
                 shape="circle" 
-                icon={config.rightIcon} 
+                icon={React.isValidElement(config.rightIcon) ? React.cloneElement(config.rightIcon, { spin: isSyncing }) : config.rightIcon} 
                 onClick={config.onRightClick}
                 type="text"
               />
