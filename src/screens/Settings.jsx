@@ -120,14 +120,14 @@ const Settings = () => {
         {
           title: 'Categories',
           description: 'Manage Categories',
-          onClick: () => navigate('/settings/categories'),
+          onClick: () => navigate('/categories'),
           suffix: <RightOutlined style={{ opacity: 0.3 }} />,
           icon: <TagsOutlined />
         },
         {
           title: 'Payees',
           description: 'Manage Payees',
-          onClick: () => navigate('/settings/payees'),
+          onClick: () => navigate('/payees'),
           suffix: <RightOutlined style={{ opacity: 0.3 }} />,
           icon: <ContactsOutlined />
         },
