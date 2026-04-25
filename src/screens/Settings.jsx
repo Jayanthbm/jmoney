@@ -134,7 +134,7 @@ const Settings = () => {
         {
           title: 'Quick Transactions',
           description: 'Setup shortcuts for frequent transactions',
-          onClick: () => navigate('/settings/quick-transactions'),
+          onClick: () => navigate('/quick-transactions'),
           suffix: <RightOutlined style={{ opacity: 0.3 }} />,
           icon: <ThunderboltOutlined />
         },

@@ -43,7 +43,7 @@ const AppRoutes = () => {
         <Route path="settings" element={<Settings />} />
         <Route path="categories" element={<ManageCategories />} />
         <Route path="payees" element={<ManagePayees />} />
-        <Route path="settings/quick-transactions" element={<ManageQuickTransactions />} />
+        <Route path="quick-transactions" element={<ManageQuickTransactions />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

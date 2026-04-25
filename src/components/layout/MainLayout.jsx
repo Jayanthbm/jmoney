@@ -68,6 +68,12 @@ const MainLayout = () => {
         return { title: 'Reports' };
       case '/settings':
         return { title: 'Settings' };
+      case '/quick-transactions':
+        return {
+          title: 'Quick Transactions',
+          showBack: true,
+          backPath: '/settings'
+        };
       case '/categories':
         return {
           title: 'Categories',
