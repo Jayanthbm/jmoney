@@ -9,7 +9,8 @@ create or replace function public.get_user_transactions(
   filter_month int default null,
   filter_year int default null,
   filter_category_id uuid default null,
-  filter_payee_id uuid default null
+  filter_payee_id uuid default null,
+  after_tid bigint default 0
 )
 returns table (
   date date,
@@ -25,7 +26,10 @@ returns table (
   category_id uuid,
   payee_id uuid,
   product_link text,
-  category_app_icon text
+  category_app_icon text,
+  latitude numeric,
+  longitude numeric,
+  tid bigint
 )
 language sql
 as $$
@@ -43,24 +47,61 @@ as $$
     t.category_id,
     t.payee_id,
     t.product_link,
-    c.app_icon as category_app_icon
+    c.app_icon as category_app_icon,
+    t.latitude,
+    t.longitude,
+    t.tid
   from transactions t
-  left join categories c on c.id = t.category_id
-  left join payees p on p.id = t.payee_id
+  left join categories c
+    on c.id = t.category_id
+  left join payees p
+    on p.id = t.payee_id
   where t.user_id = uid
     and (
-      search_term = '' or
-      t.description ilike '%' || search_term || '%' or
-      c.name ilike '%' || search_term || '%' or
-      p.name ilike '%' || search_term || '%'
+      after_tid = 0
+      or t.tid > after_tid
     )
-    and (filter_date is null or date(t.transaction_timestamp) = filter_date)
-    and (filter_start_date is null or t.transaction_timestamp >= filter_start_date)
-    and (filter_end_date is null or t.transaction_timestamp <= filter_end_date)
-    and (filter_month is null or extract(month from t.transaction_timestamp) = filter_month)
-    and (filter_year is null or extract(year from t.transaction_timestamp) = filter_year)
-    and (filter_category_id is null or t.category_id = filter_category_id)
-    and (filter_payee_id is null or t.payee_id = filter_payee_id)
-  order by t.transaction_timestamp desc
-  limit limit_count offset offset_count;
+    and (
+      search_term = ''
+      or t.description ilike '%' || search_term || '%'
+      or c.name ilike '%' || search_term || '%'
+      or p.name ilike '%' || search_term || '%'
+    )
+    and (
+      filter_date is null
+      or date(t.transaction_timestamp) = filter_date
+    )
+    and (
+      filter_start_date is null
+      or t.transaction_timestamp >= filter_start_date
+    )
+    and (
+      filter_end_date is null
+      or t.transaction_timestamp <= filter_end_date
+    )
+    and (
+      filter_month is null
+      or extract(month from t.transaction_timestamp) = filter_month
+    )
+    and (
+      filter_year is null
+      or extract(year from t.transaction_timestamp) = filter_year
+    )
+    and (
+      filter_category_id is null
+      or t.category_id = filter_category_id
+    )
+    and (
+      filter_payee_id is null
+      or t.payee_id = filter_payee_id
+    )
+  order by
+    case
+      when after_tid > 0 then t.tid
+    end asc,
+    case
+      when after_tid = 0 then t.transaction_timestamp
+    end desc
+  limit limit_count
+  offset offset_count;
 $$;
