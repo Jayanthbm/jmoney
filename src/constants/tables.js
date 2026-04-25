@@ -1,0 +1,18 @@
+// src/constants/tables.js
+
+export const TABLES = {
+  TRANSACTIONS: 'transactions',
+  CATEGORIES: 'categories',
+  PAYEES: 'payees',
+  BUDGETS: 'budgets',
+  GOALS: 'goals',
+  PROFILES: 'profiles',
+  ATTACHMENTS: 'attachments',
+  SYNC_LOG: 'sync_log',
+};
+
+export const SYNC_STATUS = {
+  PENDING: 'pending',
+  SYNCED: 'synced',
+  FAILED: 'failed',
+};
