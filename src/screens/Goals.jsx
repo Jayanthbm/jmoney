@@ -23,6 +23,7 @@ import { STORAGE_KEYS, APP_CONFIG } from '../constants';
 import { formatCurrency } from '../utils/formatters';
 import CategoryIcon from '../components/common/CategoryIcon';
 import AddGoalSheet from '../components/common/AddGoalSheet';
+import CachedImage from '../components/common/CachedImage';
 
 const { Title, Text } = Typography;
 
@@ -213,19 +214,16 @@ const Goals = () => {
                       flexShrink: 0,
                       overflow: 'hidden'
                     }}>
-                      {goal.logo ? (
-                        <img 
-                          src={goal.logo} 
-                          alt={goal.name} 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/56?text=Goal';
-                          }}
-                        />
-                      ) : (
-                        <CategoryIcon iconName="MdStars" size={28} />
-                      )}
+                      <CachedImage
+                        src={goal.logo}
+                        alt={goal.name}
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover'
+                        }}
+                        fallbackIcon={<CategoryIcon iconName="MdStars" size={28} style={{ opacity: 0.5 }} />}
+                      />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

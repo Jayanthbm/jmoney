@@ -33,6 +33,7 @@ import { getRelativeTime } from '../utils/dateUtils';
 import { STORAGE_KEYS } from '../constants';
 import AddPayeeSheet from '../components/common/AddPayeeSheet';
 import { pushLocalPayees } from '../services/sync/payeeSync';
+import CachedImage from '../components/common/CachedImage';
 
 const { Title, Text } = Typography;
 
@@ -224,16 +225,21 @@ const ManagePayees = () => {
                     <div style={{ marginBottom: 12 }}>
                       <Avatar
                         size={64}
-                        src={payee.logo}
                         style={{
                           backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
                           color: token.colorPrimary,
                           fontSize: 24,
                           fontWeight: 'bold',
-                          border: `2px solid ${token.colorBorderSecondary}`
+                          border: `2px solid ${token.colorBorderSecondary}`,
+                          overflow: 'hidden'
                         }}
                       >
-                        {getInitials(payee.name)}
+                        <CachedImage
+                          src={payee.logo}
+                          alt={payee.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          fallbackIcon={getInitials(payee.name)}
+                        />
                       </Avatar>
                     </div>
                     <Title level={5} style={{ margin: 0, fontSize: 14 }}>{payee.name}</Title>
@@ -249,14 +255,19 @@ const ManagePayees = () => {
                       <List.Item.Meta
                         avatar={
                           <Avatar
-                            src={payee.logo}
                             style={{
                               backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
                               color: token.colorPrimary,
-                              fontWeight: 'bold'
+                              fontWeight: 'bold',
+                              overflow: 'hidden'
                             }}
                           >
-                            {getInitials(payee.name)}
+                            <CachedImage
+                              src={payee.logo}
+                              alt={payee.name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              fallbackIcon={getInitials(payee.name)}
+                            />
                           </Avatar>
                         }
                         title={payee.name}
