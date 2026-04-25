@@ -164,7 +164,7 @@ const ManageQuickTransactions = () => {
             alignItems: 'center',
             justifyContent: 'flex-start'
           }}>
-            <Space wrap>
+            <Space wrap style={{ marginLeft: 'auto' }}>
               <Input
                 placeholder="Search shortcuts"
                 prefix={<SearchOutlined style={{ opacity: 0.5 }} />}

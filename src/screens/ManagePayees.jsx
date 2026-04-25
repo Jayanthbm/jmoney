@@ -156,9 +156,9 @@ const ManagePayees = () => {
             flexWrap: 'wrap',
             gap: 16,
             alignItems: 'center',
-            justifyContent: 'flex-start'
+            justifyContent: 'space-between'
           }}>
-            <Space wrap>
+            <Space wrap style={{ marginLeft: 'auto' }}>
               <Input
                 placeholder="Search payees"
                 prefix={<SearchOutlined style={{ opacity: 0.5 }} />}
@@ -172,7 +172,6 @@ const ManagePayees = () => {
                 value={sortBy}
                 onChange={setSortBy}
                 style={{ width: 140 }}
-                size="large"
                 options={[
                   { label: <><SortAscendingOutlined /> Name A-Z</>, value: 'name-asc' },
                   { label: <><SortAscendingOutlined style={{ transform: 'scaleY(-1)' }} /> Name Z-A</>, value: 'name-desc' },
@@ -182,7 +181,6 @@ const ManagePayees = () => {
               <Segmented
                 value={viewType}
                 onChange={setViewType}
-                size="large"
                 options={[
                   { value: 'card', icon: <AppstoreOutlined /> },
                   { value: 'list', icon: <BarsOutlined /> },
