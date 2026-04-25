@@ -9,6 +9,7 @@ import {
   Select, 
   InputNumber, 
   Segmented,
+  ConfigProvider,
   theme 
 } from 'antd';
 import { 
@@ -89,14 +90,26 @@ const AddQuickTransactionSheet = ({ open, onCancel, onSave, loading, initialValu
         </Form.Item>
 
         <Form.Item name="type" label="Type">
-          <Segmented
-            block
-            options={['Expense', 'Income']}
-            onChange={(val) => {
-              setType(val);
-              form.setFieldValue('type', val);
+          <ConfigProvider
+            theme={{
+              components: {
+                Segmented: {
+                  itemSelectedBg: type === 'Expense' ? '#ff4d4f' : '#52c41a',
+                  itemSelectedColor: '#fff',
+                },
+              },
             }}
-          />
+          >
+            <Segmented
+              block
+              options={['Expense', 'Income']}
+              value={type}
+              onChange={(val) => {
+                setType(val);
+                form.setFieldValue('type', val);
+              }}
+            />
+          </ConfigProvider>
         </Form.Item>
 
         <Form.Item

@@ -8,6 +8,7 @@ import {
   Segmented, 
   Space, 
   Typography, 
+  ConfigProvider,
   theme 
 } from 'antd';
 import { 
@@ -63,15 +64,36 @@ const AddCategorySheet = ({ open, onCancel, onSave, loading }) => {
         initialValues={{ type: 'Expense' }}
       >
         <Form.Item
-          name="type"
-          label="Category Type"
-          rules={[{ required: true }]}
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
         >
-          <Segmented
-            options={['Expense', 'Income']}
-            block
-            size="large"
-          />
+          {({ getFieldValue }) => {
+            const type = getFieldValue('type');
+            return (
+              <Form.Item
+                name="type"
+                label="Category Type"
+                rules={[{ required: true }]}
+              >
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Segmented: {
+                        itemSelectedBg: type === 'Expense' ? '#ff4d4f' : '#52c41a',
+                        itemSelectedColor: '#fff',
+                      },
+                    },
+                  }}
+                >
+                  <Segmented
+                    options={['Expense', 'Income']}
+                    block
+                    size="large"
+                  />
+                </ConfigProvider>
+              </Form.Item>
+            );
+          }}
         </Form.Item>
 
         <Form.Item

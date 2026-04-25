@@ -13,6 +13,7 @@ import {
   Tooltip,
   Empty,
   Badge,
+  ConfigProvider,
   theme
 } from 'antd';
 import { 
@@ -167,15 +168,26 @@ const ManageCategories = () => {
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <Segmented
-              value={typeFilter}
-              onChange={setTypeFilter}
-              options={[
-                { label: 'Expense', value: 'Expense' },
-                { label: 'Income', value: 'Income' },
-              ]}
-              size="large"
-            />
+            <ConfigProvider
+              theme={{
+                components: {
+                  Segmented: {
+                    itemSelectedBg: typeFilter === 'Expense' ? '#ff4d4f' : '#52c41a',
+                    itemSelectedColor: '#fff',
+                  },
+                },
+              }}
+            >
+              <Segmented
+                value={typeFilter}
+                onChange={setTypeFilter}
+                options={[
+                  { label: 'Expense', value: 'Expense' },
+                  { label: 'Income', value: 'Income' },
+                ]}
+                size="large"
+              />
+            </ConfigProvider>
 
             <Space wrap>
               <Input
