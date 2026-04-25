@@ -157,7 +157,7 @@ const ManagePayees = () => {
     <div>
       {/* Content */}
       <div style={{ padding: '16px 24px' }}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           {/* Controls */}
           <div style={{
             display: 'flex',
@@ -220,7 +220,7 @@ const ManagePayees = () => {
                       textAlign: 'center',
                       background: token.colorBgContainer
                     }}
-                    bodyStyle={{ padding: '20px 12px' }}
+                    styles={{ body: { padding: '20px 12px' } }}
                   >
                     <div style={{ marginBottom: 12 }}>
                       <Avatar
@@ -247,35 +247,42 @@ const ManagePayees = () => {
                 ))}
               </div>
             ) : (
-              <Card bodyStyle={{ padding: 0 }} style={{ borderRadius: 12, overflow: 'hidden' }}>
-                <List
-                  dataSource={filteredPayees}
-                  renderItem={payee => (
-                    <List.Item style={{ padding: '12px 20px' }}>
-                      <List.Item.Meta
-                        avatar={
-                          <Avatar
-                            style={{
-                              backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
-                              color: token.colorPrimary,
-                              fontWeight: 'bold',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <CachedImage
-                              src={payee.logo}
-                              alt={payee.name}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              fallbackIcon={getInitials(payee.name)}
-                            />
-                          </Avatar>
-                        }
-                        title={payee.name}
-                        description={`Payee ID: ${payee.id.slice(0, 8)}...`}
+              <Card styles={{ body: { padding: 0 } }} style={{ borderRadius: 12, overflow: 'hidden' }}>
+                {filteredPayees.map((payee, idx) => (
+                  <div 
+                    key={payee.id}
+                    style={{ 
+                      padding: '12px 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 16,
+                      borderBottom: idx < filteredPayees.length - 1 ? `1px solid ${token.colorBorderSecondary}` : 'none'
+                    }}
+                  >
+                    <Avatar
+                      style={{
+                        backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
+                        color: token.colorPrimary,
+                        fontWeight: 'bold',
+                        overflow: 'hidden',
+                        flexShrink: 0
+                      }}
+                    >
+                      <CachedImage
+                        src={payee.logo}
+                        alt={payee.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        fallbackIcon={getInitials(payee.name)}
                       />
-                    </List.Item>
-                  )}
-                />
+                    </Avatar>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 500, color: token.colorText }}>{payee.name}</div>
+                      <div style={{ fontSize: 12, color: token.colorTextDescription }}>
+                        Payee ID: {payee.id.slice(0, 8)}...
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </Card>
             )
           ) : (

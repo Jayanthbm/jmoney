@@ -20,7 +20,7 @@ const ConfirmationSheet = ({
       placement="bottom"
       onClose={onCancel}
       open={open}
-      height="auto"
+      size="auto"
       closable={true}
       closeIcon={<CloseOutlined style={{ fontSize: 16 }} />}
       styles={{
@@ -29,7 +29,7 @@ const ConfirmationSheet = ({
       }}
     >
       <div style={{ textAlign: 'center' }}>
-        <Space direction="vertical" align="center" size="middle" style={{ width: '100%' }}>
+        <Space orientation="vertical" align="center" size="middle" style={{ width: '100%' }}>
           <div style={{ 
             width: 48, 
             height: 48, 

@@ -10,6 +10,7 @@ import {
   message,
   Divider,
   Space,
+  theme,
   Segmented
 } from 'antd';
 import {
@@ -41,6 +42,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const { token } = theme.useToken();
   const [syncing, setSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState('');
   const [resetSheetOpen, setResetSheetOpen] = useState(false);
@@ -191,40 +193,55 @@ const Settings = () => {
               overflow: 'hidden',
               boxShadow: isDarkMode ? 'none' : '0 1px 2px rgba(0,0,0,0.03)'
             }}
-            bodyStyle={{ padding: 0 }}
+            styles={{ body: { padding: 0 } }}
           >
-            <List
-              itemLayout="horizontal"
-              dataSource={section.items}
-              renderItem={(item) => (
-                <List.Item
-                  style={{
-                    padding: '12px 16px',
-                    cursor: item.onClick ? 'pointer' : 'default',
-                    transition: 'background 0.2s'
-                  }}
-                  onClick={item.onClick}
-                  actions={item.action ? [item.action] : []}
-                  onMouseEnter={(e) => {
-                    if (item.onClick) e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (item.onClick) e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <List.Item.Meta
-                    avatar={item.icon && <div style={{
+            {section.items.map((item, itemIdx) => (
+              <div
+                key={item.title}
+                style={{
+                  padding: '12px 16px',
+                  cursor: item.onClick ? 'pointer' : 'default',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: itemIdx < section.items.length - 1 ? `1px solid ${token.colorBorderSecondary}` : 'none'
+                }}
+                onClick={item.onClick}
+                onMouseEnter={(e) => {
+                  if (item.onClick) e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)';
+                }}
+                onMouseLeave={(e) => {
+                  if (item.onClick) e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
+                  {item.icon && (
+                    <div style={{
                       fontSize: 18,
                       color: item.danger ? '#ff4d4f' : (isDarkMode ? '#aaa' : '#555'),
                       marginTop: 4
-                    }}>{item.icon}</div>}
-                    title={<Text delete={false} style={{ color: item.danger ? '#ff4d4f' : 'inherit' }}>{item.title}</Text>}
-                    description={item.description}
-                  />
+                    }}>
+                      {item.icon}
+                    </div>
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div>
+                      <Text strong={false} style={{ color: item.danger ? '#ff4d4f' : 'inherit' }}>
+                        {item.title}
+                      </Text>
+                    </div>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {item.description}
+                    </Text>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {item.action}
                   {item.suffix}
-                </List.Item>
-              )}
-            />
+                </div>
+              </div>
+            ))}
           </Card>
         </div>
       ))}

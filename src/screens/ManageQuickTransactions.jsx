@@ -160,7 +160,7 @@ const ManageQuickTransactions = () => {
     <div style={{ minHeight: '100%', background: isDarkMode ? '#141414' : '#f5f5f5' }}>
       {/* Content */}
       <div style={{ padding: '16px 24px' }}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           {/* Controls */}
           <div style={{
             display: 'flex',
@@ -223,6 +223,7 @@ const ManageQuickTransactions = () => {
                       borderRadius: 12,
                       background: token.colorBgContainer
                     }}
+                    styles={{ body: { padding: 8 } }} // Add styles.body if needed, or check existing Card usage
                     actions={[
                       <EditOutlined key="edit" onClick={() => {
                         setEditingItem(item);
@@ -246,13 +247,34 @@ const ManageQuickTransactions = () => {
                 ))}
               </div>
             ) : (
-              <Card bodyStyle={{ padding: 0 }} style={{ borderRadius: 12, overflow: 'hidden' }}>
-                <List
-                  dataSource={filteredItems}
-                  renderItem={item => (
-                    <List.Item
-                      style={{ padding: '12px 20px' }}
-                      actions={[
+              <Card styles={{ body: { padding: 0 } }} style={{ borderRadius: 12, overflow: 'hidden' }}>
+                {filteredItems.map((item, idx) => {
+                  const category = categories[item.category_id];
+                  return (
+                    <div 
+                      key={item.id}
+                      style={{ 
+                        padding: '12px 20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                        borderBottom: idx < filteredItems.length - 1 ? `1px solid ${token.colorBorderSecondary}` : 'none'
+                      }}
+                    >
+                      <Avatar
+                        icon={<ThunderboltOutlined />}
+                        style={{ 
+                          backgroundColor: item.type === 'Income' ? '#52c41a' : '#ff4d4f',
+                          flexShrink: 0
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 500, color: token.colorText }}>{item.name}</div>
+                        <div style={{ fontSize: 12, color: token.colorTextDescription }}>
+                          {category?.name || 'No Category'} • {item.type}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
                         <Button
                           type="text"
                           icon={<EditOutlined />}
@@ -260,7 +282,7 @@ const ManageQuickTransactions = () => {
                             setEditingItem(item);
                             setAddSheetOpen(true);
                           }}
-                        />,
+                        />
                         <Popconfirm
                           title="Delete shortcut?"
                           onConfirm={() => handleDelete(item.id)}
@@ -269,21 +291,10 @@ const ManageQuickTransactions = () => {
                         >
                           <Button type="text" danger icon={<DeleteOutlined />} />
                         </Popconfirm>
-                      ]}
-                    >
-                      <List.Item.Meta
-                        avatar={
-                          <Avatar
-                            icon={<ThunderboltOutlined />}
-                            style={{ backgroundColor: item.type === 'Income' ? '#52c41a' : '#ff4d4f' }}
-                          />
-                        }
-                        title={item.name}
-                        description={renderItemContent(item)}
-                      />
-                    </List.Item>
-                  )}
-                />
+                      </div>
+                    </div>
+                  );
+                })}
               </Card>
             )
           ) : (

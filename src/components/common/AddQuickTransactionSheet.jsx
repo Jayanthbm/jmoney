@@ -59,7 +59,7 @@ const AddQuickTransactionSheet = ({ open, onCancel, onSave, loading, initialValu
       placement="bottom"
       onClose={onCancel}
       open={open}
-      height="auto"
+      size="auto"
       closable={true}
       closeIcon={<CloseOutlined style={{ fontSize: 16 }} />}
       styles={{

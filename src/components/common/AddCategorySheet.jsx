@@ -47,7 +47,7 @@ const AddCategorySheet = ({ open, onCancel, onSave, loading }) => {
       placement="bottom"
       onClose={onCancel}
       open={open}
-      height="auto"
+      size="auto"
       closable={true}
       closeIcon={<CloseOutlined style={{ fontSize: 16 }} />}
       styles={{

@@ -43,7 +43,7 @@ const AddGoalSheet = ({ open, onCancel, onSave, loading, initialValues }) => {
       placement="bottom"
       onClose={onCancel}
       open={open}
-      height="auto"
+      size="auto"
       closable={true}
       closeIcon={<CloseOutlined style={{ fontSize: 16 }} />}
       styles={{

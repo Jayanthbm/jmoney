@@ -152,7 +152,7 @@ const Goals = () => {
           percent={percent} 
           showInfo={false} 
           strokeColor={percent >= 100 ? '#52c41a' : token.colorPrimary}
-          trailColor={isDarkMode ? 'rgba(255,255,255,0.05)' : '#f0f0f0'}
+          railColor={isDarkMode ? 'rgba(255,255,255,0.05)' : '#f0f0f0'}
         />
         {percent < 100 && (
           <div style={{ marginTop: 4 }}>
@@ -168,7 +168,7 @@ const Goals = () => {
   return (
     <div>
       <div style={{ padding: '16px 24px' }}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Select
               value={sortBy}
@@ -200,7 +200,7 @@ const Goals = () => {
                   key={goal.id}
                   hoverable
                   style={{ borderRadius: 16, background: token.colorBgContainer }}
-                  bodyStyle={{ padding: 20 }}
+                  styles={{ body: { padding: 20 } }}
                 >
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 20 }}>
                     <div style={{

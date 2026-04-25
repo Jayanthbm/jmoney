@@ -159,7 +159,7 @@ const ManageCategories = () => {
     <div>
       {/* Content */}
       <div style={{ padding: '16px 24px' }}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           {/* Controls */}
           <div style={{
             display: 'flex',
@@ -243,7 +243,7 @@ const ManageCategories = () => {
                       textAlign: 'center',
                       background: token.colorBgContainer
                     }}
-                    bodyStyle={{ padding: '20px 12px' }}
+                    styles={{ body: { padding: '20px 12px' } }}
                   >
                     <div style={{
                       fontSize: 32,
@@ -264,32 +264,37 @@ const ManageCategories = () => {
                 ))}
               </div>
             ) : (
-              <Card bodyStyle={{ padding: 0 }} style={{ borderRadius: 12, overflow: 'hidden' }}>
-                <List
-                  dataSource={filteredCategories}
-                  renderItem={cat => (
-                    <List.Item style={{ padding: '12px 20px' }}>
-                      <List.Item.Meta
-                        avatar={
-                          <div style={{
-                            fontSize: 24,
-                            width: 40,
-                            height: 40,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
-                            borderRadius: 8
-                          }}>
-                            <CategoryIcon iconName={cat.icon} size={24} />
-                          </div>
-                        }
-                        title={cat.name}
-                        description={cat.type}
-                      />
-                    </List.Item>
-                  )}
-                />
+              <Card styles={{ body: { padding: 0 } }} style={{ borderRadius: 12, overflow: 'hidden' }}>
+                {filteredCategories.map((cat, idx) => (
+                  <div 
+                    key={cat.id}
+                    style={{ 
+                      padding: '12px 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 16,
+                      borderBottom: idx < filteredCategories.length - 1 ? `1px solid ${token.colorBorderSecondary}` : 'none'
+                    }}
+                  >
+                    <div style={{
+                      fontSize: 24,
+                      width: 40,
+                      height: 40,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: isDarkMode ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
+                      borderRadius: 8,
+                      flexShrink: 0
+                    }}>
+                      <CategoryIcon iconName={cat.icon} size={24} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 500, color: token.colorText }}>{cat.name}</div>
+                      <div style={{ fontSize: 12, color: token.colorTextDescription }}>{cat.type}</div>
+                    </div>
+                  </div>
+                ))}
               </Card>
             )
           ) : (
