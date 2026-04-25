@@ -72,7 +72,15 @@ const MainLayout = () => {
       case '/':
         return { title: 'Dashboard' };
       case '/transactions':
-        return { title: 'Transactions' };
+        return { 
+          title: 'Transactions',
+          subtitle: () => {
+            const time = localStorage.getItem(`${STORAGE_KEYS.LAST_SYNC_TRANSACTIONS}${user?.id}`);
+            return time ? `Last synced ${getRelativeTime(time)}` : 'Never synced';
+          },
+          rightIcon: <SyncOutlined />,
+          onRightClick: () => window.dispatchEvent(new CustomEvent('trigger-sync-transactions'))
+        };
       case '/budgets':
         return { title: 'Budgets' };
       case '/goals':
