@@ -177,15 +177,16 @@ const MainLayout = () => {
       <Layout style={{
         marginLeft: collapsed ? 0 : 200,
         transition: 'all 0.2s',
-        marginBottom: collapsed ? 64 : 0
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         <Header style={{
           padding: '0 24px',
           background: colorBgContainer,
           display: 'flex',
           alignItems: 'center',
-          position: 'sticky',
-          top: 0,
+          flexShrink: 0,
           zIndex: 99,
           width: '100%',
           boxShadow: isDarkMode ? '0 1px 0 rgba(255,255,255,0.05)' : '0 1px 0 rgba(0,0,0,0.05)',
@@ -221,8 +222,11 @@ const MainLayout = () => {
         </Header>
         <Content
           style={{
-            minHeight: 280,
-            overflow: 'auto',
+            flex: 1,
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            paddingBottom: collapsed ? 80 : 24, // Extra space for mobile bottom bar
+            background: isDarkMode ? '#141414' : '#f5f5f5',
           }}
         >
           <Outlet />

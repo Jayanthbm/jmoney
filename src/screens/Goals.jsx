@@ -165,7 +165,7 @@ const Goals = () => {
   };
 
   return (
-    <div style={{ minHeight: '100%', background: isDarkMode ? '#141414' : '#f5f5f5' }}>
+    <div>
       <div style={{ padding: '16px 24px' }}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

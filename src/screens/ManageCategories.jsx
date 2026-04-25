@@ -155,7 +155,7 @@ const ManageCategories = () => {
   }, [categories, searchQuery, typeFilter, sortBy]);
 
   return (
-    <div style={{ minHeight: '100%', background: isDarkMode ? '#141414' : '#f5f5f5' }}>
+    <div>
       {/* Content */}
       <div style={{ padding: '16px 24px' }}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
