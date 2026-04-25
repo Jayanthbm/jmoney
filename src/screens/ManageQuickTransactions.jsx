@@ -50,7 +50,12 @@ const ManageQuickTransactions = () => {
   // Filters and Views
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name-asc');
-  const [viewType, setViewType] = useState('card'); // card, list
+  const [viewType, setViewType] = useState(localStorage.getItem('qt_view_type') || 'card'); // card, list
+
+  const handleViewChange = (type) => {
+    setViewType(type);
+    localStorage.setItem('qt_view_type', type);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -186,7 +191,7 @@ const ManageQuickTransactions = () => {
 
               <Segmented
                 value={viewType}
-                onChange={setViewType}
+                onChange={handleViewChange}
                 options={[
                   { value: 'card', icon: <AppstoreOutlined /> },
                   { value: 'list', icon: <BarsOutlined /> },

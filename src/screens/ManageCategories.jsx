@@ -55,7 +55,12 @@ const ManageCategories = () => {
   const [typeFilter, setTypeFilter] = useState('Expense'); // Expense, Income
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name-asc');
-  const [viewType, setViewType] = useState('card'); // card, list
+  const [viewType, setViewType] = useState(localStorage.getItem('categories_view_type') || 'card'); // card, list
+
+  const handleViewChange = (type) => {
+    setViewType(type);
+    localStorage.setItem('categories_view_type', type);
+  };
 
   // Fetch categories from Dexie
   const fetchCategories = async () => {
@@ -192,7 +197,7 @@ const ManageCategories = () => {
 
               <Segmented
                 value={viewType}
-                onChange={setViewType}
+                onChange={handleViewChange}
                 options={[
                   { value: 'card', icon: <AppstoreOutlined /> },
                   { value: 'list', icon: <BarsOutlined /> },
