@@ -26,6 +26,8 @@ const SingleTransaction = ({
     category_id,
     payee_id,
     product_link,
+    latitude,
+    longitude,
   } = transaction;
 
   const [updatedAmount, setUpdatedAmount] = useState(amount);
@@ -40,6 +42,10 @@ const SingleTransaction = ({
   );
   const [selectedCategory, setSelectedCategory] = useState(category_id);
   const [selectedPayee, setSelectedPayee] = useState(payee_id);
+
+  const [combinedLocation, setCombinedLocation] = useState(
+    latitude && longitude ? `${latitude}, ${longitude}` : ""
+  );
 
   const categoryOptions = (
     type === "Expense" ? expenseCategories : incomeCategories
@@ -56,6 +62,17 @@ const SingleTransaction = ({
   const [isSaving, setIsSaving] = useState(false);
   const handleSave = async () => {
     setIsSaving(true);
+
+    let finalLatitude = null;
+    let finalLongitude = null;
+
+    if (combinedLocation.trim()) {
+      const parts = combinedLocation.split(",").map((v) => v.trim());
+
+      finalLatitude = parts[0] || null;
+      finalLongitude = parts[1] || null;
+    }
+
     const updatedData = {
       amount: updatedAmount,
       description: updatedDescription,
@@ -63,6 +80,8 @@ const SingleTransaction = ({
       category_id: selectedCategory,
       payee_id: selectedPayee,
       product_link: updatedProductLink,
+      latitude: finalLatitude,
+      longitude: finalLongitude,
     };
 
     // Optimistic UI update
@@ -147,6 +166,17 @@ const SingleTransaction = ({
             onChange={(e) => setUpdatedProductLink(e.target.value)}
             className="input"
             placeholder="https://..."
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Location</label>
+          <input
+            type="text"
+            value={combinedLocation}
+            onChange={(e) => setCombinedLocation(e.target.value)}
+            className="input"
+            placeholder="12.9716, 77.5946"
           />
         </div>
 

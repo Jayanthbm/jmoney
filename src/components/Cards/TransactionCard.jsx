@@ -6,6 +6,7 @@ import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
 
 import React from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
   const {
@@ -19,7 +20,14 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
     transaction_timestamp,
     percentage = null,
     product_link = null,
+    latitude = null,
+    longitude = null,
   } = transaction;
+
+  const googleMapsLink =
+    latitude && longitude
+      ? `https://www.google.com/maps?q=${latitude},${longitude}`
+      : null;
 
   return (
     <div className="transaction-card" onClick={onCardClick}>
@@ -31,8 +39,10 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
         >
           {renderIcon(category_icon)}
         </div>
+
         <div className="transaction-details">
           <div className="category-name">{category_name}</div>
+
           {description && <div className="description">{description}</div>}
 
           {transaction_timestamp && (
@@ -40,37 +50,49 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
               {formatTimestamp(transaction_timestamp)}
             </div>
           )}
-          <div className="payee-info">
-            {(payee_logo || product_link) && (
-              <>
-                {payee_logo && (
-                  <>
-                    <img
-                      src={payee_logo}
-                      alt={payee_name}
-                      className="transaction-payee-logo"
-                    />
-                    <span className="transaction-payee-name">{payee_name}</span>
-                  </>
-                )}
 
-                {product_link && (
-                  <a
-                    href={product_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#007bff", cursor: "pointer" }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FaExternalLinkAlt
-                      size={14}
-                      color="#007bff"
-                      title="Product Link"
-                    />
-                  </a>
-                )}
-              </>
-            )}
+          <div className="payee-info">
+            <div className="payee-left">
+              {payee_logo && (
+                <img
+                  src={payee_logo}
+                  alt={payee_name}
+                  className="transaction-payee-logo"
+                />
+              )}
+
+              {payee_name && (
+                <span className="transaction-payee-name">{payee_name}</span>
+              )}
+            </div>
+
+            <div className="payee-actions">
+              {product_link && (
+                <a
+                  href={product_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Product Link"
+                  className="action-link product-link"
+                >
+                  <FaExternalLinkAlt size={14} />
+                </a>
+              )}
+
+              {googleMapsLink && (
+                <a
+                  href={googleMapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Open Location"
+                  className="action-link map-link"
+                >
+                  <FaLocationDot size={16} />
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -83,6 +105,7 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
         >
           {formatIndianNumber(Number(amount))}
         </div>
+
         {percentage !== null && (
           <div className="transaction-percentage">{percentage}%</div>
         )}

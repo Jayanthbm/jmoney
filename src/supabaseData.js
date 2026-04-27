@@ -121,6 +121,9 @@ export const updateTransaction = async (id, payload, options = {}) => {
     type: category?.type || "Expense",
     date: payload.transaction_timestamp.split("T")[0],
     product_link: payload.product_link || null,
+    latitude: payload.latitude !== undefined ? payload.latitude || null : null,
+    longitude:
+      payload.longitude !== undefined ? payload.longitude || null : null,
   };
 
   // 1. Update in IndexedDB immediately
