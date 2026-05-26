@@ -8,7 +8,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.40.0",
     "fuse.js": "^7.3.0",
-    "idb-keyval": "^6.2.2",
+    "idb-keyval": "^6.2.4",
     "react": "^19.2.5",
     "react-calendar": "^6.0.1",
     "react-countup": "^6.5.3",
