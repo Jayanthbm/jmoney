@@ -74,33 +74,39 @@ const TransactionCard = ({
               )}
             </div>
 
-            <div className="payee-actions">
-              {product_link && (
-                <a
-                  href={product_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Product Link"
-                  className="action-link product-link"
-                >
-                  <FaExternalLinkAlt size={14} />
-                </a>
-              )}
+            {(product_link || googleMapsLink) && (
+              <div className="payee-actions">
+                <div className="action-slot">
+                  {product_link && (
+                    <a
+                      href={product_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Product Link"
+                      className="action-link product-link"
+                    >
+                      <FaExternalLinkAlt size={14} />
+                    </a>
+                  )}
+                </div>
 
-              {googleMapsLink && (
-                <a
-                  href={googleMapsLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Open Location"
-                  className="action-link map-link"
-                >
-                  <FaLocationDot size={16} />
-                </a>
-              )}
-            </div>
+                <div className="action-slot">
+                  {googleMapsLink && (
+                    <a
+                      href={googleMapsLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Open Location"
+                      className="action-link map-link"
+                    >
+                      <FaLocationDot size={16} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
