@@ -15,31 +15,6 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.sync-status {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  padding: 0 5px;
-}
-
-.sync-time {
-  background: var(--card-bg, #fff);
-  padding: 6px 12px;
-  border-radius: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  font-size: 0.75rem;
-  color: var(--text-color, #666);
-  border: 1px solid var(--border-color, #eaeaea);
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.sync-time:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
 /* Dialog Styling */
 
 .budget-dialog-content {

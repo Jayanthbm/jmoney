@@ -8,7 +8,11 @@ import React from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 
-const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
+const TransactionCard = ({
+  transaction,
+  onCardClick = () => {},
+  onCardDoubleClick = () => {},
+}) => {
   const {
     amount,
     category_name,
@@ -30,7 +34,11 @@ const TransactionCard = ({ transaction, onCardClick = () => {} }) => {
       : null;
 
   return (
-    <div className="transaction-card" onClick={onCardClick}>
+    <div
+      className="transaction-card"
+      onClick={onCardClick}
+      onDoubleClick={onCardDoubleClick}
+    >
       <div className="transaction-left">
         <div
           className={`transaction-icon ${
