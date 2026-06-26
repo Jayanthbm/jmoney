@@ -5,17 +5,21 @@ import "react-calendar/dist/Calendar.css";
 import React, { useEffect, useState } from "react";
 import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
 
+import AppLayout from "../Layouts/AppLayout";
 import Button from "../Button/Button";
 import Calendar from "react-calendar";
+import InlineLoader from "../Loader/InlineLoader";
 import { MdToday } from "react-icons/md";
 import NoDataCard from "../Cards/NoDataCard";
 import TransactionCard from "../Cards/TransactionCard";
 import { getAllTransactions } from "../../db/transactionDb";
 import { isSameDay } from "date-fns";
 import { useMediaQuery } from "react-responsive";
+import MySkeletion from "../Loader/MySkeletion";
 
-const PayDayView = () => {
+const PayDayView = ({ title, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
   const [filteredTx, setFilteredTx] = useState([]);
@@ -25,6 +29,7 @@ const PayDayView = () => {
 
   useEffect(() => {
     const fetchTransactions = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
 
       if (allTx.length > 0) {
@@ -38,11 +43,12 @@ const PayDayView = () => {
         .filter((tx) => isSameDay(new Date(tx.date), selectedDate))
         .sort(
           (a, b) =>
-            new Date(a.transaction_timestamp) -
-            new Date(b.transaction_timestamp)
+            new Date(b.transaction_timestamp) -
+            new Date(a.transaction_timestamp)
         );
 
       setFilteredTx(txForDate);
+      setLoading(false);
     };
 
     fetchTransactions();
@@ -65,10 +71,14 @@ const PayDayView = () => {
   const netTotal = incomeTotal - expenseTotal;
 
   return (
-    <div>
+    <AppLayout title={title} onBack={onBack}>
       <div className="align-right">
         {!isSameDay(selectedDate, today) && (
-          <Button onClick={goToToday} text={isMobile ? null : "Today"} icon={<MdToday />} />
+          <Button
+            onClick={goToToday}
+            text={isMobile ? null : "Today"}
+            icon={<MdToday />}
+          />
         )}
       </div>
 
@@ -98,15 +108,24 @@ const PayDayView = () => {
 
       {/* Transactions */}
       <div className="transaction-list-wrapper">
-        {filteredTx?.length === 0 ? (
-          <NoDataCard message="No transactions on this date" height="100" width="150" />
+        {loading ? (
+          <>
+            <InlineLoader />
+            <MySkeletion count={1} keyName="payday-view" height={70} />
+          </>
+        ) : filteredTx?.length === 0 ? (
+          <NoDataCard
+            message="No transactions on this date"
+            height="100"
+            width="150"
+          />
         ) : (
           filteredTx?.map((tx) => (
             <TransactionCard key={tx.id} transaction={tx} />
           ))
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

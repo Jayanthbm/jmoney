@@ -42,6 +42,9 @@
   overflow: hidden;
 }
 
+.content {
+  overflow-y: auto;
+}
 /* Sidebar (desktop only) */
 .sidebar {
   width: 220px;
@@ -87,7 +90,7 @@
 .content {
   flex: 1;
   padding-left: 0.9rem;
-    padding-right: 0.9rem;
+  padding-right: 0.9rem;
     padding-bottom: 0.9rem;
     padding-top: 0rem;
   overflow-y: auto;
@@ -163,4 +166,24 @@
   .mobile-only {
     display: none !important;
   }
+}
+/* WebKit-based browsers (Chrome, Safari, Edge) */
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+  /* Optional */
+}
+
+.content::-webkit-scrollbar-thumb {
+  background-color: var(--border-color, #ccc);
+  border-radius: 10px;
+}
+
+/* Firefox */
+.content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color, #ccc) transparent;
 }

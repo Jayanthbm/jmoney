@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import ScrollToTop from "./ScrollToTop";
 import { supabase } from "../../supabaseClient";
 import { updateThemeColorMetaTag } from "../../utils/themeUtils";
 
@@ -124,13 +125,16 @@ const MainLayout = ({ children }) => {
               className={`footer-nav-item ${
                 selected === item.path ? "active" : ""
               }`}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path)
+              }}
             >
               <div className="footer-icon">{item.icon}</div>
               <div className="footer-label">{item.label}</div>
             </div>
           ))}
       </footer>
+      <ScrollToTop scrollContainerSelector=".content" />
     </div>
   );
 };

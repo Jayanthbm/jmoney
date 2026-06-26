@@ -8,6 +8,7 @@ import {
   MdCompareArrows,
   MdHome,
   MdPeople,
+  MdPerson,
   MdSubscriptions,
 } from "react-icons/md";
 import React, { useEffect, useState } from "react";
@@ -18,27 +19,16 @@ import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsVie
 import PayeesView from "../../components/Views/PayeesView";
 import ReportCard from "../../components/Cards/ReportCard";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
+import SummaryByPayee from "../../components/Views/SummaryByPayee";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
 
 const reportsList = [
   {
-    title: "Transactions By Category",
-    description: "See the complete history about a category",
-    icon: <MdCategory size={28} />,
-    view: "transactionsByCategory",
-  },
-  {
-    title: "Yearly Summary",
-    description: "Review your yearly financial performance",
-    icon: <MdCalendarToday size={28} />,
-    view: "yearlySummary",
-  },
-  {
-    title: "Income vs Expense",
-    description: "Compare how much you earned vs spent",
-    icon: <MdCompareArrows size={28} />,
-    view: "incomeVsExpense",
+    title: "Monthly Living Costs",
+    description: "Track your monthly essential expenses",
+    icon: <MdHome size={28} />,
+    view: "monthlyLivingCosts",
   },
   {
     title: "Subscription and Bills",
@@ -47,17 +37,42 @@ const reportsList = [
     view: "subscriptionAndBills",
   },
   {
+    title: "Transactions By Payee",
+    description: "See the complete history about a payee",
+    icon: <MdPerson size={28} />,
+    view: "transactionsByPayee",
+  },
+  {
+    title: "Transactions By Category",
+    description: "See the complete history about a category",
+    icon: <MdCategory size={28} />,
+    view: "transactionsByCategory",
+  },
+  {
+    title: "Monthly Summary",
+    description: "Review your monthly financial performance",
+    icon: <MdCalendarToday size={28} />,
+    view: "monthlySummary",
+  },
+  {
+    title: "Income vs Expense",
+    description: "Compare how much you earned vs spent",
+    icon: <MdCompareArrows size={28} />,
+    view: "incomeVsExpense",
+  },
+  {
+    title: "Yearly Summary",
+    description: "Review your yearly financial performance",
+    icon: <MdCalendarToday size={28} />,
+    view: "yearlySummary",
+  },
+  {
     title: "Payees",
     description: "Analyze transactions by payees",
     icon: <MdPeople size={28} />,
     view: "payees",
   },
-  {
-    title: "Monthly Living Costs",
-    description: "Track your monthly essential expenses",
-    icon: <MdHome size={28} />,
-    view: "monthlyLivingCosts",
-  },
+
 ];
 
 const Reports = () => {
@@ -69,35 +84,39 @@ const Reports = () => {
     setLoading(false);
   }, []);
 
+
+  const onBack = () => {
+    setViewMode('reportList');
+    setTitle('Reports');
+  }
+
   const renderView = () => {
     switch (viewMode) {
-      case "transactionsByCategory":
-        return <SummaryView />;
-      case "yearlySummary":
-        return <YearlySummaryView />;
-      case "incomeVsExpense":
-        return <IncomeExpenseView />;
-      case "subscriptionAndBills":
-        return <SubscriptionBillsView />;
-      case "payees":
-        return <PayeesView />;
       case "monthlyLivingCosts":
-        return <MonthlyLivingCostsView />;
+        return <MonthlyLivingCostsView title={title} onBack={onBack} />;
+      case "subscriptionAndBills":
+        return <SubscriptionBillsView title={title} onBack={onBack} />;
+      case "transactionsByPayee":
+        return <SummaryByPayee title={title} onBack={onBack} />
+      case "transactionsByCategory":
+        return <SummaryView title={title} onBack={onBack} />;
+      case "monthlySummary":
+        return <YearlySummaryView showMonth={true} title={title} onBack={onBack} />;
+      case "incomeVsExpense":
+        return <IncomeExpenseView title={title} onBack={onBack} />;
+      case "yearlySummary":
+        return <YearlySummaryView title={title} onBack={onBack} />;
+      case "payees":
+        return <PayeesView title={title} onBack={onBack} />;
       default:
         return null;
     }
   };
-
   return (
-    <AppLayout title={title} loading={loading} onBack={
-      viewMode !== 'reportList' ? () => {
-        setViewMode('reportList');
-        setTitle('Reports');
-      } : null
-    }>
-
+    <>
       {viewMode === "reportList" ? (
-        <div className="report-container">
+        <AppLayout title={title} loading={loading}>
+          <div className="report-container">
           {reportsList.map((report, index) => (
             <div
               key={report.title}
@@ -116,10 +135,11 @@ const Reports = () => {
             </div>
           ))}
         </div>
+        </AppLayout>
       ) : (
         renderView()
       )}
-    </AppLayout>
+    </>
   );
 };
 

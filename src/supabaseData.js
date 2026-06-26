@@ -2,12 +2,14 @@
 
 import { addBudget, deleteBudget, updateBudget } from "./db/budgetDb";
 import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
-import { del, set } from "idb-keyval";
 import {
+  clearTransactions,
   deleteTransactionInDb,
+  getAllTransactions,
   storeTransactions,
   updateTransactionInDb,
 } from "./db/transactionDb";
+import { del, set } from "idb-keyval";
 import { getGoalsCacheKey, getSupabaseUserIdFromLocalStorage } from "./utils";
 
 import { supabase } from "./supabaseClient";
@@ -38,49 +40,60 @@ export const loadTransactionsFromSupabase = async () => {
       break;
     }
 
-    await storeTransactions(data);
     allData = [...allData, ...data];
     offset += CHUNK_SIZE;
   }
-
+  await clearTransactions();
+  await storeTransactions(allData);
   return allData;
 };
 
-export const fetchUserOverviewData = async (uid) => {
-  const today = new Date().toISOString().split("T")[0];
+export const getMaxTransactionTimestamp = async () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("transaction_timestamp")
+    .eq("user_id", userId)
+    .order("transaction_timestamp", { ascending: false })
+    .limit(1);
 
-  const calls = [
-    { key: "remainingForPeriod", fn: "get_user_overview_remaining" },
-    { key: "dailyLimit", fn: "get_user_overview_daily_limit" },
-    { key: "topCategories", fn: "get_user_overview_top_categories" },
-    { key: "current_month", fn: "get_user_overview_current_month" },
-    { key: "current_year", fn: "get_user_overview_current_year" },
-    { key: "networth", fn: "get_user_overview_networth" },
-  ];
-
-  const result = {};
-
-  for (const { key, fn } of calls) {
-    const { data, error } = await supabase.rpc(fn, { uid });
-    if (error) {
-      console.error(`Error fetching ${key}:`, error);
-      continue;
-    }
-
-    const normalizedData =
-      Array.isArray(data) && data.length === 1 ? data[0] : data;
-
-    result[key] = normalizedData;
-
-    // ✅ Store to IndexedDB
-    await set(uid + "_" + key, {
-      data: normalizedData,
-      timestamp: new Date().toISOString(),
-      date: today,
-    });
+  if (error) {
+    console.error("Error fetching max transaction timestamp:", error);
+    return null;
   }
 
-  return result;
+  return data.length > 0 ? data[0].transaction_timestamp : null;
+};
+
+export const needsTransactionSync = async () => {
+  try {
+    const allTx = await getAllTransactions();
+    if (allTx.length < 1) {
+      return true; // no local data → needs sync
+    }
+
+    const maxLocalDate = new Date(
+      Math.max(
+        ...allTx.map((tx) => new Date(tx.transaction_timestamp).getTime())
+      )
+    );
+
+    const maxSupabaseDateStr = await getMaxTransactionTimestamp();
+    const maxSupabaseDate = maxSupabaseDateStr
+      ? new Date(maxSupabaseDateStr)
+      : null;
+
+    // If Supabase has no timestamp or local is behind, we need sync
+    if (!maxSupabaseDate || maxLocalDate < maxSupabaseDate) {
+      return true;
+    }
+
+    // If both are same or local is ahead, no sync needed
+    return false;
+  } catch (error) {
+    console.error("Error in needsTransactionSync:", error);
+    return true; // safe default → try to sync
+  }
 };
 
 export const updateTransaction = async (id, payload, options = {}) => {
@@ -107,6 +120,10 @@ export const updateTransaction = async (id, payload, options = {}) => {
     payee_logo: payee?.logo || null,
     type: category?.type || "Expense",
     date: payload.transaction_timestamp.split("T")[0],
+    product_link: payload.product_link || null,
+    latitude: payload.latitude !== undefined ? payload.latitude || null : null,
+    longitude:
+      payload.longitude !== undefined ? payload.longitude || null : null,
   };
 
   // 1. Update in IndexedDB immediately
@@ -285,6 +302,17 @@ export const deleteGoalInDb = async (id) => {
     });
 };
 
+export const fetchBudgetsData = async () => {
+  const BUDGETS_CACHE_KEY = "budgets_cache";
+  const { data, error } = await supabase.from("budgets").select("*");
+  if (error) console.error("Error fetching budgets:", error);
+  else {
+    await del(BUDGETS_CACHE_KEY);
+    await set(BUDGETS_CACHE_KEY, data);
+    return data;
+  }
+};
+
 export const addBudgetInDb = async (payload) => {
   const id = crypto.randomUUID();
   const userId = getSupabaseUserIdFromLocalStorage();
@@ -343,8 +371,10 @@ export const updateBudgetInDb = async (budget) => {
 export const deleteBudgetInDb = async (id) => {
   const userId = getSupabaseUserIdFromLocalStorage();
 
+  // 1. Delete from IndexedDB
   await deleteBudget(id);
 
+  // 2. Sync with Supabase
   supabase
     .from("budgets")
     .delete()

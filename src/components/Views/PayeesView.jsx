@@ -1,30 +1,36 @@
 // src/components/Views/PayeesView.jsx
-
 import "./PayeesView.css";
 
 import React, { useEffect, useState } from "react";
-import { formatDateToDayMonthYear, formatIndianNumber } from "../../utils";
+import { formatIndianNumber, groupAndSortTransactions } from "../../utils";
 
-import { IoIosArrowBack } from "react-icons/io";
-import Loading from "../Layouts/Loading";
-import TransactionCard from "../Cards/TransactionCard";
+import AppLayout from "../Layouts/AppLayout";
+import Fuse from "fuse.js";
+import InlineLoader from "../Loader/InlineLoader";
+import { MdClose } from "react-icons/md";
+import NoDataCard from "../Cards/NoDataCard";
+import TransactionsMode from "./TransactionsMode";
+import { debounce } from "lodash";
 import { getAllTransactions } from "../../db/transactionDb";
 import { groupBy } from "lodash";
 
-const PayeesView = () => {
+const PayeesView = ({ title, onBack }) => {
   const [loading, setLoading] = useState(true);
-  const [heading, setHeading] = useState(null);
   const [viewMode, setViewMode] = useState("summary");
+  const [payees, setPayees] = useState([]);
   const [groupedPayees, setGroupedPayees] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedPayee, setSelectedPayee] = useState(null);
   const [selectedPayeeTotal, setSelectedPayeeTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [fuse, setFuse] = useState(null);
+  const [type, setType] = useState("Expense");
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
       setLoading(true);
       const allTx = await getAllTransactions();
-      const filtered = allTx.filter((tx) => tx.payee_name);
+      const filtered = allTx.filter((tx) => tx.payee_name && tx.type === type);
       const grouped = groupBy(filtered, (tx) => tx.payee_name);
 
       const summarizedPayees = Object.entries(grouped)?.map(
@@ -41,39 +47,103 @@ const PayeesView = () => {
         }
       );
 
-      // 🔠 Sort alphabetically by payee name
       summarizedPayees.sort((a, b) => a.name.localeCompare(b.name));
 
+      setPayees(summarizedPayees);
       setGroupedPayees(summarizedPayees);
+
+      // Initialize Fuse for fuzzy search
+      const fuseInstance = new Fuse(summarizedPayees, {
+        keys: ['name'],
+        threshold: 0.3
+      });
+      setFuse(fuseInstance);
+
       setLoading(false);
     };
     fetchAndSummarize();
-  }, [setLoading]);
+  }, [type]);
+
+  useEffect(() => {
+    if (!fuse) return;
+
+    const handler = debounce((query) => {
+      if (!query) {
+        setGroupedPayees(payees);
+      } else {
+        const results = fuse.search(query);
+        setGroupedPayees(results.map(r => r.item));
+      }
+    }, 300);
+
+    handler(search);
+
+    return () => handler.cancel();
+  }, [search, fuse, payees]);
 
   const handlePayeeClick = (payee) => {
-    const sorted = payee.transactions.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-    const groupedByDate = groupBy(sorted, "date");
     setSelectedPayee(payee.name);
     setSelectedPayeeTotal(payee.amount);
-    setTransactions(groupedByDate);
+    setTransactions(groupAndSortTransactions(payee.transactions));
     setViewMode("transactions");
-    setHeading(`${payee.name} Transactions`);
+  };
+
+  const handleBack = () => {
+    setViewMode("summary");
+    setTransactions([]);
   };
 
   return (
-    <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
-      {loading ? (
-        <Loading />
-      ) : (
-        <>
-          {viewMode === "summary" && (
+    <>
+      {viewMode === "summary" && (
+        <AppLayout title={title} onBack={onBack}>
+          {loading ? (
+            <InlineLoader />
+          ) : (
             <>
-              <div className="payee-summary-wrapper">
+              <div className="toggle-button-group">
+                <button
+                  onClick={() => setType("Expense")}
+                  className={type === "Expense" ? "active" : ""}
+                >
+                  Expense
+                </button>
+                <button
+                  onClick={() => setType("Income")}
+                  className={type === "Income" ? "active" : ""}
+                >
+                  Income
+                </button>
+              </div>
+                <div className="search-input-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Search Payees"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="search-bar"
+                    spellCheck={false}
+                    aria-label="Search payees"
+                    disabled={loading}
+                  />
+                  {search && (
+                    <span
+                      className="search-clear-icon"
+                      onClick={() => setSearch("")}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Clear search"
+                      title="Clear search"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSearch("")}
+                    >
+                      <MdClose />
+                    </span>
+                  )}
+                </div>
+                <div className="payee-summary-wrapper">
+                {groupedPayees?.length === 0 && (
+                  <NoDataCard message="No Payee found" height="150" width="200" />
+                )}
                 {groupedPayees?.map((payee) => (
                   <div
                     key={payee.name}
@@ -85,13 +155,13 @@ const PayeesView = () => {
                       if (e.key === "Enter" || e.key === " ")
                         handlePayeeClick(payee);
                     }}
+                    aria-label={`View transactions for ${payee.name}`}
                   >
                     <div className="payee-details">
                       <div className="payee-name">{payee.name}</div>
                       <div
-                        className={`payee-amount ${
-                          payee.amount >= 0 ? "green-text" : "red-text"
-                        }`}
+                        className={`payee-amount ${payee.amount >= 0 ? "green-text" : "red-text"
+                          }`}
                       >
                         {payee.amount < 0 ? "-" : ""}
                         {formatIndianNumber(Math.abs(payee.amount))}
@@ -102,53 +172,18 @@ const PayeesView = () => {
               </div>
             </>
           )}
-          {viewMode === "transactions" && (
-            <>
-              <div
-                className="back-button-container"
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  setViewMode("summary");
-                  setHeading(null);
-                  setTransactions([]);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    setViewMode("summary");
-                    setHeading(null);
-                    setTransactions([]);
-                  }
-                }}
-              >
-                <IoIosArrowBack />
-                <span className="back-button">Summary</span>
-              </div>
-              <div className="date-summary-bar">
-                <div className="summary-date">{selectedPayee}</div>
-                <div className="summary-amount">
-                  {formatIndianNumber(selectedPayeeTotal)}
-                </div>
-              </div>
-              <div className="transaction-page-wrapper">
-                {Object.entries(transactions)?.map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items?.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </>
+        </AppLayout>
       )}
-    </div>
+      {viewMode === "transactions" && (
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
+            name={selectedPayee}
+            amount={selectedPayeeTotal}
+            transactions={transactions}
+          />
+        </AppLayout>
+      )}
+    </>
   );
 };
 

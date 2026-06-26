@@ -1,22 +1,28 @@
 // src/components/Views/MonthlyLivingCostsView.jsx
 
 import React, { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
+import { formatIndianNumber, getCategoryCachekeys, getMonthOptions, groupAndSortTransactions } from "../../utils";
 import { get, set } from "idb-keyval";
-import Select from "react-select";
-import { groupBy } from "lodash";
-import { FiSave } from "react-icons/fi";
-import { FaEdit } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
-import TransactionCard from "../Cards/TransactionCard";
+
+import AppLayout from "../Layouts/AppLayout";
 import Button from "../Button/Button";
+import { FaEdit } from "react-icons/fa";
+import { FiSave } from "react-icons/fi";
+import InlineLoader from "../Loader/InlineLoader";
+import MonthYearSelector from "./MonthYearSelector";
+import MySelect from "../Select/MySelect";
 import NoDataCard from "../Cards/NoDataCard";
-import { formatDateToDayMonthYear, formatIndianNumber, getCategoryCachekeys, getMonthOptions, getYearOptions } from "../../utils";
+import TransactionCard from "../Cards/TransactionCard";
+import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
+import { useMediaQuery } from "react-responsive";
 
-const MonthlyLivingCostsView = () => {
+const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys();
+
+const MonthlyLivingCostsView = ({ title, onBack }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-
+  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -36,7 +42,7 @@ const MonthlyLivingCostsView = () => {
   const [transactions, setTransactions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryAmount, setSelectedCategoryAmount] = useState(0);
-  const { EXPENSE_CACHE_KEY, CHOOSEN_CATEGORIES_CACHE_KEY } = getCategoryCachekeys()
+
 
   useEffect(() => {
     const init = async () => {
@@ -54,12 +60,14 @@ const MonthlyLivingCostsView = () => {
           ?.map((cat) => ({ value: cat.id, label: cat.name }));
         setSelectedOptions(selected);
       }
+      setInitializing(false);
     };
     init();
   }, []);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
@@ -93,26 +101,29 @@ const MonthlyLivingCostsView = () => {
             category_name: category,
             category_icon: data.icon,
             amount: data.amount,
-            percentage: Math.round((data.amount / total) * 100),
+            percentage: total > 0 ? Math.round((data.amount / total) * 100) : 0,
             type: "Expense",
             transactions: data.transactions,
           }))
-          .sort((a, b) => b.percentage - a.percentage);
+          .sort((a, b) => b.amount - a.amount);
         setSummary(summaryArray);
-
+      } else {
+        setSummary([]);
+        setTotalSummary(0);
       }
-    }
-    if (choosenCategories?.length > 0) {
-      fetchAndSummarize();
-    }
 
-  }, [month, year, choosenCategories])
+      setLoading(false);
+    };
+    if (initializing) return;
+    fetchAndSummarize();
+  }, [month, year, choosenCategories, initializing]);
+
 
   const handleSaveCategories = async () => {
     const selectedIds = selectedOptions?.map((opt) => opt.value);
     await set(CHOOSEN_CATEGORIES_CACHE_KEY, selectedIds);
     setChoosenCategories(selectedIds);
-    setHeading("Monthly Living Costs");
+    setHeading(null);
     setViewMode("summary");
   };
 
@@ -121,30 +132,32 @@ const MonthlyLivingCostsView = () => {
     label: cat.name,
   }));
 
+  const handleBack = () => {
+    setViewMode("summary");
+    setHeading(null);
+    setTransactions([]);
+  };
+
   return (
     <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
       {viewMode === "configure" && (
-        <>
+        <AppLayout title={heading} onBack={handleBack}>
           <div style={{
             marginBottom: '1rem'
           }}>
-            <Select
+            <MySelect
               isMulti
               options={categoryOptions}
               value={selectedOptions}
               onChange={setSelectedOptions}
-              classNamePrefix="react-select"
               placeholder="Select categories to track"
             />
           </div>
           <Button icon={<FiSave />} variant="success" onClick={handleSaveCategories} text="Save Categories" disabled={selectedOptions.length === 0} />
-        </>
+        </AppLayout>
       )}
       {viewMode === "summary" && (
-        <>
+        <AppLayout title={title} onBack={onBack}>
           <div className="align-right">
             <Button
               icon={<FaEdit />}
@@ -155,29 +168,21 @@ const MonthlyLivingCostsView = () => {
                   .filter((cat) => choosenCategories.includes(cat.id))
                   ?.map((cat) => ({ value: cat.id, label: cat.name }));
                 setSelectedOptions(selected);
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
               }}
               text={isMobile ? null : "Edit Configuration"}
             />
 
           </div>
-          {/* Month/Year Selectors */}
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-            />
 
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-            />
-          </div>
+          {/* Month/Year Selectors */}
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => setYear(opt)}
+            monthValue={month}
+            onMonthChange={(opt) => setMonth(opt)}
+            disabled={loading}
+          />
 
           {/* Category Summary */}
           <div className="date-summary-bar">
@@ -186,71 +191,41 @@ const MonthlyLivingCostsView = () => {
               {formatIndianNumber(totalSummary)}
             </div>
           </div>
-          {summary?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-          <div className="transaction-card-list">
-            {summary?.map((category, index) => {
-              return (
-                <TransactionCard
-                  key={index}
-                  transaction={category}
-                  onCardClick={() => {
-                    setViewMode("transactions");
-                    setHeading("Transactions");
-                    setTransactions(groupBy(category.transactions, "date"));
-                    setSelectedCategory(category.category_name);
-                    setSelectedCategoryAmount(category.amount);
-                  }}
-                />
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-              setHeading(null);
-              setTransactions([]);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setViewMode("summary");
-                setHeading(null);
-                setTransactions([]);
-              }
-            }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
-
-          <div className="date-summary-bar">
-            <div className="summary-date">{selectedCategory}</div>
-            <div className="summary-amount">
-              {formatIndianNumber(selectedCategoryAmount)}
+          {initializing || loading ? (
+            <InlineLoader />
+          ) : summary.length === 0 ? (
+            <NoDataCard message="No transactions found" height="100" width="150" />
+          ) : (
+            <div className="transaction-card-list">
+              {summary?.map((category, index) => {
+                return (
+                  <TransactionCard
+                    key={index}
+                    transaction={category}
+                    onCardClick={() => {
+                      setViewMode("transactions");
+                      setTransactions(
+                        groupAndSortTransactions(category.transactions)
+                      );
+                      setSelectedCategory(category.category_name);
+                      setSelectedCategoryAmount(category.amount);
+                      sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
+                    }}
+                  />
+                );
+              })}
             </div>
-          </div>
-          <div className="transaction-page-wrapper">
-            {Object.entries(transactions)?.map(([date, items]) => (
-              <div key={date} className="transaction-group">
-                <h2 className="transaction-date-header">
-                  {formatDateToDayMonthYear(date)}
-                </h2>
-                <div className="transaction-card-list">
-                  {items?.map((tx) => (
-                    <TransactionCard key={tx.id} transaction={tx} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
+          )}
+        </AppLayout>
+      )}
+      {viewMode === "transactions" && (
+        <AppLayout title={title} onBack={handleBack}>
+          <TransactionsMode
+            name={selectedCategory}
+            amount={selectedCategoryAmount}
+            transactions={transactions}
+          />
+        </AppLayout>
       )}
     </div>
   );

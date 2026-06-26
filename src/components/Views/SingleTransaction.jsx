@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { deleteTransaction, updateTransaction } from "../../supabaseData";
 
 import Button from "../Button/Button";
-import Select from "react-select";
+import MySelect from "../Select/MySelect";
 
 const SingleTransaction = ({
   incomeCategories,
@@ -25,17 +25,27 @@ const SingleTransaction = ({
     description,
     category_id,
     payee_id,
+    product_link,
+    latitude,
+    longitude,
   } = transaction;
 
   const [updatedAmount, setUpdatedAmount] = useState(amount);
   const [updatedDescription, setUpdatedDescription] = useState(
     description || ""
   );
+  const [updatedProductLink, setUpdatedProductLink] = useState(
+    product_link || ""
+  );
   const [updatedTimestamp, setUpdatedTimestamp] = useState(
     transaction_timestamp
   );
   const [selectedCategory, setSelectedCategory] = useState(category_id);
   const [selectedPayee, setSelectedPayee] = useState(payee_id);
+
+  const [combinedLocation, setCombinedLocation] = useState(
+    latitude && longitude ? `${latitude}, ${longitude}` : ""
+  );
 
   const categoryOptions = (
     type === "Expense" ? expenseCategories : incomeCategories
@@ -52,12 +62,26 @@ const SingleTransaction = ({
   const [isSaving, setIsSaving] = useState(false);
   const handleSave = async () => {
     setIsSaving(true);
+
+    let finalLatitude = null;
+    let finalLongitude = null;
+
+    if (combinedLocation.trim()) {
+      const parts = combinedLocation.split(",").map((v) => v.trim());
+
+      finalLatitude = parts[0] || null;
+      finalLongitude = parts[1] || null;
+    }
+
     const updatedData = {
       amount: updatedAmount,
       description: updatedDescription,
       transaction_timestamp: updatedTimestamp,
       category_id: selectedCategory,
       payee_id: selectedPayee,
+      product_link: updatedProductLink,
+      latitude: finalLatitude,
+      longitude: finalLongitude,
     };
 
     // Optimistic UI update
@@ -117,25 +141,42 @@ const SingleTransaction = ({
 
         <div className="form-group">
           <label>Category</label>
-          <Select
+          <MySelect
             options={categoryOptions}
             value={categoryOptions.find(
               (opt) => opt.value === selectedCategory
             )}
             onChange={(selected) => setSelectedCategory(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
 
         <div className="form-group">
-          <label>Payee</label>
-          <Select
+          <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
             onChange={(selected) => setSelectedPayee(selected.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Product Link</label>
+          <input
+            type="text"
+            value={updatedProductLink}
+            onChange={(e) => setUpdatedProductLink(e.target.value)}
+            className="input"
+            placeholder="https://..."
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Location</label>
+          <input
+            type="text"
+            value={combinedLocation}
+            onChange={(e) => setCombinedLocation(e.target.value)}
+            className="input"
+            placeholder="12.9716, 77.5946"
           />
         </div>
 

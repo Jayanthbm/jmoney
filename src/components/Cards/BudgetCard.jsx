@@ -1,15 +1,12 @@
 // src/components/Cards/BudgetCard.js
 
-import "./BudgetCard.css"; // optional
+import "./BudgetCard.css";
 
 import { MdDelete, MdModeEditOutline } from "react-icons/md";
 
-import Button from "../Button/Button";
-import CircularProgressBar from "../Charts/CircularProgressBar";
+import ProgressBar from "../Charts/ProgressBar";
 import React from "react";
 import { formatIndianNumber } from "../../utils";
-import useTheme from "../../hooks/useTheme";
-
 const BudgetCard = ({
   title,
   amount,
@@ -18,92 +15,117 @@ const BudgetCard = ({
   logo,
   onEdit,
   onDelete,
-  spent= 0,
-  percentage_spent= 10,
-  percentage_remaining= 90
+  spent = 0,
+  percentage_spent = 0,
+  percentage_remaining = 0,
+  onClick,
+  isCurrentMonth = true,
 }) => {
-  const theme = useTheme();
+  const isOverSpent = percentage_remaining < 0;
+  const trackColor = isOverSpent ? "#ef4444" : "#3ecf8e";
+  const remainingValue = amount - spent;
 
-  const getInterval = (type) => {
-  const now = new Date();
-  let interval = '';
+  let heroLabel = "Remaining";
+  let heroValueDisplay = null;
 
-  if (type === 'Month') {
-    const year = now.getFullYear();
-    const month = now.getMonth(); // 0-based
-    const monthName = now.toLocaleString('default', { month: 'short' }); // e.g. Jun
-
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of current month
-
-    const startDay = startDate.getDate().toString().padStart(2, '0');
-    const endDay = endDate.getDate().toString().padStart(2, '0');
-
-    interval = `${monthName} ${startDay} - ${monthName} ${endDay}`;
-  } else if (type === 'Year') {
-    interval = `${now.getFullYear()}`;
+  if (!isCurrentMonth) {
+    if (remainingValue < 0) {
+      heroLabel = "Overspent";
+      heroValueDisplay = (
+        <span className="red-text">
+          {formatIndianNumber(Math.abs(remainingValue))}
+        </span>
+      );
+    } else {
+      heroLabel = "Saved";
+      heroValueDisplay = formatIndianNumber(remainingValue);
+    }
+  } else {
+    heroLabel = "Remaining";
+    heroValueDisplay =
+      remainingValue < 0 ? (
+        <>
+          {formatIndianNumber(0)}{" "}
+          <span
+            className="red-text"
+            style={{ fontSize: "1rem", fontWeight: "600" }}
+          >
+            (Overspent {formatIndianNumber(Math.abs(remainingValue))})
+          </span>
+        </>
+      ) : (
+        formatIndianNumber(remainingValue)
+      );
   }
 
-  return interval;
-};
-
   return (
-    <div className="budget-card">
+    <div className="budget-card" onClick={onClick}>
       <div className="budget-card-header">
-        <div className="budget-card-title">{title} - {getInterval(interval)} </div>
-        <div className="budget-progress">
-          <CircularProgressBar
-            progress={percentage_remaining}
-            text={`${Math.round(percentage_remaining)}%`}
-            pathColor="#3ecf8e"
-            textColor={theme === "dark" ? "#f1f1f1" : "#374151"}
-            fontSize="13px"
-            size={40}
-            strokeWidth={4}
-          />
+        <h3 className="budget-card-title">{title}</h3>
+        <div
+          className="budget-card-actions"
+          onClick={(e) => {
+            // Prevent triggering the card's onClick when hitting actions
+            e.stopPropagation();
+          }}
+        >
+          <button
+            className="icon-action-btn"
+            onClick={onEdit}
+            aria-label="Edit Budget"
+          >
+            <MdModeEditOutline size={16} />
+          </button>
+          <button
+            className="icon-action-btn danger"
+            onClick={onDelete}
+            aria-label="Delete Budget"
+          >
+            <MdDelete size={16} />
+          </button>
         </div>
       </div>
+
       <div className="budget-card-body">
-        <div className="budget-amount-container">
+        <div className="budget-hero">
+          <span className="hero-label">{heroLabel}</span>
+          <span className="hero-value">{heroValueDisplay}</span>
+        </div>
 
-          {/* Remaining */}
+        <div className="budget-sub-metrics">
           <div>
-            <div className="amount-label">Budgeted</div>
-            <div className="amount-value green-text">
+            <span className="amount-label">Budgeted</span>
+            <span className="amount-value">
               {formatIndianNumber(amount || 0)}
-            </div>
+            </span>
           </div>
-
-          {/* Divider */}
-          <div className="divider" />
-
-          {/* Spent */}
-          <div>
-            <div className="amount-label">Spent</div>
-            <div className="amount-value red-text">
+          <div style={{ textAlign: "right" }}>
+            <span className="amount-label">Spent</span>
+            <span className="amount-value red-text">
               {formatIndianNumber(spent || 0)}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="divider" />
-
-          {/* Remaining */}
-          <div>
-             <div className="amount-label">Remaining</div>
-            <div className="amount-value ">
-              {formatIndianNumber(amount - spent || 0)}
-            </div>
+            </span>
           </div>
         </div>
       </div>
-      <div className="budget-card-actions">
-        <Button
-          icon={<MdModeEditOutline />}
-          variant="primary"
-          onClick={onEdit}
-        />
-        <Button icon={<MdDelete />} variant="danger" onClick={onDelete} />
+
+      <div className="budget-card-footer">
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ flex: 1 }}>
+            <ProgressBar
+              value={isOverSpent ? 101 : percentage_remaining}
+              color={trackColor}
+            />
+          </div>
+          <span
+            style={{
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              color: isOverSpent ? "#ef4444" : "var(--text-muted)",
+            }}
+          >
+            {isOverSpent ? "0" : Math.round(percentage_remaining)}%
+          </span>
+        </div>
       </div>
     </div>
   );

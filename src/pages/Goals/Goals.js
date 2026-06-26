@@ -1,83 +1,49 @@
 // src/pages/Goals/Goals.js
-
 import "./Goals.css";
 
-import { FaSave, FaWindowClose } from "react-icons/fa";
 import React, { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   addGoalInDb,
   deleteGoalInDb,
   updateGoalInDb,
 } from "../../supabaseData";
 import {
-  getGoalsCacheKey,
   getSupabaseUserIdFromLocalStorage,
   refreshGoalsCache,
 } from "../../utils";
+import { sortGoals, sortOptions } from "./goalUtils";
 
 import AppLayout from "../../components/Layouts/AppLayout";
 import Button from "../../components/Button/Button";
 import { FaCirclePlus } from "react-icons/fa6";
-import GoalCard from "../../components/Cards/GoalCard";
-import Select from "react-select";
-import { get } from "idb-keyval";
+import GoalCard from "./components/GoalCard";
+import GoalForm from "./components/GoalForm";
+import MyModal from "../../components/Layouts/MyModal";
+import MySelect from "../../components/Select/MySelect";
+import { getCachedGoals } from "../../db/goalDb";
 import { useMediaQuery } from "react-responsive";
 
 const Goals = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editGoal, setEditGoal] = useState(null);
   const [orderBy, setOrderBy] = useState("updated_at");
-  const [formData, setFormData] = useState({
-    name: "",
-    logo: "",
-    goal_amount: "",
-    current_amount: "",
-  });
-
-  const sortGoals = (list) => {
-    return [...list]?.sort((a, b) => {
-      if (orderBy === "name") return a.name.localeCompare(b.name);
-      if (orderBy === "goal_amount") return b.goal_amount - a.goal_amount;
-      if (orderBy === "current_amount")
-        return b.current_amount - a.current_amount;
-      if (orderBy === "progress") {
-        const aProg = a.goal_amount ? a.current_amount / a.goal_amount : 0;
-        const bProg = b.goal_amount ? b.current_amount / b.goal_amount : 0;
-        return bProg - aProg;
-      }
-      if (orderBy === "created_at") {
-        return new Date(b.created_at) - new Date(a.created_at);
-      }
-      if (orderBy === "updated_at") {
-        return new Date(b.updated_at) - new Date(a.updated_at);
-      }
-
-      return 0;
-    });
-  };
+  const [saving, setSaving] = useState(false);
 
   const refreshData = useCallback(async () => {
     const freshData = await refreshGoalsCache(true);
-    console.log("Goals from Supabase:", freshData);
     setGoals(freshData);
   }, []);
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
-    const { GOALS_CACHE_KEY } = getGoalsCacheKey();
-    const goals = await get(GOALS_CACHE_KEY);
-
-    if (goals) {
-      setGoals(goals);
-    } else {
-      await refreshData();
-    }
-
+    const data = await getCachedGoals();
+    setGoals(data);
     setLoading(false);
-  }, [refreshData]);
+  }, []);
 
   useEffect(() => {
     fetchGoals();
@@ -85,36 +51,28 @@ const Goals = () => {
 
   const handleDialogOpen = (goal = null) => {
     setEditGoal(goal);
-    setFormData(
-      goal || {
-        name: "",
-        logo: "",
-        goal_amount: "",
-        current_amount: "",
-      }
-    );
-    setOpenDialog(true);
+    setIsModalOpen(true);
   };
 
   const handleDialogClose = () => {
-    setOpenDialog(false);
+    setIsModalOpen(false);
     setEditGoal(null);
-    setFormData({ name: "", logo: "", goal_amount: "", current_amount: "" });
   };
 
-  const handleSave = async () => {
-    if (!formData.name || !formData.goal_amount) return;
-    const userId = getSupabaseUserIdFromLocalStorage();
-    if (!userId) return;
-
-    const payload = {
-      ...formData,
-      user_id: userId,
-      goal_amount: parseFloat(formData.goal_amount),
-      current_amount: parseFloat(formData.current_amount) || 0,
-    };
-
+  const handleSaveGoal = async (formData) => {
+    if (saving) return;
+    setSaving(true);
     try {
+      const userId = getSupabaseUserIdFromLocalStorage();
+      if (!userId) throw new Error("User not found");
+
+      const payload = {
+        ...formData,
+        user_id: userId,
+        goal_amount: parseFloat(formData.goal_amount) || 0,
+        current_amount: parseFloat(formData.current_amount) || 0,
+      };
+
       if (editGoal) {
         await updateGoalInDb({ ...payload, id: editGoal.id });
       } else {
@@ -125,28 +83,24 @@ const Goals = () => {
       await fetchGoals();
     } catch (e) {
       console.error("Error saving goal:", e);
+      alert("Something went wrong while saving goal.");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!id) return;
     try {
       await deleteGoalInDb(id);
       await fetchGoals();
     } catch (e) {
       console.error("Error deleting goal:", e);
+      alert("Could not delete goal.");
     }
   };
 
-  const sortedGoals = sortGoals(goals);
-
-  const sortOptions = [
-    { value: "updated_at", label: "Sort by Updated" },
-    { value: "created_at", label: "Sort by Created" },
-    { value: "name", label: "Sort by Name" },
-    { value: "goal_amount", label: "Sort by Goal Amount" },
-    { value: "current_amount", label: "Sort by Current Amount" },
-    { value: "progress", label: "Sort by Progress" },
-  ];
+  const sortedGoals = sortGoals(goals, orderBy);
 
   return (
     <AppLayout
@@ -154,15 +108,17 @@ const Goals = () => {
       loading={!goals || loading}
       onRefresh={refreshData}
     >
-      <div className="goals-header">
+      <motion.div
+        className="goals-header"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="left-controls">
-          <Select
+          <MySelect
             options={sortOptions}
             value={sortOptions.find((opt) => opt.value === orderBy)}
             onChange={(selected) => setOrderBy(selected.value)}
-            isSearchable={false}
-            className="react-select-container"
-            classNamePrefix="react-select"
           />
         </div>
         <div className="right-controls">
@@ -171,84 +127,67 @@ const Goals = () => {
             text={isMobile ? null : "Add Goal"}
             variant="primary"
             onClick={() => handleDialogOpen()}
+            aria-label="Add new goal"
           />
         </div>
-      </div>
-      <div className="goal-card-container">
-        {sortedGoals.map((goal) => {
-          const progress = goal.goal_amount
-            ? (goal.current_amount / goal.goal_amount) * 100
-            : 0;
-
-          return (
-            <div className="goal-card-wrapper" key={goal.id}>
-              <GoalCard
-                title={goal.name}
-                progress={progress}
-                logo={goal.logo}
-                target={goal.goal_amount}
-                current={goal.current_amount}
-                onEdit={() => handleDialogOpen(goal)}
-                onDelete={() => handleDelete(goal.id)}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      {openDialog && (
-        <div className="goal-dialog">
-          <div className="goal-dialog-content">
-            <h3>{editGoal ? "Edit Goal" : "Add Goal"}</h3>
-            <input
-              type="text"
-              placeholder="Name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
-            <input
-              type="text"
-              placeholder="Logo URL"
-              value={formData.logo}
-              onChange={(e) =>
-                setFormData({ ...formData, logo: e.target.value })
-              }
-            />
-            <input
-              type="number"
-              placeholder="Goal Amount"
-              value={formData.goal_amount}
-              onChange={(e) =>
-                setFormData({ ...formData, goal_amount: e.target.value })
-              }
-            />
-            <input
-              type="number"
-              placeholder="Current Amount"
-              value={formData.current_amount}
-              onChange={(e) =>
-                setFormData({ ...formData, current_amount: e.target.value })
-              }
-            />
-            <div className="goal-dialog-actions">
-              <Button
-                icon={<FaSave />}
-                text="Save"
-                variant="success"
-                onClick={handleSave}
-              />
-              <Button
-                icon={<FaWindowClose />}
-                text="Cancel"
-                variant="warning"
-                onClick={handleDialogClose}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      </motion.div>
+      <motion.div
+        className="goal-card-container"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+      >
+        <AnimatePresence mode="popLayout">
+          {sortedGoals.map((goal) => {
+            const progress = goal.goal_amount
+              ? (goal.current_amount / goal.goal_amount) * 100
+              : 0;
+            return (
+              <motion.div
+                className="goal-card-wrapper"
+                key={goal.id}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 20 },
+                  show: { opacity: 1, scale: 1, y: 0 },
+                }}
+                layout
+                exit={{
+                  opacity: 0,
+                  scale: 0.95,
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <GoalCard
+                  title={goal.name}
+                  progress={progress}
+                  logo={goal.logo}
+                  target={goal.goal_amount}
+                  current={goal.current_amount}
+                  onEdit={() => handleDialogOpen(goal)}
+                  onDelete={() => handleDelete(goal.id)}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
+      <MyModal showModal={isModalOpen} onClose={handleDialogClose}>
+        <h3>{editGoal ? "Edit Goal" : "Add Goal"}</h3>
+        <GoalForm
+          initialData={editGoal}
+          onSave={handleSaveGoal}
+          onCancel={handleDialogClose}
+          saving={saving}
+        />
+      </MyModal>
     </AppLayout>
   );
 };

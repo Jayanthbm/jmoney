@@ -18,8 +18,7 @@
     "react-responsive": "^10.0.1",
     "react-router-dom": "^7.18.0",
     "react-scripts": "5.0.1",
-    "react-select": "^5.10.2",
-    "recharts": "^3.8.1"
+    "react-select": "^5.10.2"
   },
   "scripts": {
     "predeploy": "npm run build",
@@ -27,7 +26,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +48,15 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2",
+    "source-map-explorer": "^2.5.3"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
   }
 }

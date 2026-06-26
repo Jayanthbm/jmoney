@@ -2,18 +2,13 @@
 
 import * as MdIcons from "react-icons/md";
 
-import {
-  fetchGoalsData,
-  fetchUserOverviewData,
-  loadTransactionsFromSupabase,
-  updateBudgetInDb,
-} from "./supabaseData";
-
 import { MY_KEYS } from "./constants";
 import React from "react";
+import {
+  fetchGoalsData,
+} from "./supabaseData";
 import { format } from "date-fns";
-import { get } from "idb-keyval";
-import { getAllTransactions } from "./db/transactionDb";
+import { groupBy } from "lodash";
 
 export const formatIndianNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return "₹0";
@@ -63,39 +58,25 @@ export const calculatePayDayInfo = () => {
   };
 };
 
-export const isCacheExpired = (timestamp, storedDate, expiryHours = 20) => {
-  const now = new Date();
-  const diffHours = (now - new Date(timestamp)) / 1000 / 60 / 60;
-  const today = now.toISOString().split("T")[0];
-  return diffHours > expiryHours || storedDate !== today;
-};
-
-export const refreshOverviewCache = async () => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  if (userId) {
-    await fetchUserOverviewData(userId);
-  }
-};
-
 export function formatDateToDayMonthYear(input) {
   return format(new Date(input), "dd MMM yyyy");
 }
 
-export const getMonthOptions = () => {
-  return [
-    { value: 0, label: "Jan" },
-    { value: 1, label: "Feb" },
-    { value: 2, label: "Mar" },
-    { value: 3, label: "Apr" },
-    { value: 4, label: "May" },
-    { value: 5, label: "Jun" },
-    { value: 6, label: "Jul" },
-    { value: 7, label: "Aug" },
-    { value: 8, label: "Sep" },
-    { value: 9, label: "Oct" },
-    { value: 10, label: "Nov" },
-    { value: 11, label: "Dec" },
+export const getMonthOptions = (year) => {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-based
+
+  const maxMonth = year === currentYear ? currentMonth : 11;
+
+  return monthNames
+    .slice(0, maxMonth + 1)
+    .map((label, value) => ({ value, label }));
 };
 
 export const getYearOptions = (startYear = 2022) => {
@@ -161,24 +142,6 @@ export function getSupabaseUserIdFromLocalStorage() {
   return null; // Return null if no user ID found
 }
 
-export const refreshTransactionsCache = async (force = false) => {
-  const userId = getSupabaseUserIdFromLocalStorage();
-  const CACHE_KEY = `${userId}_${MY_KEYS.LAST_TRANSACTION_FETCH_CACHE_KEY}`;
-  const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
-
-  const lastFetch = localStorage.getItem(CACHE_KEY);
-  const now = Date.now();
-
-  const isExpired = !lastFetch || now - Number(lastFetch) > EXPIRY_MS;
-
-  if (force || isExpired) {
-    await loadTransactionsFromSupabase(); // This function handles updating localStorage
-    return true;
-  }
-
-  return false;
-};
-
 export const renderIcon = (iconName, size = 36) => {
   const Icon = MdIcons[iconName];
   return Icon ? <Icon size={size} /> : null;
@@ -240,52 +203,15 @@ export const getTransactionCachekeys = () => {
   return result;
 };
 
-export const reCalculateBudget = async () => {
-  const allTx = await getAllTransactions();
-  const budgets = await get("budgets_cache");
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth(); // 0-indexed (0 = Jan)
-
-  if (!budgets || !Array.isArray(budgets)) {
-    console.warn("No budgets found.");
-    return;
-  }
-
-  const filteredTx = allTx.filter((tx) => {
-    const txDate = new Date(tx.transaction_timestamp);
-    return (
-      txDate.getFullYear() === currentYear &&
-      txDate.getMonth() === currentMonth &&
-      tx.type === "Expense" // Only count expenses
+export const groupAndSortTransactions = (transactions) => {
+  let sorted = transactions.sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+  let grouped = groupBy(sorted, "date");
+  Object.keys(grouped).forEach((date) => {
+    grouped[date] = grouped[date].sort(
+      (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
     );
   });
-
-  for (const budget of budgets) {
-    const { categories, amount } = budget;
-
-    const matchingTx = filteredTx.filter((tx) =>
-      categories.includes(tx.category_id)
-    );
-
-    const totalSpent = matchingTx.reduce(
-      (sum, tx) => sum + (tx.amount || 0),
-      0
-    );
-
-    const percentageSpent = ((totalSpent / amount) * 100).toFixed(2);
-    const percentageRemaining = (100 - percentageSpent).toFixed(2);
-
-    const updatedBudget = {
-      ...budget,
-      spent: totalSpent,
-      percentage_spent: Number(percentageSpent),
-      percentage_remaining: Number(percentageRemaining),
-    };
-
-    delete updatedBudget.updated_at;
-
-    await updateBudgetInDb(updatedBudget);
-    return true;
-  }
-};
+  return grouped;
+}

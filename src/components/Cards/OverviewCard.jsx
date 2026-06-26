@@ -4,9 +4,9 @@ import "./OverviewCard.css";
 
 import React from "react";
 
-const OverviewCard = ({ title, subtitle, children }) => {
+const OverviewCard = ({ title, subtitle, children, customStyles = {} }) => {
   return (
-    <div className="overview-card">
+    <div className="overview-card" style={customStyles}>
       <div className="overview-card-header">
         <h2 className="overview-card-title">{title}</h2>
         <p className="overview-card-subtitle">{subtitle}</p>

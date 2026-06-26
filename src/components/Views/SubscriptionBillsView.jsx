@@ -4,21 +4,21 @@ import "./SubscriptionBillsView.css";
 
 import { MdReceiptLong, MdSubscriptions } from "react-icons/md";
 import React, { useEffect, useState } from "react";
-import {
-  formatDateToDayMonthYear,
-  getMonthOptions,
-  getYearOptions,
-} from "../../utils";
 
-import { IoIosArrowBack } from "react-icons/io";
+import AppLayout from "../Layouts/AppLayout";
+import MonthYearSelector from "./MonthYearSelector";
 import MyCountUp from "../Charts/MyCountUp";
-import NoDataCard from "../Cards/NoDataCard";
 import OverviewCard from "../Cards/OverviewCard";
-import Select from "react-select";
-import TransactionCard from "../Cards/TransactionCard";
+import TransactionsMode from "./TransactionsMode";
 import { getAllTransactions } from "../../db/transactionDb";
+import {
+  getMonthOptions,
+} from "../../utils";
 import { groupBy } from "lodash";
-const SubscriptionBillsView = () => {
+
+const SubscriptionBillsView = ({ title, onBack }) => {
+  const [loading, setLoading] = useState(true);
+
   const [month, setMonth] = useState({
     value: new Date().getMonth(),
     label: getMonthOptions()[new Date().getMonth()].label,
@@ -34,11 +34,11 @@ const SubscriptionBillsView = () => {
   const [bills, setBills] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [viewMode, setViewMode] = useState("summary");
-  const [heading, setHeading] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
     const fetchAndSummarize = async () => {
+      setLoading(true);
       const allTx = await getAllTransactions();
       const filtered = allTx.filter((tx) => {
         const date = new Date(tx.date);
@@ -65,43 +65,36 @@ const SubscriptionBillsView = () => {
 
       const billsTotal = billsFiltered.reduce((sum, tx) => sum + tx.amount, 0);
       setBillsTotal(billsTotal);
+      setLoading(false);
     };
     fetchAndSummarize();
   }, [year, month]);
 
+  const handleBack = () => {
+    setViewMode("summary");
+  };
+
   return (
-    <div>
-      {heading && (
-        <div className="sub-section-heading">{heading}</div>
-      )}
-
+    <>
       {viewMode === "summary" && (
-        <>
-          <div className="filters-wrapper">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getYearOptions()}
-              value={year}
-              onChange={(opt) => setYear(opt)}
-              isSearchable={false}
-            />
-
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={getMonthOptions()}
-              value={month}
-              onChange={(opt) => setMonth(opt)}
-              isSearchable={false}
-            />
-          </div>
+        <AppLayout title={title} onBack={onBack}>
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => {
+              setYear(opt);
+            }}
+            monthValue={month}
+            onMonthChange={(opt) => {
+              setMonth(opt);
+            }}
+            disabled={loading}
+          />
           <div
             onClick={() => {
               if (subscriptionsTotal > 0) {
                 setViewMode("transactions");
-                setHeading("Transactions");
                 setSelectedCard("Subscriptions");
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
               } else {
                 return;
               }
@@ -124,8 +117,8 @@ const SubscriptionBillsView = () => {
             onClick={() => {
               if (billsTotal > 0) {
                 setViewMode("transactions");
-                setHeading("Transactions");
                 setSelectedCard("Bills");
+                sessionStorage.setItem('transactionsViewMode', JSON.stringify(true));
               } else {
                 return;
               }
@@ -143,78 +136,59 @@ const SubscriptionBillsView = () => {
               </div>
             </OverviewCard>
           </div>
-        </>
+        </AppLayout>
       )}
       {viewMode === "transactions" && (
-        <>
-          <div
-            className="back-button-container"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              setViewMode("summary");
-              setHeading(null);
+        <AppLayout title={title} onBack={handleBack}>
+          <MonthYearSelector
+            yearValue={year}
+            onYearChange={(opt) => {
+              setYear(opt);
+
             }}
-          >
-            <IoIosArrowBack />
-            <span className="back-button">Summary</span>
-          </div>
+            monthValue={month}
+            onMonthChange={(opt) => {
+              setMonth(opt);
+            }}
+            disabled={loading}
+          />
           {/* Toggle Buttons */}
           <div className="toggle-button-group">
             <button
-              onClick={() => setSelectedCard("Subscriptions")}
+              onClick={() => {
+                setSelectedCard("Subscriptions");
+              }}
               className={selectedCard === "Subscriptions" ? "active" : ""}
             >
               Subscriptions
             </button>
             <button
-              onClick={() => setSelectedCard("Bills")}
+              onClick={() => {
+                setSelectedCard("Bills");
+              }}
               className={selectedCard === "Bills" ? "active" : ""}
             >
               Bills
             </button>
           </div>
+
           {selectedCard === "Subscriptions" && (
-            <>
-              {Object.entries(subscriptions)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-              <div className="transaction-page-wrapper">
-                {Object.entries(subscriptions)?.map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items?.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <TransactionsMode
+              name={"Total"}
+              amount={subscriptionsTotal}
+              transactions={subscriptions}
+            />
           )}
           {selectedCard === "Bills" && (
-            <>
-              {Object.entries(bills)?.length === 0 && (<NoDataCard message="No transactions found" height="100" width="150" />)}
-              <div className="transaction-page-wrapper">
-                {Object.entries(bills).map(([date, items]) => (
-                  <div key={date} className="transaction-group">
-                    <h2 className="transaction-date-header">
-                      {formatDateToDayMonthYear(date)}
-                    </h2>
-                    <div className="transaction-card-list">
-                      {items.map((tx) => (
-                        <TransactionCard key={tx.id} transaction={tx} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <TransactionsMode
+              name={"Total"}
+              amount={billsTotal}
+              transactions={bills}
+            />
           )}
-        </>
+        </AppLayout>
       )}
-    </div>
+    </>
   );
 };
 
