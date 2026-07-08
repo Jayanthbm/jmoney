@@ -109,3 +109,148 @@
 .clear-cache-btn:hover {
   background: var(--btn-danger-hover);
 }
+
+/* Groups Section */
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.group-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.group-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.group-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-color, #374752);
+}
+
+.group-desc {
+  font-size: 12px;
+  color: #777;
+}
+
+.group-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.delete-group-btn {
+  background: none;
+  border: none;
+  color: var(--btn-danger-bg, #d9534f);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.delete-group-btn:hover {
+  background: rgba(217, 83, 79, 0.1);
+}
+
+/* Add Group Form */
+.add-group-form {
+  margin-top: 16px;
+  background: var(--card-bg, #f8f9fa);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+}
+
+.form-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color, #374752);
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-inputs input {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text-color);
+}
+
+.form-inputs input:focus {
+  outline: none;
+  border-color: var(--primary-color, #374752);
+}
+
+.add-btn {
+  background: var(--primary-color, #374752);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
+}
+
+/* Modal Group Form */
+.modal-group-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.modal-group-input,
+.modal-group-textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-color, #374752);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.modal-group-input:focus,
+.modal-group-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #374752);
+}
+
+.modal-group-textarea {
+  min-height: 80px;
+  resize: vertical;
+}

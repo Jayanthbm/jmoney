@@ -3,6 +3,12 @@
 import { addBudget, deleteBudget, updateBudget } from "./db/budgetDb";
 import { addGoal, deleteGoal, updateGoal } from "./db/goalDb";
 import {
+  addGroup,
+  deleteGroup,
+  updateGroup,
+  getCachedGroups,
+} from "./db/groupDb";
+import {
   clearTransactions,
   deleteTransactionInDb,
   getAllTransactions,
@@ -10,7 +16,11 @@ import {
   updateTransactionInDb,
 } from "./db/transactionDb";
 import { del, set } from "idb-keyval";
-import { getGoalsCacheKey, getSupabaseUserIdFromLocalStorage } from "./utils";
+import {
+  getGoalsCacheKey,
+  getGroupCacheKey,
+  getSupabaseUserIdFromLocalStorage,
+} from "./utils";
 
 import { supabase } from "./supabaseClient";
 
@@ -101,11 +111,13 @@ export const updateTransaction = async (id, payload, options = {}) => {
     incomeCategories = [],
     expenseCategories = [],
     payees = [],
+    groups = [],
   } = options;
 
   const allCategories = [...incomeCategories, ...expenseCategories];
   const category = allCategories.find((cat) => cat.id === payload.category_id);
   const payee = payees.find((p) => p.id === payload.payee_id);
+  const group = groups.find((g) => g.id === payload.group_id);
 
   const updatedData = {
     id,
@@ -118,6 +130,8 @@ export const updateTransaction = async (id, payload, options = {}) => {
     payee_id: payload.payee_id || null,
     payee_name: payee?.name || null,
     payee_logo: payee?.logo || null,
+    group_id: payload.group_id || null,
+    group_name: group?.name || null,
     type: category?.type || "Expense",
     date: payload.transaction_timestamp.split("T")[0],
     product_link: payload.product_link || null,
@@ -166,11 +180,13 @@ export const addTransaction = async (payload, options = {}) => {
     incomeCategories = [],
     expenseCategories = [],
     payees = [],
+    groups = [],
   } = options;
 
   const allCategories = [...incomeCategories, ...expenseCategories];
   const category = allCategories.find((cat) => cat.id === payload.category_id);
   const payee = payees.find((p) => p.id === payload.payee_id);
+  const group = groups.find((g) => g.id === payload.group_id);
 
   const newId = crypto.randomUUID();
   const newTransaction = {
@@ -184,6 +200,8 @@ export const addTransaction = async (payload, options = {}) => {
     payee_id: payload.payee_id || null,
     payee_name: payee?.name || null,
     payee_logo: payee?.logo || null,
+    group_id: payload.group_id || null,
+    group_name: group?.name || null,
     type: category?.type || "Expense",
     date: payload.transaction_timestamp.split("T")[0],
     user_id: getSupabaseUserIdFromLocalStorage(),
@@ -203,6 +221,7 @@ export const addTransaction = async (payload, options = {}) => {
         transaction_timestamp: newTransaction.transaction_timestamp,
         category_id: newTransaction.category_id,
         payee_id: newTransaction.payee_id,
+        group_id: newTransaction.group_id,
         type: newTransaction.type,
         user_id: newTransaction.user_id,
       },
@@ -385,4 +404,127 @@ export const deleteBudgetInDb = async (id) => {
         console.error("Supabase delete failed:", error);
       }
     });
+};
+
+export const fetchGroupsData = async () => {
+  const { GROUPS_CACHE_KEY, GROUPS_EXPIRY_KEY } = getGroupCacheKey();
+  const { data, error } = await supabase
+    .from("transaction_groups")
+    .select("*")
+    .order("name", { ascending: true });
+  if (error) {
+    console.error("Error fetching groups:", error);
+    return [];
+  } else {
+    localStorage.setItem(GROUPS_EXPIRY_KEY, Date.now());
+    await del(GROUPS_CACHE_KEY);
+    await set(GROUPS_CACHE_KEY, data);
+    return data;
+  }
+};
+
+export const addGroupInDb = async (payload) => {
+  const id = crypto.randomUUID();
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  const group = {
+    id,
+    user_id: userId,
+    name: payload.name,
+    description: payload.description || null,
+    created_at: new Date().toISOString(),
+  };
+
+  // 1. Add to IndexedDB
+  await addGroup(group);
+
+  // 2. Sync to Supabase
+  supabase
+    .from("transaction_groups")
+    .insert([group])
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase insert group failed:", error);
+      }
+    });
+
+  return group;
+};
+
+export const updateGroupInDb = async (group) => {
+  const updated = {
+    ...group,
+  };
+
+  // 1. Update in IndexedDB
+  await updateGroup(updated);
+
+  // 2. Sync to Supabase
+  supabase
+    .from("transaction_groups")
+    .update(updated)
+    .eq("id", group.id)
+    .eq("user_id", group.user_id)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase update group failed:", error);
+      }
+    });
+
+  return updated;
+};
+
+export const deleteGroupInDb = async (id) => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+
+  // 1. Delete from IndexedDB
+  await deleteGroup(id);
+
+  // 2. Sync to Supabase
+  supabase
+    .from("transaction_groups")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .then(({ error }) => {
+      if (error) {
+        console.error("Supabase delete group failed:", error);
+      }
+    });
+};
+
+export const syncLocalGroupsWithSupabase = async () => {
+  try {
+    const localGroups = await getCachedGroups();
+    if (!localGroups || localGroups.length === 0) return;
+
+    const { data: remoteGroups, error } = await supabase
+      .from("transaction_groups")
+      .select("id");
+
+    if (error) {
+      console.error("Error fetching remote groups for sync:", error);
+      return;
+    }
+
+    const remoteIds = new Set(remoteGroups.map((g) => g.id));
+    const missingGroups = localGroups.filter((g) => !remoteIds.has(g.id));
+
+    if (missingGroups.length > 0) {
+      console.log(
+        `Syncing ${missingGroups.length} local groups to Supabase...`
+      );
+      const { error: insertError } = await supabase
+        .from("transaction_groups")
+        .insert(missingGroups);
+
+      if (insertError) {
+        console.error("Failed to sync local groups to Supabase:", insertError);
+      } else {
+        console.log("Groups synced successfully!");
+      }
+    }
+  } catch (err) {
+    console.error("Error in syncLocalGroupsWithSupabase:", err);
+  }
 };

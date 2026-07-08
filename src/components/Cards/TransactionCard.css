@@ -157,3 +157,20 @@
   font-size: 13px;
   color: var(--text-muted-color);
 }
+
+.transaction-group-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-color);
+  background-color: var(--muted-bg-color);
+  padding: 1px 6px;
+  border-radius: 4px;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid var(--border-color);
+  line-height: 1.2;
+}

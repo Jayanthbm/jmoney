@@ -14,6 +14,7 @@ const AddTransaction = ({
   incomeCategories,
   expenseCategories,
   payees,
+  groups = [],
   onClose,
   onTransactionAdded,
 }) => {
@@ -25,6 +26,7 @@ const AddTransaction = ({
   const [description, setDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedPayee, setSelectedPayee] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
@@ -61,6 +63,14 @@ const AddTransaction = ({
     label: payee.name,
   }));
 
+  const groupOptions = [
+    { value: null, label: "None" },
+    ...groups.map((group) => ({
+      value: group.id,
+      label: group.name,
+    })),
+  ];
+
   const handleAdd = async () => {
     if (!amount || !timestamp || !selectedCategory) return;
 
@@ -73,8 +83,9 @@ const AddTransaction = ({
         transaction_timestamp: timestamp,
         category_id: selectedCategory,
         payee_id: selectedPayee,
+        group_id: selectedGroup,
       },
-      { incomeCategories, expenseCategories, payees }
+      { incomeCategories, expenseCategories, payees, groups }
     );
 
     onTransactionAdded?.();
@@ -144,7 +155,21 @@ const AddTransaction = ({
           <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
-            onChange={(selected) => setSelectedPayee(selected.value)}
+            onChange={(selected) =>
+              setSelectedPayee(selected ? selected.value : null)
+            }
+            isSearchable={true}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Group</label>
+          <MySelect
+            options={groupOptions}
+            value={groupOptions.find((opt) => opt.value === selectedGroup)}
+            onChange={(selected) =>
+              setSelectedGroup(selected ? selected.value : null)
+            }
             isSearchable={true}
           />
         </div>

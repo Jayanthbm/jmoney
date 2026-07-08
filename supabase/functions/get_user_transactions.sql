@@ -29,7 +29,9 @@ returns table (
   category_app_icon text,
   latitude numeric,
   longitude numeric,
-  tid bigint
+  tid bigint,
+  group_id uuid,
+  group_name text
 )
 language sql
 as $$
@@ -50,12 +52,16 @@ as $$
     c.app_icon as category_app_icon,
     t.latitude,
     t.longitude,
-    t.tid
+    t.tid,
+    t.group_id,
+    g.name as group_name
   from transactions t
   left join categories c
     on c.id = t.category_id
   left join payees p
     on p.id = t.payee_id
+  left join transaction_groups g
+    on g.id = t.group_id
   where t.user_id = uid
     and (
       after_tid = 0

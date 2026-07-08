@@ -6,6 +6,7 @@ import { MdClose, MdSync } from "react-icons/md";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getCategoryCachekeys,
+  getGroupCacheKey,
   getPayeeCacheKey,
   getRelativeTime,
   getTransactionCachekeys,
@@ -29,6 +30,7 @@ import { motion } from "framer-motion";
 
 const { INCOME_CACHE_KEY, EXPENSE_CACHE_KEY } = getCategoryCachekeys();
 const { PAYEE_CACHE_KEY } = getPayeeCacheKey();
+const { GROUPS_CACHE_KEY } = getGroupCacheKey();
 const { LAST_TRANSACTION_FETCH } = getTransactionCachekeys();
 
 const Transactions = () => {
@@ -42,6 +44,7 @@ const Transactions = () => {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [payees, setPayees] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedPayees, setSelectedPayees] = useState([]);
 
@@ -115,16 +118,18 @@ const Transactions = () => {
     const init = async () => {
       setLoading(true);
 
-      const [expenseCategories, incomeCategories, cachedPayees] =
+      const [expenseCategories, incomeCategories, cachedPayees, cachedGroups] =
         await Promise.all([
           get(EXPENSE_CACHE_KEY),
           get(INCOME_CACHE_KEY),
           get(PAYEE_CACHE_KEY),
+          get(GROUPS_CACHE_KEY),
         ]);
       const sorted = await getAndSortTransactions();
       setExpenseCategories(expenseCategories || []);
       setIncomeCategories(incomeCategories || []);
       setPayees(cachedPayees || []);
+      setGroups(cachedGroups || []);
       setAllTransactions(sorted);
       const last = localStorage.getItem(LAST_TRANSACTION_FETCH);
       if (last) {
@@ -320,6 +325,7 @@ const Transactions = () => {
               },
               ...payees,
             ]}
+            groups={groups}
             onClose={() => setShowModal(false)}
             onTransactionAdded={handleTransactionUpdated}
           />
@@ -334,6 +340,7 @@ const Transactions = () => {
               },
               ...payees,
             ]}
+            groups={groups}
             transaction={selectedTransaction}
             onClose={closeModal}
             onTransactionUpdated={handleTransactionUpdated}
