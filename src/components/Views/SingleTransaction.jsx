@@ -13,6 +13,7 @@ const SingleTransaction = ({
   incomeCategories,
   expenseCategories,
   payees,
+  groups = [],
   transaction,
   onClose,
   onTransactionUpdated,
@@ -25,6 +26,7 @@ const SingleTransaction = ({
     description,
     category_id,
     payee_id,
+    group_id,
     product_link,
     latitude,
     longitude,
@@ -42,6 +44,7 @@ const SingleTransaction = ({
   );
   const [selectedCategory, setSelectedCategory] = useState(category_id);
   const [selectedPayee, setSelectedPayee] = useState(payee_id);
+  const [selectedGroup, setSelectedGroup] = useState(group_id || null);
 
   const [combinedLocation, setCombinedLocation] = useState(
     latitude && longitude ? `${latitude}, ${longitude}` : ""
@@ -58,6 +61,14 @@ const SingleTransaction = ({
     value: payee.id,
     label: payee.name,
   }));
+
+  const groupOptions = [
+    { value: null, label: "None" },
+    ...groups.map((group) => ({
+      value: group.id,
+      label: group.name,
+    })),
+  ];
 
   const [isSaving, setIsSaving] = useState(false);
   const handleSave = async () => {
@@ -79,6 +90,7 @@ const SingleTransaction = ({
       transaction_timestamp: updatedTimestamp,
       category_id: selectedCategory,
       payee_id: selectedPayee,
+      group_id: selectedGroup,
       product_link: updatedProductLink,
       latitude: finalLatitude,
       longitude: finalLongitude,
@@ -92,6 +104,7 @@ const SingleTransaction = ({
       incomeCategories,
       expenseCategories,
       payees,
+      groups,
     });
     setIsSaving(false);
   };
@@ -151,10 +164,24 @@ const SingleTransaction = ({
         </div>
 
         <div className="form-group">
+          <label>Payee</label>
           <MySelect
             options={payeeOptions}
             value={payeeOptions.find((opt) => opt.value === selectedPayee)}
-            onChange={(selected) => setSelectedPayee(selected.value)}
+            onChange={(selected) =>
+              setSelectedPayee(selected ? selected.value : null)
+            }
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Group</label>
+          <MySelect
+            options={groupOptions}
+            value={groupOptions.find((opt) => opt.value === selectedGroup)}
+            onChange={(selected) =>
+              setSelectedGroup(selected ? selected.value : null)
+            }
           />
         </div>
 

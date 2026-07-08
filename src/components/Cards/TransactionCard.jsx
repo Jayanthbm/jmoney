@@ -5,7 +5,7 @@ import "./TransactionCard.css";
 import { formatIndianNumber, formatTimestamp, renderIcon } from "../../utils";
 
 import React from "react";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaFolder } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 
 const TransactionCard = ({
@@ -26,6 +26,7 @@ const TransactionCard = ({
     product_link = null,
     latitude = null,
     longitude = null,
+    group_name = null,
   } = transaction;
 
   const googleMapsLink =
@@ -49,7 +50,26 @@ const TransactionCard = ({
         </div>
 
         <div className="transaction-details">
-          <div className="category-name">{category_name}</div>
+          <div
+            className="category-title-row"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
+          >
+            <span className="category-name">{category_name}</span>
+            {group_name && (
+              <span
+                className="transaction-group-badge"
+                title={`Group: ${group_name}`}
+              >
+                <FaFolder size={9} style={{ marginRight: 3, flexShrink: 0 }} />
+                <span>{group_name}</span>
+              </span>
+            )}
+          </div>
 
           {description && <div className="description">{description}</div>}
 

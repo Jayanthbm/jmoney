@@ -6,6 +6,7 @@ import {
   MdCalendarToday,
   MdCategory,
   MdCompareArrows,
+  MdFolder,
   MdHome,
   MdPeople,
   MdPerson,
@@ -19,6 +20,7 @@ import MonthlyLivingCostsView from "../../components/Views/MonthlyLivingCostsVie
 import PayeesView from "../../components/Views/PayeesView";
 import ReportCard from "../../components/Cards/ReportCard";
 import SubscriptionBillsView from "../../components/Views/SubscriptionBillsView";
+import SummaryByGroup from "../../components/Views/SummaryByGroup";
 import SummaryByPayee from "../../components/Views/SummaryByPayee";
 import SummaryView from "../../components/Views/SummaryView";
 import YearlySummaryView from "../../components/Views/YearlySummaryView";
@@ -72,23 +74,27 @@ const reportsList = [
     icon: <MdPeople size={28} />,
     view: "payees",
   },
-
+  {
+    title: "Transactions By Group",
+    description: "Analyze transactions by custom groups",
+    icon: <MdFolder size={28} />,
+    view: "transactionsByGroup",
+  },
 ];
 
 const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("reportList");
-  const [title, setTitle] = useState('Reports')
+  const [title, setTitle] = useState("Reports");
 
   useEffect(() => {
     setLoading(false);
   }, []);
 
-
   const onBack = () => {
-    setViewMode('reportList');
-    setTitle('Reports');
-  }
+    setViewMode("reportList");
+    setTitle("Reports");
+  };
 
   const renderView = () => {
     switch (viewMode) {
@@ -97,17 +103,21 @@ const Reports = () => {
       case "subscriptionAndBills":
         return <SubscriptionBillsView title={title} onBack={onBack} />;
       case "transactionsByPayee":
-        return <SummaryByPayee title={title} onBack={onBack} />
+        return <SummaryByPayee title={title} onBack={onBack} />;
       case "transactionsByCategory":
         return <SummaryView title={title} onBack={onBack} />;
       case "monthlySummary":
-        return <YearlySummaryView showMonth={true} title={title} onBack={onBack} />;
+        return (
+          <YearlySummaryView showMonth={true} title={title} onBack={onBack} />
+        );
       case "incomeVsExpense":
         return <IncomeExpenseView title={title} onBack={onBack} />;
       case "yearlySummary":
         return <YearlySummaryView title={title} onBack={onBack} />;
       case "payees":
         return <PayeesView title={title} onBack={onBack} />;
+      case "transactionsByGroup":
+        return <SummaryByGroup title={title} onBack={onBack} />;
       default:
         return null;
     }
@@ -117,24 +127,24 @@ const Reports = () => {
       {viewMode === "reportList" ? (
         <AppLayout title={title} loading={loading}>
           <div className="report-container">
-          {reportsList.map((report, index) => (
-            <div
-              key={report.title}
-              className="report-card-wrapper"
-              style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => {
-                setViewMode(report.view)
-                setTitle(report.title)
-              }}
-            >
-              <ReportCard
-                icon={report.icon}
-                title={report.title}
-                description={report.description}
-              />
-            </div>
-          ))}
-        </div>
+            {reportsList.map((report, index) => (
+              <div
+                key={report.title}
+                className="report-card-wrapper"
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => {
+                  setViewMode(report.view);
+                  setTitle(report.title);
+                }}
+              >
+                <ReportCard
+                  icon={report.icon}
+                  title={report.title}
+                  description={report.description}
+                />
+              </div>
+            ))}
+          </div>
         </AppLayout>
       ) : (
         renderView()

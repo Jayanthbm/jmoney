@@ -4,9 +4,7 @@ import * as MdIcons from "react-icons/md";
 
 import { MY_KEYS } from "./constants";
 import React from "react";
-import {
-  fetchGoalsData,
-} from "./supabaseData";
+import { fetchGoalsData } from "./supabaseData";
 import { format } from "date-fns";
 import { groupBy } from "lodash";
 
@@ -64,8 +62,18 @@ export function formatDateToDayMonthYear(input) {
 
 export const getMonthOptions = (year) => {
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const now = new Date();
@@ -194,6 +202,15 @@ export const getPayeeCacheKey = () => {
   return result;
 };
 
+export const getGroupCacheKey = () => {
+  const userId = getSupabaseUserIdFromLocalStorage();
+  let result = {
+    GROUPS_CACHE_KEY: `${userId}_${MY_KEYS.GROUPS_CACHE_KEY}`,
+    GROUPS_EXPIRY_KEY: `${userId}_${MY_KEYS.LAST_GROUP_FETCH_CACHE_KEY}`,
+  };
+  return result;
+};
+
 export const getTransactionCachekeys = () => {
   const userId = getSupabaseUserIdFromLocalStorage();
   let result = {
@@ -204,14 +221,13 @@ export const getTransactionCachekeys = () => {
 };
 
 export const groupAndSortTransactions = (transactions) => {
-  let sorted = transactions.sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
+  let sorted = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   let grouped = groupBy(sorted, "date");
   Object.keys(grouped).forEach((date) => {
     grouped[date] = grouped[date].sort(
-      (a, b) => new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
+      (a, b) =>
+        new Date(b.transaction_timestamp) - new Date(a.transaction_timestamp)
     );
   });
   return grouped;
-}
+};
