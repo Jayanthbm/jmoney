@@ -50,7 +50,7 @@
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
+    "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "source-map-explorer": "^2.5.3"
   },
